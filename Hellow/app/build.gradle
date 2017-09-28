@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 26
@@ -6,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.hellow"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -17,8 +18,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding{
+    dataBinding {
         enabled true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -29,5 +34,15 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:design:26.+'
     testCompile 'junit:junit:4.12'
+    //RxJava
+    compile 'io.reactivex.rxjava2:rxjava:+'
+    compile 'io.reactivex.rxjava2:rxandroid:+'
+    //Gson
+    compile 'com.squareup.retrofit2:converter-gson:+'
+    //Glide
+    compile 'com.github.bumptech.glide:glide:+'
+    //RoundedImageView
+    compile 'com.makeramen:roundedimageview:+'
 }

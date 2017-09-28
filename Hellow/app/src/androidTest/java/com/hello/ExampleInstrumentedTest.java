@@ -1,4 +1,4 @@
-package com.hellow;
+package com.hello;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
