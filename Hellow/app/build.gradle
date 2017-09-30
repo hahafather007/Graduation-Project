@@ -5,7 +5,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
-        applicationId "com.hellow"
+        applicationId "com.hello"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
@@ -32,17 +32,18 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    //RxJava
+    //Gson
+    //Glide
+    //RoundedImageView
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:26.+'
-    testCompile 'junit:junit:4.12'
-    //RxJava
     compile 'io.reactivex.rxjava2:rxjava:+'
     compile 'io.reactivex.rxjava2:rxandroid:+'
-    //Gson
     compile 'com.squareup.retrofit2:converter-gson:+'
-    //Glide
     compile 'com.github.bumptech.glide:glide:+'
-    //RoundedImageView
     compile 'com.makeramen:roundedimageview:+'
+    compile 'com.android.support:support-v4:26.+'
+    testCompile 'junit:junit:4.12'
 }

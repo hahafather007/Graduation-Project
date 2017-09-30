@@ -2,8 +2,10 @@
 <resources>
     <color name="colorPrimary">#3366CC</color>
     <color name="colorPrimaryDark">#3366CC</color>
-    <color name="colorAccent">#3366CC</color>
+    <color name="colorAccent">#6699ff</color>
     <color name="colorLine">#eeeeee</color>
     <color name="colorTransparent">#00000000</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorRipple">#44666666</color>
+    <color name="colorText">#333333</color>
 </resources>
