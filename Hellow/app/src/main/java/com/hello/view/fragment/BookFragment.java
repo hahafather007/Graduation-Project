@@ -12,13 +12,13 @@ import com.hello.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteFragment extends Fragment {
+public class BookFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorite, container, false);
+        return inflater.inflate(R.layout.fragment_book, container, false);
     }
 
 }

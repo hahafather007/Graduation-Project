@@ -1,85 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.hello.view.activity.MainActivity">
+<layout>
 
-    <android.support.design.widget.AppBarLayout
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="view"
+            type="com.hello.view.activity.MainActivity" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.hello.view.activity.MainActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/mainTab"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            app:tabIndicatorColor="@color/colorWhite" />
-    </android.support.design.widget.AppBarLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+            <android.support.design.widget.TabLayout
+                android:id="@+id/mainTab"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                app:tabIndicatorColor="@color/colorWhite" />
+        </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/mainViewPager"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="?attr/actionBarSize" />
+            android:layout_below="@+id/appBarLayout">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentBottom="true"
-            android:background="@color/colorPrimary"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:gravity="center|left"
-            android:paddingRight="80dp">
-
-            <ImageView
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                android:paddingLeft="6dp"
-                android:paddingRight="4dp"
-                android:src="@drawable/btn_showmore" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="30dp"
-                android:background="#66ffffff" />
-
-            <EditText
+            <android.support.v4.view.ViewPager
+                android:id="@+id/mainViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorTransparent"
-                android:hint="你想说点啥呢？"
-                android:paddingBottom="6dp"
-                android:paddingLeft="10dp"
-                android:paddingTop="6dp"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="#aaffffff"
-                android:textSize="14sp" />
-        </LinearLayout>
+                android:layout_above="@+id/voiceLayout" />
 
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/btn_ripple_microphone"
-            android:padding="1dp"
-            android:scaleType="centerCrop" />
+            <LinearLayout
+                android:id="@+id/voiceLayout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_above="@+id/showMoreLayout"
+                android:background="@color/colorPrimary"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center|left"
+                android:paddingRight="80dp"
+                app:layout_alignParentBottom="@{!view.isShowMore.get()}">
+
+                <ImageView
+                    android:id="@+id/btn_showMore"
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="4dp"
+                    android:src="@drawable/btn_showmore" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="30dp"
+                    android:background="#66ffffff" />
+
+                <EditText
+                    android:id="@+id/editVoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorTransparent"
+                    android:hint="你想说点啥呢？"
+                    android:paddingBottom="6dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="6dp"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="#aaffffff"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/showMoreLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:background="@color/colorDarkBlue"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <include layout="@layout/app_bar_main_showmore" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnVoice"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignBottom="@+id/voiceLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/btn_ripple_microphone"
+                android:padding="1dp"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
     </RelativeLayout>
-</LinearLayout>
+</layout>

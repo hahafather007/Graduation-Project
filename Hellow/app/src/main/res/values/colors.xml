@@ -8,4 +8,5 @@
     <color name="colorWhite">#ffffff</color>
     <color name="colorRipple">#44666666</color>
     <color name="colorText">#333333</color>
+    <color name="colorDarkBlue">#2156a4</color>
 </resources>

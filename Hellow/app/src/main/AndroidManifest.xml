@@ -25,7 +25,7 @@
             android:label="@string/title_activity_setting"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.activity.InterestActivity"
+            android:name=".view.activity.BookActivity"
             android:label="@string/title_activity_interest"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
