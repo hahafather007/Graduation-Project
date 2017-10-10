@@ -1,42 +1,178 @@
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.hello.view.fragment.TodayTodoFragment">
+<layout>
 
-    <ScrollView
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="view"
+            type="com.hello.view.fragment.TodayTodoFragment" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context="com.hello.view.fragment.TodayTodoFragment">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100sp"
-                android:text="2"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100sp"
-                android:text="2"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100sp"
-                android:text="2"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100sp"
-                android:text="2"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="100sp"
-                android:text="2"/>
-        </LinearLayout>
-    </ScrollView>
-</android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_below="@+id/appBarLayout">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="?attr/actionBarSize"
+                android:paddingTop="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_corner"
+                        android:backgroundTint="@color/colorDarkBlue">
+
+                        <LinearLayout
+                            android:id="@+id/btn_tip"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:onClick="@{view.onClick}"
+                            android:paddingBottom="6dp"
+                            android:paddingTop="6dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:paddingBottom="3dp"
+                                android:src="@drawable/img_tip" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="3dp"
+                                android:text="新建提醒"
+                                android:textColor="@color/colorWhite" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:paddingBottom="8dp"
+                            android:paddingTop="8dp">
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/colorWhite" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn_sport"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:onClick="@{view.onClick}"
+                            android:paddingBottom="6dp"
+                            android:paddingTop="6dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:paddingBottom="3dp"
+                                android:src="@drawable/img_sport" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="3dp"
+                                android:text="运动情况"
+                                android:textColor="@color/colorWhite" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+
+            <LinearLayout
+                android:id="@+id/voiceLayout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_above="@+id/showMoreLayout"
+                android:background="@color/colorPrimary"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center|left"
+                android:paddingRight="80dp"
+                app:layout_alignParentBottom="@{!view.isShowMore.get()}">
+
+                <ImageView
+                    android:id="@+id/btn_showMore"
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:onClick="@{view.onClick}"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="4dp"
+                    android:src="@drawable/btn_showmore" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="30dp"
+                    android:background="#66ffffff" />
+
+                <EditText
+                    android:id="@+id/editVoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorTransparent"
+                    android:hint="你想说点啥呢？"
+                    android:paddingBottom="6dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="6dp"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="#aaffffff"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/showMoreLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:background="@color/colorDarkBlue"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <include layout="@layout/app_bar_main_showmore" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnVoice"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignBottom="@+id/voiceLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/btn_ripple_microphone"
+                android:padding="1dp"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+    </LinearLayout>
+</layout>

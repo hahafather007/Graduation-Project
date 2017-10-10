@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,21 +37,16 @@ import com.hello.view.fragment.TodayTodoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public long durationMillis = 300;
-    public int verticalanimUp = 1;
-    public int verticalanimDown = 0;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private DrawerLayout drawer;
-    public ObservableBoolean isShowMore = new ObservableBoolean(false);
     private ActivityMainBinding binding;
-    private LinearLayout showMoreLayout;
-    private LinearLayout voiceLayout;
-    private Button btnVoice;
-    private EditText editVoice;
+    private boolean isExit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +63,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initViewPager();
-        initView();
     }
 
     @Override
@@ -120,35 +115,10 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.btn_showMore:
-                editVoice.clearFocus();
-                //隐藏软键盘
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                if (isShowMore.get()) {
-                    hideMore();
-                } else {
-                    showMore();
-                }
-                break;
+
         }
     }
 
-    private void hideMore() {
-        isShowMore.set(false);
-        startVerticalAnim(showMoreLayout, verticalanimDown, showMoreLayout.getHeight());
-        startVerticalAnim(voiceLayout, verticalanimUp, -showMoreLayout.getHeight());
-        startVerticalAnim(btnVoice, verticalanimUp, -showMoreLayout.getHeight());
-        showMoreLayout.setVisibility(View.GONE);
-    }
-
-    private void showMore() {
-        isShowMore.set(true);
-        startVerticalAnim(showMoreLayout, verticalanimUp, showMoreLayout.getHeight());
-        startVerticalAnim(voiceLayout, verticalanimUp, showMoreLayout.getHeight());
-        startVerticalAnim(btnVoice, verticalanimUp, showMoreLayout.getHeight());
-        showMoreLayout.setVisibility(View.VISIBLE);
-    }
 
     private void showShareView() {
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -183,26 +153,30 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    private void initView() {
-        showMoreLayout = binding.appBarMain.showMoreLayout;
-        voiceLayout = binding.appBarMain.voiceLayout;
-        btnVoice = binding.appBarMain.btnVoice;
-        editVoice = binding.appBarMain.editVoice;
-        editVoice.setOnFocusChangeListener((v, b) -> {
-            hideMore();
-        });
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitByDoubleClick();
+        }
+        return false;
     }
 
-    private void startVerticalAnim(View view, int type, int height) {
-        TranslateAnimation animation;
-        if (type == verticalanimUp) {
-            animation = new TranslateAnimation(0, 0, height, 0);
+    //双击返回键退出
+    private void exitByDoubleClick() {
+        Timer tExit = null;
+        if (!isExit) {
+            isExit = true;
+            ToastUtil.showToast(this, "再按一次退出");
+            tExit = new Timer();
+            tExit.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isExit = false;//取消退出
+                }
+            }, 2000);// 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
         } else {
-            animation = new TranslateAnimation(0, 0, 0, height);
+            finish();
+            System.exit(0);
         }
-        //设置动画的回弹效果
-        animation.setInterpolator(new OvershootInterpolator());
-        animation.setDuration(durationMillis);
-        view.startAnimation(animation);
     }
 }
