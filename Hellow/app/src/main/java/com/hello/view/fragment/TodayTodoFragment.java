@@ -3,7 +3,6 @@ package com.hello.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.DatabaseUtils;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
@@ -17,17 +16,11 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
 import com.hello.view.activity.TipActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class TodayTodoFragment extends Fragment {
     public ObservableBoolean isShowMore = new ObservableBoolean(false);
     private long durationMillis = 300;
