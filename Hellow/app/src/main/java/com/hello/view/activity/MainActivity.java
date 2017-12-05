@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.hello.R;
@@ -21,6 +20,7 @@ import com.hello.databinding.ActivityMainBinding;
 import com.hello.utils.IntentUtil;
 import com.hello.view.fragment.BookFragment;
 import com.hello.view.fragment.TodayTodoFragment;
+import com.hello.viewmodel.MainActivityViewModel;
 import com.hello.widget.HeartFlyView;
 
 import java.util.ArrayList;
@@ -28,15 +28,18 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.hello.utils.DimensionUtil.dp2px;
-import static com.hello.utils.ToastUtil.*;
+import javax.inject.Inject;
+
+import static com.hello.utils.ToastUtil.showToast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
     private ActivityMainBinding binding;
-    private HeartFlyView flyView;
     private boolean isExit = false;
+
+    @Inject
+    MainActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initDrawer() {
         Toolbar toolbar = binding.appBarMain.toolbar;
+        toolbar.setTitle(R.string.app_name);
         drawer = binding.drawerLayout;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
                 toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -91,14 +95,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initFlyView() {
-        flyView = binding.navView.getHeaderView(0).findViewById(R.id.flyView);
-        flyView.setDefaultDrawableList();
-        flyView.setScaleAnimation(0.2f, 1f);
-        flyView.setMinHeartNum(Integer.MAX_VALUE);
-        flyView.setOriginsOffset(dp2px(this,60));
-        flyView.setAnimationDelay(100);
-        flyView.startAnimation(dp2px(this, 100),
-                dp2px(this, 200));
+        HeartFlyView flyView = binding.navView.getHeaderView(0).findViewById(R.id.flyView);
+        flyView.post(() -> {
+            flyView.setDefaultDrawableList();
+            flyView.setScaleAnimation(0.5f, 1.5f);
+            flyView.setMinHeartNum(Integer.MAX_VALUE);
+            flyView.setMaxHeartNum(Integer.MAX_VALUE);
+            flyView.setOriginsOffset(flyView.getWidth() / 2);
+            flyView.setAnimationDelay(100);
+            flyView.setBottomPadding(-flyView.getHeight());
+            flyView.startAnimation(flyView.getWidth(), flyView.getHeight());
+        });
     }
 
     private void showShareView() {

@@ -147,24 +147,29 @@ public class HeartFlyView extends RelativeLayout {
         }
 
         int heartDrawableIndex;
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(viewWidth, viewHeight);
+        LinearLayout.LayoutParams layoutParams
+                = new LinearLayout.LayoutParams(viewWidth, viewHeight);
         heartDrawableIndex = (int) (drawableList.size() * Math.random());
         ImageView tempImageView = new ImageView(getContext());
         tempImageView.setImageDrawable(drawableList.get(heartDrawableIndex));
         addView(tempImageView, layoutParams);
 
-        ObjectAnimator riseAlphaAnimator = ObjectAnimator.ofFloat(tempImageView, View.ALPHA, 1.0f, 0.0f);
+        ObjectAnimator riseAlphaAnimator
+                = ObjectAnimator.ofFloat(tempImageView, View.ALPHA, 1.5f, 0.0f);
         riseAlphaAnimator.setDuration(riseDuration);
 
-        ObjectAnimator riseScaleXAnimator = ObjectAnimator.ofFloat(tempImageView, View.SCALE_X, minScale, maxScale);
+        ObjectAnimator riseScaleXAnimator
+                = ObjectAnimator.ofFloat(tempImageView, View.SCALE_X, minScale, maxScale);
         riseScaleXAnimator.setDuration(riseDuration);
 
-        ObjectAnimator riseScaleYAnimator = ObjectAnimator.ofFloat(tempImageView, View.SCALE_Y, minScale, maxScale);
+        ObjectAnimator riseScaleYAnimator
+                = ObjectAnimator.ofFloat(tempImageView, View.SCALE_Y, minScale, maxScale);
         riseScaleYAnimator.setDuration(riseDuration);
 
         ValueAnimator valueAnimator = getBesselAnimator(tempImageView, rankWidth, rankHeight);
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(valueAnimator).with(riseAlphaAnimator).with(riseScaleXAnimator).with(riseScaleYAnimator);
+        animatorSet.play(valueAnimator).with(riseAlphaAnimator)
+                .with(riseScaleXAnimator).with(riseScaleYAnimator);
         animatorSet.start();
     }
 
