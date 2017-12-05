@@ -1,12 +1,11 @@
 package com.hello.view.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.hello.R;
 
-public class TipActivity extends AppCompatActivity {
+public class RemindActivity extends AppActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,9 +15,9 @@ public class TipActivity extends AppCompatActivity {
     }
 
     private void initToolBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(__ -> finish());
     }
 }

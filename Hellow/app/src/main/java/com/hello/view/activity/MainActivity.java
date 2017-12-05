@@ -13,24 +13,29 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.hello.R;
 import com.hello.databinding.ActivityMainBinding;
 import com.hello.utils.IntentUtil;
-import com.hello.utils.ToastUtil;
 import com.hello.view.fragment.BookFragment;
 import com.hello.view.fragment.TodayTodoFragment;
+import com.hello.widget.HeartFlyView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.hello.utils.DimensionUtil.dp2px;
+import static com.hello.utils.ToastUtil.*;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
     private ActivityMainBinding binding;
+    private HeartFlyView flyView;
     private boolean isExit = false;
 
     @Override
@@ -40,16 +45,9 @@ public class MainActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
 
-        Toolbar toolbar = binding.appBarMain.toolbar;
-        setSupportActionBar(toolbar);
-        drawer = binding.drawerLayout;
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
-                toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        binding.navView.setNavigationItemSelectedListener(this);
-
+        initDrawer();
         initViewPager();
+        initFlyView();
     }
 
     @Override
@@ -66,13 +64,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_setting:
-                IntentUtil.startActivity(this, SettingActivity.class);
+                IntentUtil.setupActivity(this, SettingActivity.class);
                 break;
             case R.id.nav_book:
-                IntentUtil.startActivity(this, BookActivity.class);
+                IntentUtil.setupActivity(this, BookActivity.class);
                 break;
             case R.id.nav_checkUpdate:
-                ToastUtil.showToast(this, R.string.toast_checkUpdate);
+                showToast(this, R.string.toast_checkUpdate);
                 break;
             case R.id.nav_share:
                 showShareView();
@@ -80,6 +78,27 @@ public class MainActivity extends AppCompatActivity
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void initDrawer() {
+        Toolbar toolbar = binding.appBarMain.toolbar;
+        drawer = binding.drawerLayout;
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
+                toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        binding.navView.setNavigationItemSelectedListener(this);
+    }
+
+    private void initFlyView() {
+        flyView = binding.navView.getHeaderView(0).findViewById(R.id.flyView);
+        flyView.setDefaultDrawableList();
+        flyView.setScaleAnimation(0.2f, 1f);
+        flyView.setMinHeartNum(Integer.MAX_VALUE);
+        flyView.setOriginsOffset(dp2px(this,60));
+        flyView.setAnimationDelay(100);
+        flyView.startAnimation(dp2px(this, 100),
+                dp2px(this, 200));
     }
 
     private void showShareView() {
@@ -123,7 +142,7 @@ public class MainActivity extends AppCompatActivity
         Timer tExit;
         if (!isExit) {
             isExit = true;
-            ToastUtil.showToast(this, R.string.exit_warn_msg);
+            showToast(this, R.string.exit_warn_msg);
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
                 @Override

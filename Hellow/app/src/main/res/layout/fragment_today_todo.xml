@@ -1,35 +1,36 @@
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="android.view.View" />
-
         <variable
-            name="view"
+            name="fragment"
             type="com.hello.view.fragment.TodayTodoFragment" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <com.hello.widget.VpSwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.hello.view.fragment.TodayTodoFragment">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/appBarLayout">
+            android:animateLayoutChanges="true">
 
             <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="?attr/actionBarSize"
-                android:paddingTop="6dp">
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:paddingTop="6dp"
+                app:layout_constraintBottom_toTopOf="@+id/voiceLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
                     android:orientation="vertical"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
@@ -38,7 +39,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/shape_corner"
-                        android:backgroundTint="@color/colorDarkBlue">
+                        android:backgroundTint="@color/colorDarkBlue"
+                        tools:targetApi="lollipop">
 
                         <LinearLayout
                             android:id="@+id/btn_tip"
@@ -48,7 +50,6 @@
                             android:clickable="true"
                             android:foreground="?android:attr/selectableItemBackground"
                             android:gravity="center"
-                            android:onClick="@{view.onClick}"
                             android:paddingBottom="6dp"
                             android:paddingTop="6dp">
 
@@ -61,9 +62,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:paddingLeft="3dp"
-                                android:text="新建提醒"
-                                android:textColor="@color/colorWhite" />
+                                android:paddingStart="3dp"
+                                android:text="@string/todo_newRemind"
+                                android:textColor="@color/colorWhite"
+                                tools:ignore="RtlSymmetry" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -86,7 +88,6 @@
                             android:clickable="true"
                             android:foreground="?android:attr/selectableItemBackground"
                             android:gravity="center"
-                            android:onClick="@{view.onClick}"
                             android:paddingBottom="6dp"
                             android:paddingTop="6dp">
 
@@ -99,35 +100,44 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:paddingLeft="3dp"
-                                android:text="运动情况"
-                                android:textColor="@color/colorWhite" />
+                                android:paddingStart="3dp"
+                                android:text="@string/todo_sportMsg"
+                                android:textColor="@color/colorWhite"
+                                tools:ignore="RtlSymmetry" />
                         </LinearLayout>
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="5"
+                        android:textSize="500sp" />
                 </LinearLayout>
+
             </ScrollView>
 
             <LinearLayout
                 android:id="@+id/voiceLayout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_above="@+id/showMoreLayout"
                 android:background="@color/colorPrimary"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:gravity="center|left"
-                android:paddingRight="80dp"
-                app:layout_alignParentBottom="@{!view.isShowMore.get()}">
+                android:gravity="center_vertical"
+                android:paddingEnd="80dp"
+                app:layout_constraintBottom_toTopOf="@+id/showMoreLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="RtlSymmetry">
 
                 <ImageView
                     android:id="@+id/btn_showMore"
                     android:layout_width="45dp"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:onClick="@{view.onClick}"
-                    android:paddingLeft="6dp"
-                    android:paddingRight="4dp"
+                    android:onClick="@{() -> fragment.showMore()}"
+                    android:paddingEnd="4dp"
+                    android:paddingStart="6dp"
                     android:src="@drawable/btn_showmore" />
 
                 <View
@@ -140,39 +150,47 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorTransparent"
-                    android:hint="你想说点啥呢？"
+                    android:hint="@string/todo_wantoSay"
                     android:paddingBottom="6dp"
-                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
                     android:paddingTop="6dp"
                     android:textColor="@color/colorWhite"
                     android:textColorHint="#aaffffff"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    tools:ignore="RtlSymmetry" />
             </LinearLayout>
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/showMoreLayout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="200dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
                 android:background="@color/colorDarkBlue"
-                android:orientation="vertical"
-                android:visibility="invisible">
+                app:layout_constraintBottom_toBottomOf="@+id/holderView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <include layout="@layout/app_bar_main_showmore" />
-            </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:id="@+id/holderView"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent" />
 
             <Button
                 android:id="@+id/btnVoice"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_alignBottom="@+id/voiceLayout"
-                android:layout_alignParentEnd="true"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/btn_ripple_microphone"
                 android:padding="1dp"
-                android:scaleType="centerCrop" />
-        </RelativeLayout>
-    </LinearLayout>
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="@+id/voiceLayout"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </com.hello.widget.VpSwipeRefreshLayout>
 </layout>

@@ -9,9 +9,6 @@ import android.view.ViewGroup;
 
 import com.hello.R;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class BookFragment extends Fragment {
 
     @Override
