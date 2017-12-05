@@ -3,8 +3,8 @@ package com.hello.view.activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
@@ -13,84 +13,64 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.hello.R;
 import com.hello.databinding.ActivityMainBinding;
 import com.hello.utils.IntentUtil;
-import com.hello.utils.ToastUtil;
 import com.hello.view.fragment.BookFragment;
 import com.hello.view.fragment.TodayTodoFragment;
+import com.hello.widget.HeartFlyView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.hello.utils.DimensionUtil.dp2px;
+import static com.hello.utils.ToastUtil.*;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
     private ActivityMainBinding binding;
+    private HeartFlyView flyView;
     private boolean isExit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding.setView(this);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        binding.setActivity(this);
+
+        initDrawer();
         initViewPager();
+        initFlyView();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            exitByDoubleClick();
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_setting:
-                IntentUtil.startActivity(this, SettingActivity.class);
+                IntentUtil.setupActivity(this, SettingActivity.class);
                 break;
             case R.id.nav_book:
-                IntentUtil.startActivity(this, BookActivity.class);
+                IntentUtil.setupActivity(this, BookActivity.class);
                 break;
             case R.id.nav_checkUpdate:
-                ToastUtil.showToast(this, getResources().getString(R.string.toast_checkUpdate));
+                showToast(this, R.string.toast_checkUpdate);
                 break;
             case R.id.nav_share:
                 showShareView();
@@ -100,28 +80,44 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void onClick(View view) {
-        int id = view.getId();
-        switch (id) {
-
-        }
+    private void initDrawer() {
+        Toolbar toolbar = binding.appBarMain.toolbar;
+        drawer = binding.drawerLayout;
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
+                toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        binding.navView.setNavigationItemSelectedListener(this);
     }
 
+    private void initFlyView() {
+        flyView = binding.navView.getHeaderView(0).findViewById(R.id.flyView);
+        flyView.setDefaultDrawableList();
+        flyView.setScaleAnimation(0.2f, 1f);
+        flyView.setMinHeartNum(Integer.MAX_VALUE);
+        flyView.setOriginsOffset(dp2px(this,60));
+        flyView.setAnimationDelay(100);
+        flyView.startAnimation(dp2px(this, 100),
+                dp2px(this, 200));
+    }
 
     private void showShareView() {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.text_share));
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_share));
         intent.setType("text/plain");
-        startActivity(Intent.createChooser(intent, getResources().getString(R.string.text_share_title)));
+        startActivity(Intent.createChooser(intent, getString(R.string.text_share_title)));
     }
 
     private void initViewPager() {
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(new TodayTodoFragment());
         fragments.add(new BookFragment());
-        String title[] = new String[]{"今日一览", "小哈说书"};
-        ViewPager viewPager = findViewById(R.id.mainViewPager);
-        TabLayout tabLayout = findViewById(R.id.mainTab);
+
+        List<String> titles = new ArrayList<>();
+        titles.add(getString(R.string.today_toda_title));
+        titles.add(getString(R.string.book_title));
+
+        ViewPager viewPager = binding.appBarMain.mainViewPager;
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -135,26 +131,18 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public CharSequence getPageTitle(int position) {
-                return title[position];
+                return titles.get(position);
             }
         });
-        tabLayout.setupWithViewPager(viewPager);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitByDoubleClick();
-        }
-        return false;
+        binding.appBarMain.mainTab.setupWithViewPager(viewPager);
     }
 
     //双击返回键退出
     private void exitByDoubleClick() {
-        Timer tExit = null;
+        Timer tExit;
         if (!isExit) {
             isExit = true;
-            ToastUtil.showToast(this, "再按一次退出");
+            showToast(this, R.string.exit_warn_msg);
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
                 @Override
