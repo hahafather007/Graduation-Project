@@ -10,7 +10,7 @@ public class RemindActivity extends AppActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tip);
+        setContentView(R.layout.activity_remind);
         initToolBar();
     }
 

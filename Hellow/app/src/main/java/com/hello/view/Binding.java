@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
+import com.hello.widget.SingleClickListener;
 
 public class Binding {
     @BindingAdapter("visible")
@@ -26,5 +27,10 @@ public class Binding {
     @BindingAdapter({"android:src", "placeholder"})
     public static void setImageWithHolder(ImageView view, String img, Drawable holder) {
 
+    }
+
+    @BindingAdapter("onSingleClick")
+    public static void setOnSingleClickListener(View view, SingleClickListener listener) {
+        view.setOnClickListener(listener);
     }
 }

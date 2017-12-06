@@ -15,17 +15,17 @@
         android:animateLayoutChanges="true">
 
         <com.hello.widget.VpSwipeRefreshLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/voiceLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ScrollView
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:paddingTop="6dp"
-                app:layout_constraintBottom_toTopOf="@+id/voiceLayout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="6dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -51,7 +51,8 @@
                             android:foreground="?android:attr/selectableItemBackground"
                             android:gravity="center"
                             android:paddingBottom="6dp"
-                            android:paddingTop="6dp">
+                            android:paddingTop="6dp"
+                            app:onSingleClick="@{() -> fragment.setupRemindActivity()}">
 
                             <ImageView
                                 android:layout_width="25dp"

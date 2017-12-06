@@ -3,19 +3,26 @@ package com.hello.view.fragment;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
+import com.hello.model.aiui.AIUIRepository;
+import com.hello.view.activity.RemindActivity;
 
-import static android.view.View.*;
+import javax.inject.Inject;
+
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hello.utils.IntentUtil.setupActivity;
 
-public class TodayTodoFragment extends Fragment {
+public class TodayTodoFragment extends AppFragment {
     private FragmentTodayTodoBinding binding;
+
+    @Inject
+    AIUIRepository aiuiRepository;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,5 +44,9 @@ public class TodayTodoFragment extends Fragment {
         } else {
             binding.holderView.setVisibility(VISIBLE);
         }
+    }
+
+    public void setupRemindActivity() {
+        setupActivity(getContext(), RemindActivity.class);
     }
 }
