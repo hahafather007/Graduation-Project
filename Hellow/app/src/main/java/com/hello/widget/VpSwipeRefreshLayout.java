@@ -19,6 +19,11 @@ public class VpSwipeRefreshLayout extends SwipeRefreshLayout {
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
+    /**
+     * 根据手指滑动的x和y方向的差值
+     * 判断用户是否在滑动其它支持左右滑动的和控件
+     * 防止滑动冲突
+     */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         int action = ev.getAction();

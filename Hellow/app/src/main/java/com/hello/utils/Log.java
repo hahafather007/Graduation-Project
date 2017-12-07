@@ -9,8 +9,16 @@ public class Log {
         android.util.Log.i(TAG_I, msg);
     }
 
+    public static void e(Exception e) {
+        e.printStackTrace();
+    }
+
     public static void e(String msg) {
-        android.util.Log.e(TAG_E, msg);
+        android.util.Log.e(TAG_I, msg);
+    }
+
+    public static void e(Throwable throwable) {
+        throwable.printStackTrace();
     }
 
     public static void d(String msg) {

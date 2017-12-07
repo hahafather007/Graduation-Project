@@ -1,28 +1,37 @@
 package com.hello.view.fragment;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
-import com.hello.model.aiui.AIUIRepository;
-import com.hello.view.activity.RemindActivity;
+import com.hello.model.aiui.AIUIHolder;
+import com.hello.widget.VerticalViewPager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.hello.utils.IntentUtil.setupActivity;
 
 public class TodayTodoFragment extends AppFragment {
     private FragmentTodayTodoBinding binding;
+    private InputMethodManager inputMethodManager;
+    private VerticalViewPager verticalPager;
 
     @Inject
-    AIUIRepository aiuiRepository;
+    AIUIHolder aiuiHolder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,17 +45,64 @@ public class TodayTodoFragment extends AppFragment {
 
         binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
+
+        initView();
+        inputMethodManager =
+                (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    }
+
+    private void initView() {
+        initViewPager();
+        binding.editVoice.setOnFocusChangeListener((view, b) -> {
+            verticalPager.setCurrentItem(1);
+            binding.holderView.setVisibility(VISIBLE);
+        });
+    }
+
+    private void initViewPager() {
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(new SecondaryNewsFragment());
+        fragments.add(new SecondaryHelloFragment());
+
+        verticalPager = binding.verticalPager;
+        verticalPager.setAdapter(new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return fragments.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return fragments.size();
+            }
+        });
+        verticalPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position == 0 && positionOffsetPixels == 0) {
+                    //当viewpager滚动完毕缩回选项
+                    binding.holderView.setVisibility(VISIBLE);
+                }
+            }
+        });
     }
 
     public void showMore() {
-        if (binding.holderView.getVisibility() == VISIBLE) {
+        //将控件焦点清除
+        binding.editVoice.clearFocus();
+        verticalPager.setCurrentItem(1);
+        if (binding.holderView.getVisibility() == VISIBLE) {//将holder隐藏，选项顶上去
+            inputMethodManager.hideSoftInputFromWindow(binding.editVoice.getWindowToken(), 0);
             binding.holderView.setVisibility(GONE);
-        } else {
+        } else {//holder显示，选项缩回
             binding.holderView.setVisibility(VISIBLE);
         }
     }
 
-    public void setupRemindActivity() {
-        setupActivity(getContext(), RemindActivity.class);
+    public void showMoreClick(View view) {
+        switch (view.getId()) {
+            case R.id.more_back:
+                verticalPager.setCurrentItem(0);
+        }
     }
 }

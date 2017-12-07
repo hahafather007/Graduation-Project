@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="fragment"
+            type="com.hello.view.fragment.SecondaryNewsFragment" />
+    </data>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_corner"
+                    android:backgroundTint="@color/colorDarkBlue"
+                    tools:targetApi="lollipop">
+
+                    <LinearLayout
+                        android:id="@+id/btn_tip"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingBottom="6dp"
+                        android:paddingTop="6dp"
+                        app:onSingleClick="@{() -> fragment.setupRemindActivity()}">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:paddingBottom="3dp"
+                            android:src="@drawable/img_tip" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="3dp"
+                            android:text="@string/todo_newRemind"
+                            android:textColor="@color/colorWhite"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp">
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorWhite" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_sport"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingBottom="6dp"
+                        android:paddingTop="6dp">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:paddingBottom="3dp"
+                            android:src="@drawable/img_sport" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="3dp"
+                            android:text="@string/todo_sportMsg"
+                            android:textColor="@color/colorWhite"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textSize="500sp" />
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</layout>

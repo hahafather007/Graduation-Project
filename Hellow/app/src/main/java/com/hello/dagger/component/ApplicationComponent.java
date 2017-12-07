@@ -6,6 +6,8 @@ import com.hello.dagger.module.BookActivityModule;
 import com.hello.dagger.module.BookFragmentMoudle;
 import com.hello.dagger.module.MainActivityModule;
 import com.hello.dagger.module.RemindActivityModule;
+import com.hello.dagger.module.SecondaryHelloFragmentModule;
+import com.hello.dagger.module.SecondaryNewsFragmentModule;
 import com.hello.dagger.module.SettingActivityModule;
 import com.hello.dagger.module.SystemServiceModule;
 import com.hello.dagger.module.TodayTodoFragmentMoudle;
@@ -24,7 +26,9 @@ import dagger.Component;
         RemindActivityModule.class,
         BookActivityModule.class,
         BookFragmentMoudle.class,
-        TodayTodoFragmentMoudle.class
+        TodayTodoFragmentMoudle.class,
+        SecondaryHelloFragmentModule.class,
+        SecondaryNewsFragmentModule.class
 })
 public interface ApplicationComponent {
     @Component.Builder

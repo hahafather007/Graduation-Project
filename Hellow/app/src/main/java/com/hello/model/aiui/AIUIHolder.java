@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 
 @Singleton
-public class AIUIRepository {
+public class AIUIHolder {
     private AIUIListener listener;
     private AIUIMessage message;
 
@@ -27,7 +27,7 @@ public class AIUIRepository {
     Context context;
 
     @Inject
-    AIUIRepository() {
+    AIUIHolder() {
 
     }
 
@@ -37,15 +37,15 @@ public class AIUIRepository {
 
         AIUIAgent agent = AIUIAgent.createAgent(context, getAIUIParams(), listener);
 
-        message = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
-        agent.sendMessage(message);
+/*        message = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
+        agent.sendMessage(message)*/;
 
-        Observable.timer(2, TimeUnit.SECONDS)
+/*        Observable.timer(2, TimeUnit.SECONDS)
                 .subscribe(__ -> {
                     message = new AIUIMessage(
-                            AIUIConstant.CMD_WRITE, 0, 0, "data_type=text", "明天早上8点提醒我开会".getBytes());
+                            AIUIConstant.CMD_WRITE, 0, 0, "data_type=text", "整型的最大值".getBytes());
                     agent.sendMessage(message);
-                });
+                });*/
 /*        message = new AIUIMessage(
                 AIUIConstant.CMD_WRITE, 0, 0, "data_type=text", "今天天气怎么样".getBytes());
         agent.sendMessage(message);*/
