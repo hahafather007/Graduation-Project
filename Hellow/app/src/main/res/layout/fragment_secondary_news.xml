@@ -8,31 +8,37 @@
         <variable
             name="fragment"
             type="com.hello.view.fragment.SecondaryNewsFragment" />
+
+        <variable
+            name="viewModel"
+            type="com.hello.viewmodel.SecondaryNewsViewModel" />
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:onRefresh="@{viewModel::refresh}"
+        app:refreshing="@{viewModel.loading}">
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="6dp">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:orientation="vertical">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shape_corner"
-                    android:backgroundTint="@color/colorDarkBlue"
-                    tools:targetApi="lollipop">
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/shape_corner">
 
                     <LinearLayout
                         android:id="@+id/btn_tip"
@@ -100,11 +106,27 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <include layout="@layout/space_line_view" />
+
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/title_news_top"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="5"
-                    android:textSize="500sp" />
+                    android:nestedScrollingEnabled="false"
+                    app:itemLayout="@{@layout/item_news_top}"
+                    app:items="@{viewModel.newsList}"
+                    app:layoutManager="@string/linear_layout_manager"
+                    app:onBindItem="@{fragment::onBindItem}" />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>

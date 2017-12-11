@@ -64,6 +64,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
     compile 'com.makeramen:roundedimageview:2.3.0'
     compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    compile 'me.drakeet.multitype:multitype:3.3.0'
 
     testCompile 'junit:junit:4.12'
 }

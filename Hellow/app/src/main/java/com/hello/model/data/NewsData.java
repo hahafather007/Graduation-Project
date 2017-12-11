@@ -10,7 +10,7 @@ public class NewsData {
     private String author;
     private String url;
     @SerializedName("thumbnail_pic_s")
-    private String imagel;
+    private String image;
 
     public String getTitle() {
         return title;
@@ -28,7 +28,7 @@ public class NewsData {
         return url;
     }
 
-    public String getImagel() {
-        return imagel;
+    public String getImage() {
+        return image;
     }
 }

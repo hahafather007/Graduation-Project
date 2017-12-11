@@ -1,6 +1,7 @@
 package com.hello.view.fragment;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,7 +10,9 @@ import android.view.ViewGroup;
 
 import com.hello.R;
 import com.hello.databinding.FragmentSecondaryNewsBinding;
+import com.hello.databinding.ItemNewsTopBinding;
 import com.hello.view.activity.RemindActivity;
+import com.hello.view.activity.WebViewActivity;
 import com.hello.viewmodel.SecondaryNewsViewModel;
 
 import javax.inject.Inject;
@@ -34,9 +37,19 @@ public class SecondaryNewsFragment extends AppFragment {
 
         binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
+        binding.setViewModel(viewModel);
+    }
+
+    public void onBindItem(ViewDataBinding binding, Object data, int position) {
+        final ItemNewsTopBinding itemBinding = (ItemNewsTopBinding) binding;
+        itemBinding.setFragment(this);
     }
 
     public void setupRemindActivity() {
         setupActivity(getContext(), RemindActivity.class);
+    }
+
+    public void openNewsDetail(String url) {
+        startActivity(WebViewActivity.intentOfUrl(url));
     }
 }

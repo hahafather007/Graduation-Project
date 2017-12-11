@@ -7,13 +7,13 @@ import com.hello.model.data.NewsData;
 import java.util.List;
 
 public class NewsReponse {
-    private Data data;
+    private Result result;
 
-    public Data getData() {
-        return data;
+    public Result getResult() {
+        return result;
     }
 
-    public static class Data {
+    public static class Result {
         @SerializedName("data")
         private List<NewsData> newsList;
 

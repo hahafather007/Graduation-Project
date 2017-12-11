@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
 
+import com.hello.common.Constants;
 import com.hello.dagger.component.DaggerApplicationComponent;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
@@ -40,6 +41,8 @@ public class HelloApplication extends Application
                 .application(this)
                 .build()
                 .inject(this);
+
+        Constants.context = this;
     }
 
     @Override

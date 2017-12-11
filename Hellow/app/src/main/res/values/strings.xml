@@ -22,4 +22,5 @@
     <string name="menu_checkUpdate">检查更新</string>
     <string name="menu_aboutUs">关于我们</string>
     <string name="menu_share">分享</string>
+    <string name="title_news_top">今日头条</string>
 </resources>
