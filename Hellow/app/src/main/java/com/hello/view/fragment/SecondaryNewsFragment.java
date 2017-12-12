@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.hello.R;
 import com.hello.databinding.FragmentSecondaryNewsBinding;
@@ -38,6 +39,8 @@ public class SecondaryNewsFragment extends AppFragment {
         binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
         binding.setViewModel(viewModel);
+        binding.scrollView.getViewTreeObserver().addOnScrollChangedListener(()
+                -> binding.refreshView.setEnabled(binding.scrollView.getScrollY() == 0));
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
