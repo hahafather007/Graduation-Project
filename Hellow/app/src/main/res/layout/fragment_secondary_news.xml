@@ -14,12 +14,18 @@
             type="com.hello.viewmodel.SecondaryNewsViewModel" />
     </data>
 
-    <com.hello.widget.VpSwipeRefreshLayout
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        app:onRefresh="@{viewModel::refresh}"
-        app:refreshing="@{viewModel.loading}">
+        android:animateLayoutChanges="true">
+
+        <com.scwang.smartrefresh.header.FunGameHitBlockHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:fgvMiddleColor="@color/colorWhite"
+            app:fgvRightColor="@color/colorLine"
+            app:fgvBackColor="@color/colorPrimary"
+            app:fgvLeftColor="@color/colorWhite" />
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -129,5 +135,5 @@
                     app:visible="@{viewModel.newsList.size() != 0}" />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
-    </com.hello.widget.VpSwipeRefreshLayout>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </layout>

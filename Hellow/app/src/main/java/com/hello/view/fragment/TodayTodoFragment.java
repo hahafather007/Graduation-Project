@@ -28,7 +28,7 @@ import static android.view.View.VISIBLE;
 public class TodayTodoFragment extends AppFragment {
     private FragmentTodayTodoBinding binding;
     private InputMethodManager inputMethodManager;
-    private VerticalViewPager verticalPager;
+    private ViewPager verticalPager;
 
     @Inject
     AIUIHolder aiuiHolder;
