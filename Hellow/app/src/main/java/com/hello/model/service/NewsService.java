@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -24,7 +25,9 @@ public class NewsService {
 
     @Inject
     NewsService() {
-        final OkHttpClient client = new OkHttpClient.Builder().build();
+        final OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new HttpLoggingInterceptor())
+                .build();
 
         api = new Retrofit.Builder()
                 .baseUrl(url)
@@ -36,7 +39,7 @@ public class NewsService {
     }
 
     public Single<List<NewsData>> getNews() {
-        return api.getNews()
+        return api.getNews(requestType, NEWS_KEY)
                 .map(value -> value.getData().getNewsList());
     }
 }

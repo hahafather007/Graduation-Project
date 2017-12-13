@@ -7,6 +7,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface NewApi {
-    @GET(value = "index?type=top&key=c116bf742a3fa1f619a4632b1059c051")
-    Single<NewsReponse> getNews();
+    @GET("/")
+    Single<NewsReponse> getNews(@Query("type") String type, @Query("key") String key);
 }

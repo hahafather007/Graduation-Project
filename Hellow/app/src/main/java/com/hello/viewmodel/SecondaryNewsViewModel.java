@@ -26,6 +26,8 @@ public class SecondaryNewsViewModel {
     void init() {
         newsService.getNews()
                 .compose(Singles.async())
-                .subscribe(newsList::add, Log::e);
+                .subscribe(
+                        v->newsList.add(v)
+                        , Log::e);
     }
 }

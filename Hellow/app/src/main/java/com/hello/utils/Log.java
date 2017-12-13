@@ -18,7 +18,7 @@ public class Log {
     }
 
     public static void e(Throwable throwable) {
-        throwable.printStackTrace();
+        android.util.Log.e(TAG_E,throwable.getMessage());
     }
 
     public static void d(String msg) {
