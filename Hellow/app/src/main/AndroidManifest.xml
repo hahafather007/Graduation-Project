@@ -61,6 +61,9 @@
             android:name=".view.activity.RemindActivity"
             android:label="@string/title_activity_tip"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.activity.WebViewActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

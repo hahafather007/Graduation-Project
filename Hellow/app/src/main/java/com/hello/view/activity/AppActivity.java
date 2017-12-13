@@ -3,6 +3,9 @@ package com.hello.view.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+
+import com.hello.R;
 
 import dagger.android.AndroidInjection;
 
@@ -17,5 +20,20 @@ public class AppActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onContentChanged() {
+        super.onContentChanged();
+
+        initToolBar();
+
+    }
+
+    private void initToolBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(__ -> finish());
     }
 }

@@ -4,9 +4,10 @@ import com.hello.model.data.response.NewsReponse;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
+
+import static com.hello.common.Constants.*;
 
 public interface NewApi {
-    @GET("/")
-    Single<NewsReponse> getNews(@Query("type") String type, @Query("key") String key);
+    @GET(value = "index?type=top&key=" + NEWS_KEY)
+    Single<NewsReponse> getNews();
 }

@@ -2,6 +2,7 @@ package com.hello.model.service;
 
 import com.hello.model.data.NewsData;
 import com.hello.model.service.api.NewApi;
+import com.hello.model.service.interceptor.AppHttpLoggingInterceptor;
 
 import java.util.List;
 
@@ -10,23 +11,19 @@ import javax.inject.Singleton;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.hello.common.Constants.NEWS_KEY;
-
 @Singleton
 public class NewsService {
-    private final String url = "http://v.juhe.cn/toutiao/index/";
-    private final String requestType = "top";
+    private final String url = "http://v.juhe.cn/toutiao/";
     private final NewApi api;
 
     @Inject
     NewsService() {
         final OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new HttpLoggingInterceptor())
+                .addInterceptor(new AppHttpLoggingInterceptor())
                 .build();
 
         api = new Retrofit.Builder()
@@ -39,7 +36,7 @@ public class NewsService {
     }
 
     public Single<List<NewsData>> getNews() {
-        return api.getNews(requestType, NEWS_KEY)
-                .map(value -> value.getData().getNewsList());
+        return api.getNews()
+                .map(value -> value.getResult().getNewsList());
     }
 }
