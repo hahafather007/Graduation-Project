@@ -39,8 +39,6 @@ public class SecondaryNewsFragment extends AppFragment {
         binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
         binding.setViewModel(viewModel);
-        binding.scrollView.getViewTreeObserver().addOnScrollChangedListener(()
-                -> binding.refreshView.setEnabled(binding.scrollView.getScrollY() == 0));
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {

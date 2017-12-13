@@ -13,7 +13,6 @@ import com.annimon.stream.function.Function;
 import com.bumptech.glide.Glide;
 import com.hello.view.binder.DataBindingItemViewBinder;
 import com.hello.widget.SingleClickListener;
-import com.yalantis.phoenix.PullToRefreshView;
 
 import java.util.List;
 
