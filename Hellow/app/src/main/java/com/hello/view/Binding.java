@@ -13,6 +13,8 @@ import com.annimon.stream.function.Function;
 import com.bumptech.glide.Glide;
 import com.hello.view.binder.DataBindingItemViewBinder;
 import com.hello.widget.SingleClickListener;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.List;
 
@@ -110,13 +112,15 @@ public class Binding {
     }
 
     @BindingAdapter("onRefresh")
-    public static void setOnRefreshListener(SwipeRefreshLayout view,
-                                            SwipeRefreshLayout.OnRefreshListener listener) {
+    public static void setOnRefreshListener(SmartRefreshLayout view,
+                                            OnRefreshListener listener) {
         view.setOnRefreshListener(listener);
     }
 
     @BindingAdapter("refreshing")
-    public static void setIfRefresh(SwipeRefreshLayout view, boolean b) {
-        view.setRefreshing(b);
+    public static void setIfRefresh(SmartRefreshLayout view, boolean refreshing) {
+        if (!refreshing) {
+            view.finishRefresh();
+        }
     }
 }

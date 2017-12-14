@@ -1,6 +1,15 @@
-<com.hello.widget.VpSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
+
+    <com.scwang.smartrefresh.header.FunGameBattleCityHeader
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:fgvBackColor="@color/colorPrimary"
+        app:fgvMiddleColor="@color/colorLine"
+        app:fgvRightColor="@color/colorLine" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -18,4 +27,4 @@
                 android:textSize="100sp" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-</com.hello.widget.VpSwipeRefreshLayout>
+</com.scwang.smartrefresh.layout.SmartRefreshLayout>

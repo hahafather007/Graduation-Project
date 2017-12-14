@@ -17,15 +17,17 @@
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        app:onRefresh="@{() -> viewModel.refresh()}"
+        app:refreshing="@{viewModel.loading}">
 
         <com.scwang.smartrefresh.header.FunGameHitBlockHeader
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:fgvMiddleColor="@color/colorWhite"
-            app:fgvRightColor="@color/colorLine"
             app:fgvBackColor="@color/colorPrimary"
-            app:fgvLeftColor="@color/colorWhite" />
+            app:fgvLeftColor="@color/colorWhite"
+            app:fgvMiddleColor="@color/colorWhite"
+            app:fgvRightColor="@color/colorLine" />
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"

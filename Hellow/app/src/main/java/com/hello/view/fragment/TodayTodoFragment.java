@@ -15,12 +15,13 @@ import android.view.inputmethod.InputMethodManager;
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
 import com.hello.model.aiui.AIUIHolder;
-import com.hello.widget.VerticalViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -28,7 +29,7 @@ import static android.view.View.VISIBLE;
 public class TodayTodoFragment extends AppFragment {
     private FragmentTodayTodoBinding binding;
     private InputMethodManager inputMethodManager;
-    private ViewPager verticalPager;
+    private VerticalViewPager verticalPager;
 
     @Inject
     AIUIHolder aiuiHolder;
