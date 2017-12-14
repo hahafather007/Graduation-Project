@@ -11,6 +11,8 @@ import com.annimon.stream.IntPair;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
 import com.bumptech.glide.Glide;
+import com.hello.R;
+import com.hello.utils.ToastUtil;
 import com.hello.view.binder.DataBindingItemViewBinder;
 import com.hello.widget.SingleClickListener;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -121,6 +123,7 @@ public class Binding {
     public static void setIfRefresh(SmartRefreshLayout view, boolean refreshing) {
         if (!refreshing) {
             view.finishRefresh();
+            ToastUtil.showToast(view.getContext(), R.string.refresh_finish);
         }
     }
 }
