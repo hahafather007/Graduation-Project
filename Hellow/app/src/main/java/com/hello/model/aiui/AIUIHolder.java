@@ -37,18 +37,12 @@ public class AIUIHolder {
 
         AIUIAgent agent = AIUIAgent.createAgent(context, getAIUIParams(), listener);
 
-/*        message = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
-        agent.sendMessage(message)*/;
+        message = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
+        agent.sendMessage(message);
 
-/*        Observable.timer(2, TimeUnit.SECONDS)
-                .subscribe(__ -> {
-                    message = new AIUIMessage(
-                            AIUIConstant.CMD_WRITE, 0, 0, "data_type=text", "整型的最大值".getBytes());
-                    agent.sendMessage(message);
-                });*/
-/*        message = new AIUIMessage(
-                AIUIConstant.CMD_WRITE, 0, 0, "data_type=text", "今天天气怎么样".getBytes());
-        agent.sendMessage(message);*/
+        message = new AIUIMessage(
+                AIUIConstant.CMD_WRITE, 0, 0, "data_type=text", "我帅不帅".getBytes());
+        agent.sendMessage(message);
     }
 
     private String getAIUIParams() {
