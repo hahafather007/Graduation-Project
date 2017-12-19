@@ -1,5 +1,7 @@
 package com.hello.model.olami;
 
+import android.content.Context;
+
 import com.annimon.stream.Optional;
 import com.hello.utils.Log;
 
@@ -8,6 +10,8 @@ import javax.inject.Singleton;
 
 import ai.olami.android.IRecorderSpeechRecognizerListener;
 import ai.olami.android.RecorderSpeechRecognizer;
+import ai.olami.android.tts.ITtsPlayerListener;
+import ai.olami.android.tts.TtsPlayer;
 import ai.olami.cloudService.APIConfiguration;
 import ai.olami.cloudService.APIResponse;
 import io.reactivex.subjects.PublishSubject;
@@ -18,6 +22,8 @@ import static com.hello.common.Constants.OLAMI_SECRET;
 
 @Singleton
 public class OLAMIHolder {
+    //语音合成播放器
+    private TtsPlayer ttsPlayer;
     //麦克风语音识别器对象
     private RecorderSpeechRecognizer recognizer;
     //是否正在录音的标识符
@@ -31,14 +37,19 @@ public class OLAMIHolder {
     public Subject<Optional> voiceCompleted = PublishSubject.create();
 
     @Inject
+    Context context;
+
+    @Inject
     OLAMIHolder() {
-        init();
     }
 
-    private void init() {
+    @Inject
+    void init() {
         //语音识别的配置
         APIConfiguration config = new APIConfiguration(OLAMI_KEY, OLAMI_SECRET,
                 APIConfiguration.LOCALIZE_OPTION_SIMPLIFIED_CHINESE);
+
+        ttsPlayer = new TtsPlayer(context, new mPlayerListener());
 
         recognizer =
                 RecorderSpeechRecognizer.create(new mRecognizerListener(), config);
@@ -63,6 +74,7 @@ public class OLAMIHolder {
         return apiResponse;
     }
 
+    //语音识别Listener
     private class mRecognizerListener implements IRecorderSpeechRecognizerListener {
         @Override
         public void onRecordStateChange(RecorderSpeechRecognizer.RecordState state) {
@@ -78,6 +90,10 @@ public class OLAMIHolder {
             Log.i("识别器状态：" + state.toString());
             if (state == RecorderSpeechRecognizer.RecognizeState.COMPLETED) {
                 voiceCompleted.onNext(Optional.empty());
+                if (apiResponse.getData().getNLIResults() != null) {
+                    ttsPlayer.playText(apiResponse.getData()
+                            .getNLIResults()[0].getDescObject().getReplyAnswer(), true);
+                }
             }
         }
 
@@ -106,6 +122,24 @@ public class OLAMIHolder {
         @Override
         public void onException(Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    //语音合成Listener
+    private class mPlayerListener implements ITtsPlayerListener {
+        @Override
+        public void onPlayEnd() {
+
+        }
+
+        @Override
+        public void onStop() {
+
+        }
+
+        @Override
+        public void onPlayingTTS(String s) {
+
         }
     }
 }

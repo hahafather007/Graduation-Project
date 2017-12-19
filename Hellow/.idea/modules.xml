@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Hellow.iml" filepath="$PROJECT_DIR$/Hellow.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/olami-android-tts-1.0.0.120/olami-android-tts-1.0.0.120.iml" filepath="$PROJECT_DIR$/olami-android-tts-1.0.0.120/olami-android-tts-1.0.0.120.iml" />
     </modules>
   </component>
 </project>
