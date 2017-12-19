@@ -1,5 +1,6 @@
 package com.hello.view.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -10,12 +11,11 @@ import com.hello.common.Constants;
 import com.hello.databinding.ActivityWebviewBinding;
 
 import static com.hello.common.Constants.URL;
-import static com.hello.common.Constants.context;
 
 public class WebViewActivity extends AppActivity {
     private ActivityWebviewBinding binding;
 
-    public static Intent intentOfUrl(String url) {
+    public static Intent intentOfUrl(Context context, String url) {
         Intent intent = new Intent(context, WebViewActivity.class);
         intent.putExtra(URL, url);
         return intent;

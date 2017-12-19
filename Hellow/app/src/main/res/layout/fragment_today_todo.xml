@@ -105,6 +105,7 @@
             android:padding="1dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="@+id/voiceLayout"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:onSingleClick="@{() -> fragment.voiceBtnClick()}" />
     </android.support.constraint.ConstraintLayout>
 </layout>

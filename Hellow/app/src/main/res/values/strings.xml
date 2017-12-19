@@ -24,4 +24,6 @@
     <string name="menu_share">分享</string>
     <string name="title_news_top">今日头条</string>
     <string name="refresh_finish">刷新完毕</string>
+    <string name="text_noTalking">好像没听到你说话哦~</string>
+    <string name="text_network_error">请检测网络连接！</string>
 </resources>

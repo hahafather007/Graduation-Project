@@ -50,6 +50,6 @@ public class SecondaryNewsFragment extends AppFragment {
     }
 
     public void openNewsDetail(String url) {
-        startActivity(WebViewActivity.intentOfUrl(url));
+        startActivity(WebViewActivity.intentOfUrl(getContext(), url));
     }
 }

@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
 
-import com.hello.common.Constants;
 import com.hello.dagger.component.DaggerApplicationComponent;
-import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.SpeechUtility;
 
 import javax.inject.Inject;
 
@@ -17,8 +14,6 @@ import dagger.android.HasActivityInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
-
-import static com.hello.common.Constants.AIUI_APPID;
 
 
 public class HelloApplication extends Application
@@ -33,16 +28,12 @@ public class HelloApplication extends Application
     public void onCreate() {
         super.onCreate();
 
-        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + AIUI_APPID);
-
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
 
         DaggerApplicationComponent.builder()
                 .application(this)
                 .build()
                 .inject(this);
-
-        Constants.context = this;
     }
 
     @Override

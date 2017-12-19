@@ -14,10 +14,14 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
-import com.hello.model.aiui.AIUIHolder;
+import com.hello.utils.Log;
+import com.hello.utils.rx.RxField;
+import com.hello.utils.rx.RxLifeCycle;
+import com.hello.viewmodel.TodayTodoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -32,7 +36,7 @@ public class TodayTodoFragment extends AppFragment {
     private VerticalViewPager verticalPager;
 
     @Inject
-    AIUIHolder aiuiHolder;
+    TodayTodoViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +54,8 @@ public class TodayTodoFragment extends AppFragment {
         initView();
         inputMethodManager =
                 (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        addChangeListener();
     }
 
     private void initView() {
@@ -88,6 +94,18 @@ public class TodayTodoFragment extends AppFragment {
         });
     }
 
+    private void addChangeListener() {
+        RxField.of(viewModel.volume)
+                .compose(RxLifeCycle.with(this))
+                .map(String::valueOf)
+                .delay(100, TimeUnit.MILLISECONDS)
+                .subscribe(Log::i);
+
+        RxField.ofNonNull(viewModel.apiResponse)
+                .compose(RxLifeCycle.with(this))
+                .subscribe();
+    }
+
     public void showMore() {
         //将控件焦点清除
         binding.editVoice.clearFocus();
@@ -98,6 +116,13 @@ public class TodayTodoFragment extends AppFragment {
         } else {//holder显示，选项缩回
             binding.holderView.setVisibility(VISIBLE);
         }
+    }
+
+    //话筒按钮被按下
+    public void voiceBtnClick() {
+        binding.editVoice.clearFocus();
+        verticalPager.setCurrentItem(1);
+        viewModel.startOrStopRecorder();
     }
 
     public void showMoreClick(View view) {
