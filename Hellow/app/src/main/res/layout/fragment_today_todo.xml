@@ -37,7 +37,6 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
-            android:paddingEnd="80dp"
             app:layout_constraintBottom_toTopOf="@+id/showMoreLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,6 +95,22 @@
             app:layout_constraintTop_toBottomOf="parent" />
 
         <Button
+            android:id="@+id/btnMessage"
+            android:layout_width="50dp"
+            android:layout_height="36dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/shape_corner"
+            android:text="@string/text_send"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:backgroundTint="@{@color/colorWhite}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/voiceLayout"
+            app:onSingleClick="@{() -> fragment.sendMessage()}" />
+
+        <Button
             android:id="@+id/btnVoice"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -105,6 +120,7 @@
             android:padding="1dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="@+id/voiceLayout"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:onSingleClick="@{() -> fragment.startOrStopRecording()}" />
     </android.support.constraint.ConstraintLayout>
 </layout>

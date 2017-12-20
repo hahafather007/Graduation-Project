@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
-import com.hello.model.aiui.AIUIHolder;
+import com.hello.viewmodel.TodayToDoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,7 @@ public class TodayTodoFragment extends AppFragment {
     private VerticalViewPager verticalPager;
 
     @Inject
-    AIUIHolder aiuiHolder;
+    TodayToDoViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,9 +56,32 @@ public class TodayTodoFragment extends AppFragment {
 
     private void initView() {
         initViewPager();
+
         binding.editVoice.setOnFocusChangeListener((view, b) -> {
             verticalPager.setCurrentItem(1);
             binding.holderView.setVisibility(VISIBLE);
+        });
+        binding.editVoice.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    binding.btnVoice.setVisibility(GONE);
+                    binding.btnMessage.setVisibility(VISIBLE);
+                } else {
+                    binding.btnVoice.setVisibility(VISIBLE);
+                    binding.btnMessage.setVisibility(GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
     }
 
@@ -98,6 +123,18 @@ public class TodayTodoFragment extends AppFragment {
         } else {//holder显示，选项缩回
             binding.holderView.setVisibility(VISIBLE);
         }
+    }
+
+    public void startOrStopRecording() {
+        binding.editVoice.clearFocus();
+        verticalPager.setCurrentItem(1);
+        viewModel.startOrStopRecording();
+
+    }
+
+    public void sendMessage() {
+        viewModel.sendMessage(binding.editVoice.getText().toString());
+        binding.editVoice.getText().clear();
     }
 
     public void showMoreClick(View view) {

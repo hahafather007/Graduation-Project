@@ -1,7 +1,9 @@
 package com.hello.view;
 
+import android.content.res.ColorStateList;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -125,5 +127,10 @@ public class Binding {
             view.finishRefresh();
             ToastUtil.showToast(view.getContext(), R.string.refresh_finish);
         }
+    }
+
+    @BindingAdapter("backgroundTint")
+    public static void setBackgroundTint(View view, int color) {
+        ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(color));
     }
 }
