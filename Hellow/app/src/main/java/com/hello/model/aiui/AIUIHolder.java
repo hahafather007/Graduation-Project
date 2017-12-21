@@ -6,6 +6,8 @@ import android.media.MediaPlayer;
 
 import com.annimon.stream.Optional;
 import com.hello.R;
+import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.UserTalkData;
 import com.hello.utils.Log;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -28,6 +30,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_QI;
+import static com.hello.model.aiui.AIUIServiceStatus.*;
 
 @Singleton
 public class AIUIHolder {
@@ -52,8 +55,11 @@ public class AIUIHolder {
     //当前的状态
     private int status;
 
+    //返回结果的类型
+    public AIUIServiceStatus serviceStatus;
+
     //返回的结果
-    public Subject<Optional<String>> aiuiResult = PublishSubject.create();
+    public Subject<Optional<Object>> aiuiResult = PublishSubject.create();
 
     @Inject
     Context context;
@@ -154,8 +160,10 @@ public class AIUIHolder {
                                 // 解析得到语义结果
                                 String resultStr = cntJson.optString("intent");
                                 Log.i("结果：" + resultStr);
-                                aiuiResult.onNext(Optional.of(resultStr));
-                                analyzeResult(new JSONObject(resultStr));
+
+                                JSONObject resultJson = new JSONObject(resultStr);
+                                analyzeResult(resultJson);
+                                aiuiResult.onNext(Optional.of(new UserTalkData(resultJson.getString("text"))));
                             }
                         }
                     } catch (Throwable e) {
@@ -208,6 +216,8 @@ public class AIUIHolder {
             try {
                 switch (resultJson.getString("service")) {
                     case "joke": {
+                        serviceStatus = JOKE;
+
                         mtalkText += new JSONObject(resultJson.getJSONObject("data")
                                 .getJSONArray("result").getString(0))
                                 .getString("content");
@@ -215,6 +225,8 @@ public class AIUIHolder {
                         break;
                     }
                     case "news": {
+                        serviceStatus = NEWS;
+
                         musicUrl = new JSONObject(resultJson.getJSONObject("data")
                                 .getJSONArray("result").getString(0))
                                 .getString("url");
@@ -224,14 +236,30 @@ public class AIUIHolder {
                         mediaPlayer.start();
                         break;
                     }
+                    case "weather": {
+                        serviceStatus = WEATHER;
+
+                        talkText = mtalkText.replaceFirst("℃", "")
+                                .replaceFirst(" ~ ", "至");
+                        break;
+                    }
+                    case "cookbook": {
+                        serviceStatus = COOKBOOK;
+
+                        break;
+                    }
                     default: {
+                        serviceStatus = DEFAULT;
+
                         talkText = mtalkText;
+
                         break;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
             speech.startSpeaking(talkText, null);
         } else {
             speech.startSpeaking(context.getString(R.string.aiui_no_result), null);

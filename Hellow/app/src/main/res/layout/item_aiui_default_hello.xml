@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.hello.model.data.HelloTalkData" />
+    </data>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="120dp"
+        android:background="@drawable/shape_talk_background"
+        android:padding="6dp"
+        android:text="@{data.data}"
+        android:textColor="@color/colorWhite"
+        android:textSize="14sp"
+        tools:text="我有一只小毛驴我从来也不骑~" />
+</layout>

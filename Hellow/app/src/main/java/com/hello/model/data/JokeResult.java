@@ -1,32 +1,25 @@
 package com.hello.model.data;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
 public class JokeResult {
-    @SerializedName("result")
-    private List<Result> results;
+    private String category;
+    private String content;
+    private String title;
 
-    public List<Result> getResults() {
-        return results;
+    public JokeResult(String category, String content, String title) {
+        this.category = category;
+        this.content = content;
+        this.title = title;
     }
 
-    public class Result {
-        private String category;
-        private String content;
-        private String title;
+    public String getCategory() {
+        return category;
+    }
 
-        public String getCategory() {
-            return category;
-        }
+    public String getContent() {
+        return content;
+    }
 
-        public String getContent() {
-            return content;
-        }
-
-        public String getTitle() {
-            return title;
-        }
+    public String getTitle() {
+        return title;
     }
 }
