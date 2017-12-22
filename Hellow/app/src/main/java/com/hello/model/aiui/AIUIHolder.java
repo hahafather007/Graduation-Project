@@ -5,7 +5,9 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 import com.annimon.stream.Optional;
+import com.google.gson.Gson;
 import com.hello.R;
+import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.utils.Log;
@@ -30,7 +32,6 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_QI;
-import static com.hello.model.aiui.AIUIServiceStatus.*;
 
 @Singleton
 public class AIUIHolder {
@@ -54,9 +55,6 @@ public class AIUIHolder {
     private boolean recording;
     //当前的状态
     private int status;
-
-    //返回结果的类型
-    public AIUIServiceStatus serviceStatus;
 
     //返回的结果
     public Subject<Optional<Object>> aiuiResult = PublishSubject.create();
@@ -162,8 +160,8 @@ public class AIUIHolder {
                                 Log.i("结果：" + resultStr);
 
                                 JSONObject resultJson = new JSONObject(resultStr);
-                                analyzeResult(resultJson);
                                 aiuiResult.onNext(Optional.of(new UserTalkData(resultJson.getString("text"))));
+                                analyzeResult(resultJson);
                             }
                         }
                     } catch (Throwable e) {
@@ -216,8 +214,6 @@ public class AIUIHolder {
             try {
                 switch (resultJson.getString("service")) {
                     case "joke": {
-                        serviceStatus = JOKE;
-
                         mtalkText += new JSONObject(resultJson.getJSONObject("data")
                                 .getJSONArray("result").getString(0))
                                 .getString("content");
@@ -225,8 +221,7 @@ public class AIUIHolder {
                         break;
                     }
                     case "news": {
-                        serviceStatus = NEWS;
-
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
                         musicUrl = new JSONObject(resultJson.getJSONObject("data")
                                 .getJSONArray("result").getString(0))
                                 .getString("url");
@@ -237,31 +232,28 @@ public class AIUIHolder {
                         break;
                     }
                     case "weather": {
-                        serviceStatus = WEATHER;
-
                         talkText = mtalkText.replaceFirst("℃", "")
                                 .replaceFirst(" ~ ", "至");
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
                         break;
                     }
                     case "cookbook": {
-                        serviceStatus = COOKBOOK;
-
+                        talkText = mtalkText;
+                        aiuiResult.onNext(Optional.of(new Gson().fromJson(resultJson.toString(), CookResult.class)));
                         break;
                     }
                     default: {
-                        serviceStatus = DEFAULT;
-
                         talkText = mtalkText;
-
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
                         break;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
             speech.startSpeaking(talkText, null);
         } else {
+            aiuiResult.onNext(Optional.of(new HelloTalkData(context.getString(R.string.aiui_no_result))));
             speech.startSpeaking(context.getString(R.string.aiui_no_result), null);
         }
     }

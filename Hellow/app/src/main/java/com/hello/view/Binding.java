@@ -4,7 +4,6 @@ import android.content.res.ColorStateList;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,6 +56,16 @@ public class Binding {
         final MultiTypeAdapter adapter = getOrCreateAdapter(view);
         adapter.setItems(items);
         adapter.notifyDataSetChanged();
+    }
+
+    @BindingAdapter("itemsScroll")
+    public static void setItemsToScroll(RecyclerView view, List items) {
+        final MultiTypeAdapter adapter = getOrCreateAdapter(view);
+        adapter.setItems(items);
+        adapter.notifyDataSetChanged();
+        if (adapter.getItemCount() != 0) {
+            view.smoothScrollToPosition(adapter.getItemCount() - 1);
+        }
     }
 
     private static MultiTypeAdapter getOrCreateAdapter(RecyclerView view) {

@@ -13,6 +13,8 @@
     <string name="text_share">分享一个好玩的应用~</string>
     <string name="text_share_title">分享</string>
     <string name="text_send">发送</string>
+    <string name="text_ingredient">准备材料：</string>
+    <string name="text_steps">步骤：</string>
     <string name="exit_warn_msg">再按一次退出</string>
     <string name="book_title">小哈说书</string>
     <string name="todo_newRemind">新建提醒</string>
@@ -25,5 +27,5 @@
     <string name="menu_aboutUs">关于我们</string>
     <string name="menu_share">分享</string>
     <string name="refresh_finish">刷新完毕</string>
-    <string name="aiui_no_result">你说的啥？我懂不起</string>
+    <string name="aiui_no_result">不好意思，我好像没听懂。。。 </string>
 </resources>
