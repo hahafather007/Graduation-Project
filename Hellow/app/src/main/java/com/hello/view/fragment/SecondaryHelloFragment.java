@@ -47,9 +47,12 @@ public class SecondaryHelloFragment extends AppFragment {
     }
 
     private void initView() {
-        Binding.Linker linkerUserTalk = Binding.Linker.of(o -> o instanceof UserTalkData, R.layout.item_aiui_default_user);
-        Binding.Linker linkerHelloTalk = Binding.Linker.of(o -> o instanceof HelloTalkData, R.layout.item_aiui_default_hello);
-        Binding.Linker linkerCook = Binding.Linker.of(o -> o instanceof CookResult, R.layout.item_aiui_cook);
+        Binding.Linker linkerUserTalk = Binding.Linker.of(o ->
+                o instanceof UserTalkData, R.layout.item_aiui_default_user);
+        Binding.Linker linkerHelloTalk = Binding.Linker.of(o ->
+                o instanceof HelloTalkData, R.layout.item_aiui_default_hello);
+        Binding.Linker linkerCook = Binding.Linker.of(o ->
+                o instanceof CookResult, R.layout.item_aiui_cook);
 
         linkers = new ArrayList<>();
         linkers.add(linkerUserTalk);

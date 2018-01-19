@@ -283,7 +283,6 @@ public class AIUIHolder {
                         }
                         mTalkText = mTalkText.replaceFirst("℃", "度")
                                 .replaceFirst(" ~ ", "至");
-                        Log.i(weather);
                         aiuiResult.onNext(Optional.of(weather));
                         speech.startSpeaking(mTalkText, speechListener);
                         break;
