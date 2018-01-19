@@ -1,9 +1,7 @@
 package com.hello.view;
 
-import android.content.res.ColorStateList;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,7 +13,7 @@ import com.bumptech.glide.Glide;
 import com.hello.R;
 import com.hello.utils.ToastUtil;
 import com.hello.view.binder.DataBindingItemViewBinder;
-import com.hello.widget.SingleClickListener;
+import com.hello.widget.listener.SingleClickListener;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
@@ -61,8 +59,9 @@ public class Binding {
     @BindingAdapter("itemsScroll")
     public static void setItemsToScroll(RecyclerView view, List items) {
         final MultiTypeAdapter adapter = getOrCreateAdapter(view);
+        final int beforeNum = adapter.getItemCount();
         adapter.setItems(items);
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemRangeInserted(beforeNum - 1, items.size() - beforeNum);
         if (adapter.getItemCount() != 0) {
             view.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
@@ -136,10 +135,5 @@ public class Binding {
             view.finishRefresh();
             ToastUtil.showToast(view.getContext(), R.string.refresh_finish);
         }
-    }
-
-    @BindingAdapter("backgroundTint")
-    public static void setBackgroundTint(View view, int color) {
-        ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(color));
     }
 }

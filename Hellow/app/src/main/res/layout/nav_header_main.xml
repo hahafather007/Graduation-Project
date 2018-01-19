@@ -7,7 +7,7 @@
     android:background="@drawable/side_nav_bar"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <com.hello.widget.HeartFlyView
+    <com.hello.widget.view.HeartFlyView
         android:id="@+id/flyView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

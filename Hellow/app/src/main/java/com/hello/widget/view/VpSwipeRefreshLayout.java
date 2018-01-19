@@ -1,4 +1,4 @@
-package com.hello.widget;
+package com.hello.widget.view;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;

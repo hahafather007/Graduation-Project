@@ -10,20 +10,26 @@ import com.hello.R;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
+import com.hello.model.data.Weather;
 import com.hello.utils.Log;
+import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIListener;
 import com.iflytek.aiui.AIUIMessage;
 import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechSynthesizer;
-import com.iflytek.speech.SynthesizerListener;
+import com.iflytek.cloud.SynthesizerListener;
 
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,7 +48,7 @@ public class AIUIHolder {
     //语音合成器
     private SpeechSynthesizer speech;
     //语音合成监听器
-    SynthesizerListener speechListener;
+    private SynthesizerListener speechListener;
     //AIUI返回结果监听器
     private AIUIListener aiuiListener;
     //发送给AIUI的消息
@@ -58,6 +64,8 @@ public class AIUIHolder {
 
     //返回的结果
     public Subject<Optional<Object>> aiuiResult = PublishSubject.create();
+    //错误信息
+    public Subject<Optional> error = PublishSubject.create();
 
     @Inject
     Context context;
@@ -78,6 +86,14 @@ public class AIUIHolder {
         speech = SpeechSynthesizer.createSynthesizer(context, null);
         speech.setParameter(SpeechConstant.VOICE_NAME, XIAO_QI);
         speech.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
+        speechListener = new SimpleSynthesizerListener() {
+            @Override
+            public void onCompleted(@Nullable SpeechError errorMsg) {
+                if (errorMsg != null && !errorMsg.getMessage().isEmpty()) {
+                    error.onNext(Optional.empty());
+                }
+            }
+        };
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -86,6 +102,7 @@ public class AIUIHolder {
     //外部调用该方法控制录音开始和结束
     public void startOrStopRecording() {
         mediaPlayer.stop();
+        speech.stopSpeaking();
 
         if (!recording) {
             if (AIUIConstant.STATE_WORKING != status) {
@@ -103,6 +120,7 @@ public class AIUIHolder {
     //外部调用该方法发送本文消息
     public void sendMessage(String msg) {
         mediaPlayer.stop();
+        speech.stopSpeaking();
 
         if (AIUIConstant.STATE_WORKING != status) {
             agent.sendMessage(wakeupMsg);
@@ -160,7 +178,8 @@ public class AIUIHolder {
                                 Log.i("结果：" + resultStr);
 
                                 JSONObject resultJson = new JSONObject(resultStr);
-                                aiuiResult.onNext(Optional.of(new UserTalkData(resultJson.getString("text"))));
+                                aiuiResult.onNext(Optional.of(new UserTalkData(
+                                        resultJson.getString("text"))));
                                 analyzeResult(resultJson);
                             }
                         }
@@ -182,6 +201,7 @@ public class AIUIHolder {
                 //错误事件
                 case AIUIConstant.EVENT_ERROR: {
                     Log.e("错误：" + event.info);
+                    error.onNext(Optional.empty());
                     break;
                 }
                 //状态时间
@@ -203,58 +223,89 @@ public class AIUIHolder {
         };
     }
 
-    private String talkText;
-
     //对结果进行解析
     private void analyzeResult(JSONObject resultJson) throws JSONException {
         if (resultJson.getInt("rc") == 0) {//0表示语义理解成功
-            String mtalkText = resultJson.getJSONObject("answer").getString("text");
+            String mTalkText = resultJson.getJSONObject("answer").getString("text");
 
             //按照类别选择不同方式
             try {
                 switch (resultJson.getString("service")) {
                     case "joke": {
-                        mtalkText += new JSONObject(resultJson.getJSONObject("data")
-                                .getJSONArray("result").getString(0))
-                                .getString("content");
-                        talkText = mtalkText;
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        JSONObject object = new JSONObject(array.getString(new Random()
+                                .nextInt(array.length())));
+                        mTalkText = object.getString("title") + "：\n";
+                        mTalkText += object.getString("content");
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }
                     case "news": {
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
-                        musicUrl = new JSONObject(resultJson.getJSONObject("data")
-                                .getJSONArray("result").getString(0))
-                                .getString("url");
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        musicUrl = new JSONObject(array.getString(new Random()
+                                .nextInt(array.length()))).getString("url");
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(musicUrl);
+                        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                            error.onNext(Optional.empty());
+                            return false;
+                        });
                         mediaPlayer.prepare();
                         mediaPlayer.start();
                         break;
                     }
                     case "weather": {
-                        talkText = mtalkText.replaceFirst("℃", "")
+                        //获取用户询问天气预报的具体时间
+                        Weather weather = null;
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        try {
+                            String suggestData = new JSONObject(resultJson.getJSONArray("semantic")
+                                    .getJSONObject(0).getJSONArray("slots")
+                                    .getJSONObject(0).getString("normValue"))
+                                    .getString("suggestDatetime");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject object = array.getJSONObject(i);
+                                if (object.getString("date").equals(suggestData)) {
+                                    weather = new Weather(object.getString("city"), suggestData,
+                                            object.getString("tempRange"),
+                                            object.getString("weather"),
+                                            object.getString("wind"));
+                                    break;
+                                }
+                            }
+                        } catch (JSONException e) {
+                            JSONObject object = array.getJSONObject(0);
+                            weather = new Weather(object.getString("city"),
+                                    object.getString("date"), object.getString("tempRange"),
+                                    object.getString("weather"), object.getString("wind"));
+                        }
+                        mTalkText = mTalkText.replaceFirst("℃", "度")
                                 .replaceFirst(" ~ ", "至");
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
+                        Log.i(weather);
+                        aiuiResult.onNext(Optional.of(weather));
+                        speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }
                     case "cookbook": {
-                        talkText = mtalkText;
-                        aiuiResult.onNext(Optional.of(new Gson().fromJson(resultJson.toString(), CookResult.class)));
+                        aiuiResult.onNext(Optional.of(new Gson().fromJson(resultJson.toString(),
+                                CookResult.class)));
+                        speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }
                     default: {
-                        talkText = mtalkText;
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(talkText)));
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            speech.startSpeaking(talkText, null);
         } else {
             aiuiResult.onNext(Optional.of(new HelloTalkData(context.getString(R.string.aiui_no_result))));
-            speech.startSpeaking(context.getString(R.string.aiui_no_result), null);
+            speech.startSpeaking(context.getString(R.string.aiui_no_result), speechListener);
         }
     }
 }

@@ -1,20 +1,15 @@
 package com.hello.viewmodel;
 
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableField;
-import android.databinding.ObservableList;
-
 import com.annimon.stream.Optional;
 import com.hello.model.aiui.AIUIHolder;
-import com.hello.model.data.NewsData;
-import com.hello.utils.Log;
 
 import javax.inject.Inject;
 
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
+
 public class TodayToDoViewModel {
-    public ObservableField<NewsData> news = new ObservableField<>();
-    //消息对话框的内容
-    public ObservableList<Object> talkItems = new ObservableArrayList<>();
+    public Subject<Optional> error = PublishSubject.create();
 
     @Inject
     AIUIHolder aiuiHolder;
@@ -25,9 +20,8 @@ public class TodayToDoViewModel {
 
     @Inject
     void init() {
-/*        aiuiHolder.aiuiResult
-                .map(Optional::get)
-                .subscribe(v -> Log.i(v.toString()));*/
+        aiuiHolder.error
+                .subscribe(__ -> error.onNext(Optional.empty()));
     }
 
     public void startOrStopRecording() {

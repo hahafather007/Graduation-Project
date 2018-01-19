@@ -1,4 +1,4 @@
-package com.hello.widget;
+package com.hello.widget.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -95,19 +95,17 @@ public class HeartFlyView extends RelativeLayout {
         this.minHeartNum = minHeartNum;
     }
 
-    public HeartFlyView setItemViewSize(int viewWidth, int viewHeight) {
+    public void setItemViewSize(int viewWidth, int viewHeight) {
         this.viewHeight = viewHeight;
         this.viewWidth = viewWidth;
-        return this;
     }
 
-    public HeartFlyView setGiftBoxImage(Drawable drawable, int positionX, int positionY) {
+    public void setGiftBoxImage(Drawable drawable, int positionX, int positionY) {
         ImageView imageView = new ImageView(getContext());
         imageView.setImageDrawable(drawable);
         addView(imageView, imageView.getWidth(), imageView.getHeight());
         imageView.setX(positionX);
         imageView.setY(positionY);
-        return this;
     }
 
     public void startAnimation(final int rankWidth, final int rankHeight) {
@@ -214,7 +212,7 @@ public class HeartFlyView extends RelativeLayout {
         private float point1[] = new float[2];
         private float point2[] = new float[2];
 
-        public PointEvaluator(float[] point1, float[] point2) {
+        private PointEvaluator(float[] point1, float[] point2) {
             this.point1 = point1;
             this.point2 = point2;
         }

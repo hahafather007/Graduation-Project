@@ -4,10 +4,12 @@
     <color name="colorPrimaryDark">#1C86EE</color>
     <color name="colorAccent">#1174CD</color>
     <color name="colorLineSpace">#f7f7f7</color>
-    <color name="colorLine">#eeeeee</color>
+    <color name="colorLine">#e4e4e4</color>
     <color name="colorTransparent">#00000000</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorRipple">#44666666</color>
     <color name="colorText">#333333</color>
     <color name="colorDarkBlue">#1174CD</color>
+    <color name="colorGhostWhite">#F8F8FF</color>
+    <color name="colorLightSkyBlue">#87CEFA</color>
 </resources>

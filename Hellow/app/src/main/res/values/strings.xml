@@ -15,6 +15,7 @@
     <string name="text_send">发送</string>
     <string name="text_ingredient">准备材料：</string>
     <string name="text_steps">步骤：</string>
+    <string name="test_network_error">网络似乎有些不太稳定~</string>
     <string name="exit_warn_msg">再按一次退出</string>
     <string name="book_title">小哈说书</string>
     <string name="todo_newRemind">新建提醒</string>

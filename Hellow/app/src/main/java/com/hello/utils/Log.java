@@ -1,27 +1,39 @@
 package com.hello.utils;
 
+import static com.hello.BuildConfig.DEBUG;
+
 public class Log {
     private final static String TAG_I = "Log.i----------------->";
     private final static String TAG_E = "Log.e----------------->";
     private final static String TAG_D = "Log.d----------------->";
 
-    public static void i(String msg) {
-        android.util.Log.i(TAG_I, msg);
+    public static void i(Object msg) {
+        if (DEBUG) {
+            android.util.Log.i(TAG_I, msg.toString());
+        }
     }
 
     public static void e(Exception e) {
-        e.printStackTrace();
+        if (DEBUG) {
+            e.printStackTrace();
+        }
     }
 
-    public static void e(String msg) {
-        android.util.Log.e(TAG_I, msg);
+    public static void e(Object msg) {
+        if (DEBUG) {
+            android.util.Log.e(TAG_I, msg.toString());
+        }
     }
 
     public static void e(Throwable throwable) {
-        android.util.Log.e(TAG_E,throwable.getMessage());
+        if (DEBUG) {
+            android.util.Log.e(TAG_E, throwable.getMessage());
+        }
     }
 
-    public static void d(String msg) {
-        android.util.Log.d(TAG_D, msg);
+    public static void d(Object msg) {
+        if (DEBUG) {
+            android.util.Log.d(TAG_D, msg.toString());
+        }
     }
 }

@@ -1,18 +1,16 @@
-package com.hello.widget;
+package com.hello.widget.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import fr.castorflex.android.verticalviewpager.VerticalViewPager;
-
-public class VerticalViewPagaer extends VerticalViewPager {
-    public VerticalViewPagaer(Context context) {
+public class VerticalViewPager extends fr.castorflex.android.verticalviewpager.VerticalViewPager {
+    public VerticalViewPager(Context context) {
         super(context);
     }
 
-    public VerticalViewPagaer(Context context, AttributeSet attrs) {
+    public VerticalViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

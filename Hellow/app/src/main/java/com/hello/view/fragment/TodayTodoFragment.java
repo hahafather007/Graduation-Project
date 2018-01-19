@@ -7,8 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +14,15 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
+import com.hello.utils.ToastUtil;
 import com.hello.viewmodel.TodayToDoViewModel;
+import com.hello.widget.listener.SimpleTextWatcher;
+import com.hello.widget.view.VerticalViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -50,6 +49,7 @@ public class TodayTodoFragment extends AppFragment {
         binding.setFragment(this);
 
         initView();
+        addChangeListener();
         inputMethodManager =
                 (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
     }
@@ -61,12 +61,8 @@ public class TodayTodoFragment extends AppFragment {
             verticalPager.setCurrentItem(1);
             binding.holderView.setVisibility(VISIBLE);
         });
-        binding.editVoice.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+        //对输入文字的长度进行监听，由此判断消息发送按钮是否显示
+        binding.editVoice.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 0) {
@@ -77,12 +73,12 @@ public class TodayTodoFragment extends AppFragment {
                     binding.btnMessage.setVisibility(GONE);
                 }
             }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
         });
+    }
+
+    private void addChangeListener() {
+        viewModel.error
+                .subscribe(__ -> ToastUtil.showToast(getContext(), R.string.test_network_error));
     }
 
     private void initViewPager() {

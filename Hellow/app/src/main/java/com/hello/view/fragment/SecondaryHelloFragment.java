@@ -11,15 +11,9 @@ import android.view.ViewGroup;
 import com.hello.R;
 import com.hello.databinding.FragmentSecondaryHelloBinding;
 import com.hello.databinding.ItemAiuiCookBinding;
-import com.hello.databinding.ItemAiuiCookItemBinding;
-import com.hello.databinding.ItemAiuiDefaultHelloBinding;
-import com.hello.databinding.ItemAiuiDefaultUserBinding;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
-import com.hello.utils.Log;
-import com.hello.utils.rx.RxField;
-import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.Binding;
 import com.hello.viewmodel.SecondaryHelloViewModel;
 
@@ -29,7 +23,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class SecondaryHelloFragment extends AppFragment {
-    private FragmentSecondaryHelloBinding helloBinding;
+    private FragmentSecondaryHelloBinding binding;
     public List<Binding.Linker> linkers;
 
     @Inject
@@ -45,15 +39,11 @@ public class SecondaryHelloFragment extends AppFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        helloBinding = DataBindingUtil.bind(view);
-        helloBinding.setFragment(this);
-        helloBinding.setViewModel(viewModel);
+        binding = DataBindingUtil.bind(view);
+        binding.setFragment(this);
+        binding.setViewModel(viewModel);
 
         initView();
-
-        RxField.of(viewModel.items)
-                .compose(RxLifeCycle.with(this))
-                .subscribe(items -> Log.i(items.size() + ""));
     }
 
     private void initView() {
@@ -68,17 +58,9 @@ public class SecondaryHelloFragment extends AppFragment {
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
-        if (data instanceof UserTalkData) {
-            ItemAiuiDefaultUserBinding userBinding = (ItemAiuiDefaultUserBinding) binding;
-        } else if (data instanceof HelloTalkData) {
-            ItemAiuiDefaultHelloBinding helloBinding = (ItemAiuiDefaultHelloBinding) binding;
-        } else if (data instanceof CookResult) {
+        if (data instanceof CookResult) {
             ItemAiuiCookBinding cookBinding = (ItemAiuiCookBinding) binding;
             cookBinding.setFragment(this);
         }
-    }
-
-    public void onBindCookItem(ViewDataBinding binding, Object data, int position) {
-        ItemAiuiCookItemBinding cookItemBinding = (ItemAiuiCookItemBinding) binding;
     }
 }
