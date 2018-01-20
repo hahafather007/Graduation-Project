@@ -59,9 +59,8 @@ public class Binding {
     @BindingAdapter("itemsScroll")
     public static void setItemsToScroll(RecyclerView view, List items) {
         final MultiTypeAdapter adapter = getOrCreateAdapter(view);
-        final int beforeNum = adapter.getItemCount();
         adapter.setItems(items);
-        adapter.notifyItemRangeInserted(beforeNum - 1, items.size() - beforeNum);
+        adapter.notifyDataSetChanged();
         if (adapter.getItemCount() != 0) {
             view.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
