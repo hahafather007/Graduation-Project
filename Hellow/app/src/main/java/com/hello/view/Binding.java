@@ -62,7 +62,7 @@ public class Binding {
         adapter.setItems(items);
         adapter.notifyDataSetChanged();
         if (adapter.getItemCount() != 0) {
-            view.smoothScrollToPosition(adapter.getItemCount() - 1);
+            view.scrollToPosition(adapter.getItemCount() - 1);
         }
     }
 

@@ -4,9 +4,11 @@
 
     <data>
 
+        <import type="com.hello.utils.WeatherUtil" />
+
         <variable
             name="data"
-            type="com.hello.model.data.Weather" />
+            type="com.hello.model.data.WeatherData" />
     </data>
 
     <FrameLayout
@@ -23,18 +25,74 @@
             app:cardCornerRadius="4dp"
             app:cardUseCompatPadding="true">
 
-            <TextView
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/colorGhostWhite"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:textColor="@color/colorText"
-                android:textIsSelectable="true"
-                android:textSize="14sp"
-                tools:text="我有一只小毛驴我从来也不骑~" />
+                android:paddingTop="8dp">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@{WeatherUtil.getWeatherImg(imageView.getContext(),data.weather)}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/img_weather_cloudy" />
+
+                <TextView
+                    android:id="@+id/cityText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:text="@{data.city}"
+                    android:textColor="@color/colorText"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="成都" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="center"
+                    android:text="@{data.temp}"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/cityText"
+                    app:layout_constraintStart_toEndOf="@+id/cityText"
+                    app:layout_constraintTop_toTopOf="@id/cityText"
+                    tools:text="-5℃ ~ 0℃" />
+
+                <TextView
+                    android:id="@+id/dateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@{data.date}"
+                    android:textColor="@color/colorText"
+                    android:textSize="10sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/cityText"
+                    tools:text="2018-01-21" />
+
+                <TextView
+                    android:id="@+id/windText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:text="@{data.wind}"
+                    android:textColor="@color/colorText"
+                    app:layout_constraintBottom_toTopOf="@id/dateText"
+                    app:layout_constraintStart_toStartOf="@id/cityText"
+                    app:layout_constraintTop_toBottomOf="@id/cityText"
+                    tools:text="西北风3-4级" />
+            </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
     </FrameLayout>
 </layout>

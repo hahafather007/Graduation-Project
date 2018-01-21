@@ -10,7 +10,7 @@ import com.hello.R;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
-import com.hello.model.data.Weather;
+import com.hello.model.data.WeatherData;
 import com.hello.utils.Log;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
@@ -258,7 +258,7 @@ public class AIUIHolder {
                     }
                     case "weather": {
                         //获取用户询问天气预报的具体时间
-                        Weather weather = null;
+                        WeatherData weather = null;
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
                         try {
                             String suggestData = new JSONObject(resultJson.getJSONArray("semantic")
@@ -268,7 +268,7 @@ public class AIUIHolder {
                             for (int i = 0; i < array.length(); i++) {
                                 JSONObject object = array.getJSONObject(i);
                                 if (object.getString("date").equals(suggestData)) {
-                                    weather = new Weather(object.getString("city"), suggestData,
+                                    weather = new WeatherData(object.getString("city"), suggestData,
                                             object.getString("tempRange"),
                                             object.getString("weather"),
                                             object.getString("wind"));
@@ -277,7 +277,7 @@ public class AIUIHolder {
                             }
                         } catch (JSONException e) {
                             JSONObject object = array.getJSONObject(0);
-                            weather = new Weather(object.getString("city"),
+                            weather = new WeatherData(object.getString("city"),
                                     object.getString("date"), object.getString("tempRange"),
                                     object.getString("weather"), object.getString("wind"));
                         }

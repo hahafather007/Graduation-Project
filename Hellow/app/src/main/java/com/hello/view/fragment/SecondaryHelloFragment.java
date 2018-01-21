@@ -14,6 +14,7 @@ import com.hello.databinding.ItemAiuiCookBinding;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
+import com.hello.model.data.WeatherData;
 import com.hello.view.Binding;
 import com.hello.viewmodel.SecondaryHelloViewModel;
 
@@ -53,11 +54,14 @@ public class SecondaryHelloFragment extends AppFragment {
                 o instanceof HelloTalkData, R.layout.item_aiui_default_hello);
         Binding.Linker linkerCook = Binding.Linker.of(o ->
                 o instanceof CookResult, R.layout.item_aiui_cook);
+        Binding.Linker linkerWeather = Binding.Linker.of(o ->
+                o instanceof WeatherData, R.layout.item_aiui_weather);
 
         linkers = new ArrayList<>();
         linkers.add(linkerUserTalk);
         linkers.add(linkerHelloTalk);
         linkers.add(linkerCook);
+        linkers.add(linkerWeather);
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
