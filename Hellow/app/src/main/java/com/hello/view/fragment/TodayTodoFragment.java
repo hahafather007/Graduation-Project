@@ -162,14 +162,14 @@ public class TodayTodoFragment extends AppFragment {
     public void voiceMethod() {
         binding.editVoice.setVisibility(GONE);
         binding.btnVoice.setVisibility(VISIBLE);
-        binding.icEdit.setVisibility(GONE);
-        binding.icVoice.setVisibility(VISIBLE);
+        binding.icEdit.setVisibility(VISIBLE);
+        binding.icVoice.setVisibility(GONE);
     }
 
     public void editMethod() {
         binding.editVoice.setVisibility(VISIBLE);
         binding.btnVoice.setVisibility(GONE);
-        binding.icEdit.setVisibility(VISIBLE);
-        binding.icVoice.setVisibility(GONE);
+        binding.icEdit.setVisibility(GONE);
+        binding.icVoice.setVisibility(VISIBLE);
     }
 }

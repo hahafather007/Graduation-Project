@@ -33,6 +33,7 @@
             android:id="@+id/voiceLayout"
             android:layout_width="0dp"
             android:layout_height="?attr/actionBarSize"
+            android:animateLayoutChanges="true"
             android:background="@color/colorPrimary"
             android:focusable="true"
             android:focusableInTouchMode="true"
