@@ -31,6 +31,7 @@ public class TodayTodoFragment extends AppFragment {
     private FragmentTodayTodoBinding binding;
     private InputMethodManager inputMethodManager;
     private VerticalViewPager verticalPager;
+    private boolean editClick;
 
     @Inject
     TodayToDoViewModel viewModel;
@@ -57,9 +58,16 @@ public class TodayTodoFragment extends AppFragment {
     private void initView() {
         initViewPager();
 
-        binding.editVoice.setOnFocusChangeListener((view, b) -> {
-            verticalPager.setCurrentItem(1);
-            binding.holderView.setVisibility(VISIBLE);
+        binding.editVoice.setOnClickListener(view -> {
+            if (verticalPager.getCurrentItem() == 0) {
+                verticalPager.setCurrentItem(1);
+                editClick = true;
+            }
+        });
+        binding.editVoice.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                binding.holderView.setVisibility(VISIBLE);
+            }
         });
         //对输入文字的长度进行监听，由此判断消息发送按钮是否显示
         binding.editVoice.addTextChangedListener(new SimpleTextWatcher() {
@@ -104,6 +112,18 @@ public class TodayTodoFragment extends AppFragment {
                 if (position == 0 && positionOffsetPixels == 0) {
                     //当viewpager滚动完毕缩回选项
                     binding.holderView.setVisibility(VISIBLE);
+                    binding.editVoice.setFocusable(false);
+                    binding.editVoice.setFocusableInTouchMode(false);
+                } else if (position == 1 && positionOffsetPixels == 0) {
+                    binding.editVoice.setFocusable(true);
+                    binding.editVoice.setFocusableInTouchMode(true);
+                    /*若点击EditTextView，弹出软键盘的同时切换页面，可能会导致页面高度计算不正确，
+                    所以设置在切换前不能获得焦点，等待页面切换完成后再获取焦点弹出软键盘*/
+                    if (editClick) {
+                        editClick = false;
+                        binding.editVoice.requestFocus();
+                        inputMethodManager.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+                    }
                 }
             }
         });
@@ -125,7 +145,6 @@ public class TodayTodoFragment extends AppFragment {
         binding.editVoice.clearFocus();
         verticalPager.setCurrentItem(1);
         viewModel.startOrStopRecording();
-
     }
 
     public void sendMessage() {
