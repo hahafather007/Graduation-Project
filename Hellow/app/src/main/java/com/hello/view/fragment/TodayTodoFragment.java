@@ -158,4 +158,18 @@ public class TodayTodoFragment extends AppFragment {
                 verticalPager.setCurrentItem(0);
         }
     }
+
+    public void voiceMethod() {
+        binding.editVoice.setVisibility(GONE);
+        binding.btnVoice.setVisibility(VISIBLE);
+        binding.icEdit.setVisibility(GONE);
+        binding.icVoice.setVisibility(VISIBLE);
+    }
+
+    public void editMethod() {
+        binding.editVoice.setVisibility(VISIBLE);
+        binding.btnVoice.setVisibility(GONE);
+        binding.icEdit.setVisibility(VISIBLE);
+        binding.icVoice.setVisibility(GONE);
+    }
 }

@@ -37,6 +37,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/showMoreLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,6 +62,7 @@
                 android:id="@+id/editVoice"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="56dp"
                 android:background="@color/colorTransparent"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -71,7 +73,26 @@
                 android:textColor="@color/colorWhite"
                 android:textColorHint="#aaffffff"
                 android:textSize="14sp"
+                android:visibility="gone"
                 tools:ignore="RtlSymmetry" />
+
+            <Button
+                android:id="@+id/btnVoice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="56dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/shape_corner"
+                android:text="@string/text_touch_to_speak"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"
+                app:backgroundTint="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/voiceLayout"
+                app:onSingleClick="@{() -> fragment.startOrStopRecording()}" />
         </LinearLayout>
 
         <FrameLayout
@@ -112,17 +133,36 @@
             app:layout_constraintTop_toTopOf="@+id/voiceLayout"
             app:onSingleClick="@{() -> fragment.sendMessage()}" />
 
-        <Button
-            android:id="@+id/btnVoice"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/btn_ripple_microphone"
-            android:padding="1dp"
-            android:scaleType="centerCrop"
+        <View
+            android:layout_width="1dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="46dp"
+            android:background="#66ffffff"
             app:layout_constraintBottom_toBottomOf="@+id/voiceLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:onSingleClick="@{() -> fragment.startOrStopRecording()}" />
+            app:layout_constraintTop_toTopOf="@+id/voiceLayout" />
+
+        <ImageView
+            android:id="@+id/icEdit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/img_edit"
+            app:layout_constraintBottom_toBottomOf="@+id/voiceLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/voiceLayout"
+            app:onSingleClick="@{() -> fragment.editMethod()}" />
+
+        <ImageView
+            android:id="@+id/icVoice"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/img_voice"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/voiceLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/voiceLayout"
+            app:onSingleClick="@{() -> fragment.voiceMethod()}" />
     </android.support.constraint.ConstraintLayout>
 </layout>
