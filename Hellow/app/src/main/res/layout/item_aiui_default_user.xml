@@ -35,7 +35,6 @@
                 android:paddingTop="8dp"
                 android:text="@{data.data}"
                 android:textColor="@color/colorText"
-                android:textIsSelectable="true"
                 android:textSize="14sp"
                 tools:text="我有一只小毛驴我从来也不骑~" />
         </android.support.v7.widget.CardView>

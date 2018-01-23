@@ -74,11 +74,11 @@ public class TodayTodoFragment extends AppFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() > 0) {
-                    binding.btnVoice.setVisibility(GONE);
+                    binding.icVoice.setVisibility(GONE);
                     binding.btnMessage.setVisibility(VISIBLE);
                 } else {
-                    binding.btnVoice.setVisibility(VISIBLE);
                     binding.btnMessage.setVisibility(GONE);
+                    binding.icVoice.setVisibility(VISIBLE);
                 }
             }
         });
@@ -167,9 +167,9 @@ public class TodayTodoFragment extends AppFragment {
     }
 
     public void editMethod() {
-        binding.editVoice.setVisibility(VISIBLE);
         binding.btnVoice.setVisibility(GONE);
-        binding.icEdit.setVisibility(GONE);
+        binding.editVoice.setVisibility(VISIBLE);
         binding.icVoice.setVisibility(VISIBLE);
+        binding.icEdit.setVisibility(GONE);
     }
 }

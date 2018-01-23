@@ -75,6 +75,7 @@ dependencies {
     compile 'me.drakeet.multitype:multitype:3.3.0'
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
+    compile 'joda-time:joda-time:2.9.9'
 
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

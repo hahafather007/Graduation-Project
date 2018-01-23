@@ -47,7 +47,7 @@
                     android:id="@+id/cityText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="6dp"
+                    android:layout_marginStart="6dp"
                     android:text="@{data.city}"
                     android:textColor="@color/colorText"
                     android:textSize="18sp"
@@ -59,7 +59,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginLeft="6dp"
+                    android:layout_marginStart="6dp"
                     android:gravity="center"
                     android:text="@{data.temp}"
                     android:textColor="@color/colorText"

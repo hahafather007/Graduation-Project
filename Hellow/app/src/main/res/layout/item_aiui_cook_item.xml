@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:text="@{@string/text_ingredient+data.ingredient}"
             android:textColor="@color/colorText"
-            android:textIsSelectable="true"
             android:textSize="12sp"
             tools:text="材料：五花肉,250g;酱油,1勺;加饭酒,2勺;鸡精,1茶匙;生姜,半块;大蒜,2个（独瓣蒜）;青椒,1个;盐,适量;清水,4勺;胡萝卜,少许" />
 
@@ -37,7 +36,6 @@
             android:layout_height="wrap_content"
             android:text="@{@string/text_steps+data.steps}"
             android:textColor="@color/colorText"
-            android:textIsSelectable="true"
             android:textSize="12sp"
             tools:text="五花肉下锅捞至筷子扎得了。五花肉切小片，胡萝卜和青椒都切条，姜切片，蒜用刀几拍下。少许油入锅预热，放入姜片和蒜（喜欢吃辣的可以下辣椒）肉入锅翻炒至肉片有卷起，依次加入适量盐、鸡精、酱油、加饭酒和少许清水，翻炒均匀，盖上锅盖闷上五分钟左右。加入青椒和胡萝卜炒到两者断生即可出锅" />
 

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 public class SecondaryHelloFragment extends AppFragment {
     public List<Binding.Linker> linkers;
+
     private FragmentSecondaryHelloBinding binding;
 
     @Inject

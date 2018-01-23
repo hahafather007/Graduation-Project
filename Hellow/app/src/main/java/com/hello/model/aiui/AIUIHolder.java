@@ -1,8 +1,14 @@
 package com.hello.model.aiui;
 
+import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
@@ -12,6 +18,7 @@ import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.Log;
+import com.hello.utils.rx.Observables;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -23,28 +30,31 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 
 import org.jetbrains.annotations.Nullable;
+import org.joda.time.LocalDateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Random;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
+import static android.provider.CalendarContract.Events;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 
 @Singleton
 public class AIUIHolder {
     //播放在线音乐文件
     private MediaPlayer mediaPlayer;
-    //在线音乐url
-    private String musicUrl;
     //语音合成器
     private SpeechSynthesizer speech;
     //语音合成监听器
@@ -223,6 +233,23 @@ public class AIUIHolder {
         };
     }
 
+    //异步进行音乐播放，以免阻塞线程
+    private void playMusic(String url) throws IOException {
+        Observable.just(url)
+                .map(v -> {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(v);
+                    mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                        error.onNext(Optional.empty());
+                        return false;
+                    });
+                    mediaPlayer.prepare();
+                    return mediaPlayer;
+                })
+                .compose(Observables.async())
+                .subscribe(MediaPlayer::start);
+    }
+
     //对结果进行解析
     private void analyzeResult(JSONObject resultJson) throws JSONException {
         if (resultJson.getInt("rc") == 0) {//0表示语义理解成功
@@ -242,18 +269,11 @@ public class AIUIHolder {
                         break;
                     }
                     case "news": {
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
-                        musicUrl = new JSONObject(array.getString(new Random()
+                        String url = new JSONObject(array.getString(new Random()
                                 .nextInt(array.length()))).getString("url");
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(musicUrl);
-                        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                            error.onNext(Optional.empty());
-                            return false;
-                        });
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        playMusic(url);
                         break;
                     }
                     case "weather": {
@@ -290,6 +310,56 @@ public class AIUIHolder {
                     case "cookbook": {
                         aiuiResult.onNext(Optional.of(new Gson().fromJson(resultJson.toString(),
                                 CookResult.class)));
+                        speech.startSpeaking(mTalkText, speechListener);
+                        break;
+                    }
+                    case "radio": {
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        JSONObject object = array.getJSONObject(0);
+                        String url = object.getString("url");
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        playMusic(url);
+                        break;
+                    }
+                    case "scheduleX": {
+                        //state表示了提醒任务是否完成
+                        String state = resultJson.getJSONObject("state")
+                                .getJSONObject("fg::scheduleX::default::reminderFinished")
+                                .getString("state");
+                        if ("reminderFinished".equals(state)) {
+                            JSONArray array = resultJson.getJSONArray("semantic")
+                                    .getJSONObject(0).getJSONArray("slots");
+                            String content = array.getJSONObject(0).getString("value");
+                            LocalDateTime time = LocalDateTime.parse(array.getJSONObject(1)
+                                    .getString("suggestDatetime"));
+                            //事件开始日期
+                            Calendar startTime = Calendar.getInstance();
+                            startTime.set(time.getYear(),
+                                    time.getMonthOfYear(), time.getDayOfMonth(), time.getHourOfDay(),
+                                    time.getMinuteOfHour(), time.getSecondOfMinute());
+                            //插入事件
+                            ContentValues infoValues = new ContentValues();
+                            //插入提醒，与事件配合起来才有效
+                            ContentValues remindValues = new ContentValues();
+                            infoValues.put(Events.DTSTART, startTime.getTimeInMillis());
+                            infoValues.put(Events.DTEND, startTime.getTimeInMillis() + 60000);
+                            infoValues.put(Events.TITLE, "哈喽助手提醒");
+                            infoValues.put(Events.DESCRIPTION, content);
+                            infoValues.put(Events.CALENDAR_ID, startTime.getTimeInMillis());
+                            infoValues.put(Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+
+                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)
+                                    != PackageManager.PERMISSION_GRANTED) return;
+
+                            Uri uri = context.getContentResolver().insert(CalendarContract.Events.CONTENT_URI, infoValues);
+                            //插完日程之后必须再插入以下代码段才能实现提醒功能
+                            String myEventsId = uri.getLastPathSegment(); // 得到当前表的_id
+                            remindValues.put("event_id", myEventsId);
+                            remindValues.put("minutes", 10); //提前10分钟提醒
+                            remindValues.put("method", 1);   //如果需要有提醒,必须要有这一行
+                            context.getContentResolver().insert(null, infoValues);
+                        }
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }

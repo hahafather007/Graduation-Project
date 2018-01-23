@@ -9,6 +9,7 @@ import com.hello.utils.IntentUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 public class SplashActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
