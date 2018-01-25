@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
 import com.hello.R;
+import com.hello.common.Constants;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
@@ -182,7 +183,7 @@ public class AIUIHolder {
                             mNlpText.append(cntJson.toString());
 
                             String sub = params.optString("sub");
-                            if ("nlp".equals(sub)) {
+                            if ("nlp" .equals(sub)) {
                                 // 解析得到语义结果
                                 String resultStr = cntJson.optString("intent");
                                 Log.i("结果：" + resultStr);
@@ -326,12 +327,12 @@ public class AIUIHolder {
                         String state = resultJson.getJSONObject("state")
                                 .getJSONObject("fg::scheduleX::default::reminderFinished")
                                 .getString("state");
-                        if ("reminderFinished".equals(state)) {
+                        if ("reminderFinished" .equals(state)) {
                             JSONArray array = resultJson.getJSONArray("semantic")
                                     .getJSONObject(0).getJSONArray("slots");
                             String content = array.getJSONObject(0).getString("value");
-                            LocalDateTime time = LocalDateTime.parse(array.getJSONObject(1)
-                                    .getString("suggestDatetime"));
+                            LocalDateTime time = LocalDateTime.parse(new JSONObject(array.getJSONObject(1)
+                                    .getString("normValue")).getString("suggestDatetime"));
                             //事件开始日期
                             Calendar startTime = Calendar.getInstance();
                             startTime.set(time.getYear(),
@@ -357,7 +358,7 @@ public class AIUIHolder {
                             remindValues.put("event_id", myEventsId);
                             remindValues.put("minutes", 10); //提前10分钟提醒
                             remindValues.put("method", 1);   //如果需要有提醒,必须要有这一行
-                            context.getContentResolver().insert(null, infoValues);
+                            context.getContentResolver().insert(Constants.CALANDER_URL, infoValues);
                         }
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
