@@ -18,6 +18,7 @@ import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
+import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Observables;
 import com.hello.widget.listener.SimpleSynthesizerListener;
@@ -183,7 +184,7 @@ public class AIUIHolder {
                             mNlpText.append(cntJson.toString());
 
                             String sub = params.optString("sub");
-                            if ("nlp" .equals(sub)) {
+                            if ("nlp".equals(sub)) {
                                 // 解析得到语义结果
                                 String resultStr = cntJson.optString("intent");
                                 Log.i("结果：" + resultStr);
@@ -327,38 +328,13 @@ public class AIUIHolder {
                         String state = resultJson.getJSONObject("state")
                                 .getJSONObject("fg::scheduleX::default::reminderFinished")
                                 .getString("state");
-                        if ("reminderFinished" .equals(state)) {
+                        if ("reminderFinished".equals(state)) {
                             JSONArray array = resultJson.getJSONArray("semantic")
                                     .getJSONObject(0).getJSONArray("slots");
                             String content = array.getJSONObject(0).getString("value");
                             LocalDateTime time = LocalDateTime.parse(new JSONObject(array.getJSONObject(1)
                                     .getString("normValue")).getString("suggestDatetime"));
-                            //事件开始日期
-                            Calendar startTime = Calendar.getInstance();
-                            startTime.set(time.getYear(),
-                                    time.getMonthOfYear(), time.getDayOfMonth(), time.getHourOfDay(),
-                                    time.getMinuteOfHour(), time.getSecondOfMinute());
-                            //插入事件
-                            ContentValues infoValues = new ContentValues();
-                            //插入提醒，与事件配合起来才有效
-                            ContentValues remindValues = new ContentValues();
-                            infoValues.put(Events.DTSTART, startTime.getTimeInMillis());
-                            infoValues.put(Events.DTEND, startTime.getTimeInMillis() + 60000);
-                            infoValues.put(Events.TITLE, "哈喽助手提醒");
-                            infoValues.put(Events.DESCRIPTION, content);
-                            infoValues.put(Events.CALENDAR_ID, startTime.getTimeInMillis());
-                            infoValues.put(Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
-
-                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)
-                                    != PackageManager.PERMISSION_GRANTED) return;
-
-                            Uri uri = context.getContentResolver().insert(CalendarContract.Events.CONTENT_URI, infoValues);
-                            //插完日程之后必须再插入以下代码段才能实现提醒功能
-                            String myEventsId = uri.getLastPathSegment(); // 得到当前表的_id
-                            remindValues.put("event_id", myEventsId);
-                            remindValues.put("minutes", 10); //提前10分钟提醒
-                            remindValues.put("method", 1);   //如果需要有提醒,必须要有这一行
-                            context.getContentResolver().insert(Constants.CALANDER_URL, infoValues);
+                            CalendarUtil.addCalendarEvent(context, time, content);
                         }
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
