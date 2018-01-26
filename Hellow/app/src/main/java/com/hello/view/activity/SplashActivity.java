@@ -15,7 +15,8 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         new RxPermissions(this)
-                .request(Manifest.permission.WRITE_CALENDAR,
+                .request(Manifest.permission.READ_CALENDAR,
+                        Manifest.permission.WRITE_CALENDAR,
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.READ_CONTACTS,

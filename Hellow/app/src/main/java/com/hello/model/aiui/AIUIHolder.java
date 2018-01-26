@@ -1,6 +1,7 @@
 package com.hello.model.aiui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -39,6 +40,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.TimeZone;
@@ -252,6 +254,7 @@ public class AIUIHolder {
                 .subscribe(MediaPlayer::start);
     }
 
+    @SuppressLint("SimpleDateFormat")
     //对结果进行解析
     private void analyzeResult(JSONObject resultJson) throws JSONException {
         if (resultJson.getInt("rc") == 0) {//0表示语义理解成功
@@ -332,8 +335,16 @@ public class AIUIHolder {
                             JSONArray array = resultJson.getJSONArray("semantic")
                                     .getJSONObject(0).getJSONArray("slots");
                             String content = array.getJSONObject(0).getString("value");
-                            LocalDateTime time = LocalDateTime.parse(new JSONObject(array.getJSONObject(1)
-                                    .getString("normValue")).getString("suggestDatetime"));
+                            String suggestTime = new JSONObject(array.getJSONObject(1)
+                                    .getString("normValue")).getString("suggestDatetime");
+                            LocalDateTime time = null;
+                            try {
+                                time = LocalDateTime.parse(suggestTime);
+                            } catch (IllegalArgumentException e) {
+                                String dayTime = new SimpleDateFormat("yyyy-MM-dd")
+                                        .format(Calendar.getInstance().getTime());
+                                time = LocalDateTime.parse(dayTime + suggestTime);
+                            }
                             CalendarUtil.addCalendarEvent(context, time, content);
                         }
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));

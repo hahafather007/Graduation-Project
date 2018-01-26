@@ -3,39 +3,95 @@ package com.hello.utils
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.provider.CalendarContract
 import android.provider.CalendarContract.Events.*
 import com.hello.common.Constants.*
 import org.joda.time.LocalDateTime
 import java.util.*
+import android.content.ContentUris
+import android.graphics.Color
+import android.provider.CalendarContract.Reminders.EVENT_ID
+import android.provider.CalendarContract.Reminders.MINUTES
+import android.provider.CalendarContract.Reminders.METHOD
 
 object CalendarUtil {
-    //    @JvmStatic
-//    fun addCalendarEvent(context: Context, description: String, time: Long) {
-//
-//    }
-//
-//    //检查是否有现有存在的账户。存在则返回账户id，否则返回-1
-//    private fun checkCalendarAccount(context: Context): Int {
-//        val cursor = context.contentResolver.query(Constants.CALENDAR_URL,
-//                null, null, null, null)
-//        cursor.use { it ->
-//            if (it == null) {
-//                return -1
-//            }
-//            val count = it.count
-//            return if (count > 0) {
-//                it.moveToFirst()
-//                it.getInt(it.getColumnIndex(CalendarContract.Calendars._ID))
-//            } else {
-//                -1
-//            }
-//        }
-//    }
+    //检查是否有现有存在的账户。存在则返回账户id，否则返回-1
+    private fun checkCalendarAccount(context: Context): Int {
+        val cursor = context.contentResolver.query(CALENDAR_URL,
+                null, null, null, null)
+        cursor.use { it ->
+            if (it == null) {
+                return -1
+            }
+            val count = it.count
+            return if (count > 0) {
+                it.moveToFirst()
+                it.getInt(it.getColumnIndex(CalendarContract.Calendars._ID))
+            } else {
+                -1
+            }
+        }
+    }
+
+    //账户创建成功则返回账户id，否则返回-1
+    private fun addCalendarAccount(context: Context): Long {
+        val timeZone = TimeZone.getDefault()
+        val value = ContentValues()
+
+        value.put(CalendarContract.Calendars.NAME, CALENDARS_NAME)
+        value.put(CalendarContract.Calendars.ACCOUNT_NAME, CALENDARS_ACCOUNT_NAME)
+        value.put(CalendarContract.Calendars.ACCOUNT_TYPE, CALENDARS_ACCOUNT_TYPE)
+        value.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, CALENDARS_DISPLAY_NAME)
+        value.put(CalendarContract.Calendars.VISIBLE, 1)
+        value.put(CalendarContract.Calendars.CALENDAR_COLOR, Color.BLUE)
+        value.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER)
+        value.put(CalendarContract.Calendars.SYNC_EVENTS, 1)
+        value.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, timeZone.id)
+        value.put(CalendarContract.Calendars.OWNER_ACCOUNT, CALENDARS_ACCOUNT_NAME)
+        value.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 0)
+
+        var calendarUri = CALENDAR_URL
+        calendarUri = calendarUri.buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, CALENDARS_ACCOUNT_NAME)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CALENDARS_ACCOUNT_TYPE)
+                .build()
+
+        val result = context.contentResolver.insert(calendarUri, value)
+        return if (result == null) -1 else ContentUris.parseId(result)
+    }
+
+    //获取日历的ID
+    private fun checkOrCreateCalendarAccount(context: Context): Int {
+        val oldId = checkCalendarAccount(context)
+        return if (oldId >= 0) {
+            oldId
+        } else {
+            val addId = addCalendarAccount(context)
+            if (addId >= 0) {
+                checkCalendarAccount(context)
+            } else {
+                -1
+            }
+        }
+    }
+
     @JvmStatic
     @SuppressLint("MissingPermission")
     fun addCalendarEvent(context: Context, data: LocalDateTime, description: String) {
+        val calId = checkOrCreateCalendarAccount(context)
+
+        //若日历id获取失败就返回
+        if (calId < 0) return
+
         val time = Calendar.getInstance()
-        time.set(data.year, data.monthOfYear - 1, data.dayOfMonth, data.hourOfDay, data.minuteOfHour)
+        if (data.hourOfDay < LocalDateTime.now().hourOfDay) {
+            time.set(data.year, data.monthOfYear - 1, data.dayOfMonth,
+                    data.hourOfDay + 12, data.minuteOfHour)
+        } else {
+            time.set(data.year, data.monthOfYear - 1, data.dayOfMonth,
+                    data.hourOfDay, data.minuteOfHour)
+        }
         //日历事件
         val infoValues = ContentValues()
         //提醒事件，需要与日历事件配合
@@ -44,12 +100,14 @@ object CalendarUtil {
 
         //插入的时间需要long型
         infoValues.put(DTSTART, time.timeInMillis)
-        infoValues.put(DTEND, time.timeInMillis + 60000)
+        //事件持续时间1小时
+        infoValues.put(DTEND, time.timeInMillis + 60000 * 60)
         infoValues.put(TITLE, "小哈提醒")
         infoValues.put(DESCRIPTION, description)
-        //将系统时间毫秒数作为id
-        infoValues.put(CALENDAR_ID, 3)
-        infoValues.put(EVENT_LOCATION, "你所在的位置")
+        //设置有闹钟提醒
+        infoValues.put(HAS_ALARM, 1)
+        infoValues.put(CALENDAR_ID, calId)
+        //设置时区为默认时区
         infoValues.put(EVENT_TIMEZONE, timeZone.id)
 
         try {
@@ -57,9 +115,10 @@ object CalendarUtil {
             // 得到当前表的_id
             val eventId = uri.lastPathSegment
 
-            remindValue.put("event_id", eventId)
-            remindValue.put("minutes", 5)
-            remindValue.put("method", 1)
+            remindValue.put(EVENT_ID, eventId)
+            //提前10分钟提醒，并且提醒3次
+            remindValue.put(MINUTES, 10)
+            remindValue.put(METHOD, 3)
             context.contentResolver.insert(CALENDAR_REMIDER_URL, remindValue)
         } catch (e: Exception) {
             Log.e(e)

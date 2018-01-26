@@ -11,6 +11,13 @@ public class Constants {
     public final static Uri CALENDAR_URL = Uri.parse("content://com.android.calendar/calendars");
     public final static Uri CALENDAR_EVENT_URL = Uri.parse("content://com.android.calendar/events");
     public final static Uri CALENDAR_REMIDER_URL = Uri.parse("content://com.android.calendar/reminders");
+    //日历的id
+    public final static long CALENDAR_INSERT_ID = 3;
+    //日历账户
+    public final static String CALENDARS_NAME = "hello";
+    public final static String CALENDARS_ACCOUNT_NAME = "hello@gmail.com";
+    public final static String CALENDARS_ACCOUNT_TYPE = "com.hello";
+    public final static String CALENDARS_DISPLAY_NAME = "哈喽助手";
     //网页URL参数的标识
     public final static String URL = "url";
 }
