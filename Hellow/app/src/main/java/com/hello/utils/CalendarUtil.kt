@@ -1,18 +1,19 @@
 package com.hello.utils
 
 import android.annotation.SuppressLint
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Color
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events.*
-import com.hello.common.Constants.*
-import org.joda.time.LocalDateTime
-import java.util.*
-import android.content.ContentUris
-import android.graphics.Color
 import android.provider.CalendarContract.Reminders.EVENT_ID
-import android.provider.CalendarContract.Reminders.MINUTES
 import android.provider.CalendarContract.Reminders.METHOD
+import android.provider.CalendarContract.Reminders.METHOD_ALERT
+import android.provider.CalendarContract.Reminders.MINUTES
+import com.hello.R
+import com.hello.common.Constants.*
+import java.util.*
 
 object CalendarUtil {
     //检查是否有现有存在的账户。存在则返回账户id，否则返回-1
@@ -76,22 +77,15 @@ object CalendarUtil {
         }
     }
 
+    //添加日程事件
     @JvmStatic
     @SuppressLint("MissingPermission")
-    fun addCalendarEvent(context: Context, data: LocalDateTime, description: String) {
+    fun addCalendarEvent(context: Context, time: Calendar, description: String) {
         val calId = checkOrCreateCalendarAccount(context)
 
         //若日历id获取失败就返回
         if (calId < 0) return
 
-        val time = Calendar.getInstance()
-        if (data.hourOfDay < LocalDateTime.now().hourOfDay) {
-            time.set(data.year, data.monthOfYear - 1, data.dayOfMonth,
-                    data.hourOfDay + 12, data.minuteOfHour)
-        } else {
-            time.set(data.year, data.monthOfYear - 1, data.dayOfMonth,
-                    data.hourOfDay, data.minuteOfHour)
-        }
         //日历事件
         val infoValues = ContentValues()
         //提醒事件，需要与日历事件配合
@@ -102,10 +96,8 @@ object CalendarUtil {
         infoValues.put(DTSTART, time.timeInMillis)
         //事件持续时间1小时
         infoValues.put(DTEND, time.timeInMillis + 60000 * 60)
-        infoValues.put(TITLE, "小哈提醒")
-        infoValues.put(DESCRIPTION, description)
+        infoValues.put(TITLE, description)
         //设置有闹钟提醒
-        infoValues.put(HAS_ALARM, 1)
         infoValues.put(CALENDAR_ID, calId)
         //设置时区为默认时区
         infoValues.put(EVENT_TIMEZONE, timeZone.id)
@@ -116,12 +108,12 @@ object CalendarUtil {
             val eventId = uri.lastPathSegment
 
             remindValue.put(EVENT_ID, eventId)
-            //提前10分钟提醒，并且提醒3次
-            remindValue.put(MINUTES, 10)
-            remindValue.put(METHOD, 3)
+            //提前5分钟提醒
+            remindValue.put(MINUTES, 5)
+            remindValue.put(METHOD, METHOD_ALERT)
             context.contentResolver.insert(CALENDAR_REMIDER_URL, remindValue)
         } catch (e: Exception) {
-            Log.e(e)
+            ToastUtil.showToast(context, R.string.text_no_permission_calendar)
         }
     }
 }

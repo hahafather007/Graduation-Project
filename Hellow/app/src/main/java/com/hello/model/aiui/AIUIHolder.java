@@ -1,20 +1,13 @@
 package com.hello.model.aiui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.provider.CalendarContract;
-import android.support.v4.app.ActivityCompat;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
 import com.hello.R;
-import com.hello.common.Constants;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
@@ -43,7 +36,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
-import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,7 +44,6 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-import static android.provider.CalendarContract.Events;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 
 @Singleton
@@ -337,13 +328,22 @@ public class AIUIHolder {
                             String content = array.getJSONObject(0).getString("value");
                             String suggestTime = new JSONObject(array.getJSONObject(1)
                                     .getString("normValue")).getString("suggestDatetime");
-                            LocalDateTime time = null;
+                            Calendar time = Calendar.getInstance();
                             try {
-                                time = LocalDateTime.parse(suggestTime);
+                                LocalDateTime dateTime = LocalDateTime.parse(suggestTime);
+                                time.set(dateTime.getYear(), dateTime.getMonthOfYear() - 1,
+                                        dateTime.getDayOfMonth(), dateTime.getHourOfDay(),
+                                        dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
                             } catch (IllegalArgumentException e) {
                                 String dayTime = new SimpleDateFormat("yyyy-MM-dd")
                                         .format(Calendar.getInstance().getTime());
-                                time = LocalDateTime.parse(dayTime + suggestTime);
+                                LocalDateTime dateTime = LocalDateTime.parse(dayTime + suggestTime);
+                                time.set(dateTime.getYear(), dateTime.getMonthOfYear() - 1,
+                                        dateTime.getDayOfMonth(), dateTime.getHourOfDay(),
+                                        dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
+                                if (mTalkText.contains("明天")) {
+                                    time.add(Calendar.DATE, 1);
+                                }
                             }
                             CalendarUtil.addCalendarEvent(context, time, content);
                         }
