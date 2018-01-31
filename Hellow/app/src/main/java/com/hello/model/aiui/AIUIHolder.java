@@ -1,21 +1,15 @@
 package com.hello.model.aiui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.provider.CalendarContract;
-import android.support.v4.app.ActivityCompat;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
 import com.hello.R;
-import com.hello.common.Constants;
 import com.hello.model.data.CookResult;
+import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -43,7 +37,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
-import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,7 +45,6 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-import static android.provider.CalendarContract.Events;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 
 @Singleton
@@ -269,7 +261,9 @@ public class AIUIHolder {
                                 .nextInt(array.length())));
                         mTalkText = object.getString("title") + "：\n";
                         mTalkText += object.getString("content");
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        DescriptionData data = new DescriptionData(object.getString("title"),
+                                object.getString("content"));
+                        aiuiResult.onNext(Optional.of(data));
                         speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }
@@ -349,6 +343,15 @@ public class AIUIHolder {
                         }
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
+                        break;
+                    }
+                    case "drama": {
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        JSONObject object = array.getJSONObject(new Random().nextInt(array.length()));
+                        DescriptionData data = new DescriptionData(object.getString("album"),
+                                object.getString("description"));
+                        aiuiResult.onNext(Optional.of(data));
+                        playMusic(object.getString("url"));
                         break;
                     }
                     default: {
