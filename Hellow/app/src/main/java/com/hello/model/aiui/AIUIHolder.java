@@ -9,6 +9,7 @@ import com.annimon.stream.Optional;
 import com.google.gson.Gson;
 import com.hello.R;
 import com.hello.model.data.CookResult;
+import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -260,7 +261,9 @@ public class AIUIHolder {
                                 .nextInt(array.length())));
                         mTalkText = object.getString("title") + "：\n";
                         mTalkText += object.getString("content");
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        DescriptionData data = new DescriptionData(object.getString("title"),
+                                object.getString("content"));
+                        aiuiResult.onNext(Optional.of(data));
                         speech.startSpeaking(mTalkText, speechListener);
                         break;
                     }
@@ -349,6 +352,15 @@ public class AIUIHolder {
                         }
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
+                        break;
+                    }
+                    case "drama": {
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        JSONObject object = array.getJSONObject(new Random().nextInt(array.length()));
+                        DescriptionData data = new DescriptionData(object.getString("album"),
+                                object.getString("description"));
+                        aiuiResult.onNext(Optional.of(data));
+                        playMusic(object.getString("url"));
                         break;
                     }
                     default: {
