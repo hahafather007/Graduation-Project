@@ -2,8 +2,6 @@ package com.hello.model.aiui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
@@ -15,7 +13,6 @@ import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
-import com.hello.utils.rx.Observables;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -41,16 +38,15 @@ import java.util.Random;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_QI;
+import static com.hello.utils.MusicUtil.playMusic;
+import static com.hello.utils.MusicUtil.stopMusic;
 
 @Singleton
 public class AIUIHolder {
-    //播放在线音乐文件
-    private MediaPlayer mediaPlayer;
     //语音合成器
     private SpeechSynthesizer speech;
     //语音合成监听器
@@ -100,14 +96,11 @@ public class AIUIHolder {
                 }
             }
         };
-
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
     //外部调用该方法控制录音开始和结束
     public void startOrStopRecording() {
-        mediaPlayer.stop();
+        stopMusic();
         speech.stopSpeaking();
 
         if (!recording) {
@@ -125,7 +118,7 @@ public class AIUIHolder {
 
     //外部调用该方法发送本文消息
     public void sendMessage(String msg) {
-        mediaPlayer.stop();
+        stopMusic();
         speech.stopSpeaking();
 
         if (AIUIConstant.STATE_WORKING != status) {
@@ -151,6 +144,7 @@ public class AIUIHolder {
         return params;
     }
 
+    @SuppressWarnings({"MismatchedQueryAndUpdateOfStringBuilder", "ConstantConditions"})
     private void initAIUIListener() {
         StringBuffer mNlpText = new StringBuffer();
 
@@ -229,27 +223,11 @@ public class AIUIHolder {
         };
     }
 
-    //异步进行音乐播放，以免阻塞线程
-    private void playMusic(String url) throws IOException {
-        Observable.just(url)
-                .map(v -> {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(v);
-                    mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                        error.onNext(Optional.empty());
-                        return false;
-                    });
-                    mediaPlayer.prepare();
-                    return mediaPlayer;
-                })
-                .compose(Observables.async())
-                .subscribe(MediaPlayer::start);
-    }
-
     @SuppressLint("SimpleDateFormat")
     //对结果进行解析
     private void analyzeResult(JSONObject resultJson) throws JSONException {
-        if (resultJson.getInt("rc") == 0) {//0表示语义理解成功
+        int rc = resultJson.getInt("rc");
+        if (rc == 0 || rc == 3) {//0表示语义理解成功，3表示业务失败但有信息返回
             String mTalkText = resultJson.getJSONObject("answer").getString("text");
 
             //按照类别选择不同方式
@@ -263,16 +241,20 @@ public class AIUIHolder {
                         mTalkText += object.getString("content");
                         DescriptionData data = new DescriptionData(object.getString("title"),
                                 object.getString("content"));
+
                         aiuiResult.onNext(Optional.of(data));
                         speech.startSpeaking(mTalkText, speechListener);
+
                         break;
                     }
                     case "news": {
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
                         String url = new JSONObject(array.getString(new Random()
                                 .nextInt(array.length()))).getString("url");
+
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
-                        playMusic(url);
+                        playMusic(url, () -> error.onNext(Optional.empty()));
+
                         break;
                     }
                     case "weather": {
@@ -291,6 +273,7 @@ public class AIUIHolder {
                                             object.getString("tempRange"),
                                             object.getString("weather"),
                                             object.getString("wind"));
+
                                     break;
                                 }
                             }
@@ -302,22 +285,28 @@ public class AIUIHolder {
                         }
                         mTalkText = mTalkText.replaceFirst("℃", "度")
                                 .replaceFirst(" ~ ", "至");
+
+                        assert weather != null;
                         aiuiResult.onNext(Optional.of(weather));
                         speech.startSpeaking(mTalkText, speechListener);
+
                         break;
                     }
                     case "cookbook": {
                         aiuiResult.onNext(Optional.of(new Gson().fromJson(resultJson.toString(),
                                 CookResult.class)));
                         speech.startSpeaking(mTalkText, speechListener);
+
                         break;
                     }
                     case "radio": {
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
                         JSONObject object = array.getJSONObject(0);
                         String url = object.getString("url");
+
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
-                        playMusic(url);
+                        playMusic(url, () -> error.onNext(Optional.empty()));
+
                         break;
                     }
                     case "scheduleX": {
@@ -350,8 +339,10 @@ public class AIUIHolder {
                             }
                             CalendarUtil.addCalendarEvent(context, time, content);
                         }
+
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
+
                         break;
                     }
                     case "drama": {
@@ -359,13 +350,16 @@ public class AIUIHolder {
                         JSONObject object = array.getJSONObject(new Random().nextInt(array.length()));
                         DescriptionData data = new DescriptionData(object.getString("album"),
                                 object.getString("description"));
+
                         aiuiResult.onNext(Optional.of(data));
-                        playMusic(object.getString("url"));
+                        playMusic(object.getString("url"), () -> error.onNext(Optional.empty()));
+
                         break;
                     }
                     default: {
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
+
                         break;
                     }
                 }

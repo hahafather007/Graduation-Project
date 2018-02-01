@@ -20,7 +20,6 @@ public class SplashActivity extends AppCompatActivity {
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.ACCESS_FINE_LOCATION)
                 .subscribe(__ -> {
