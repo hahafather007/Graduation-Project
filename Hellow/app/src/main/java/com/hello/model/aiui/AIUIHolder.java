@@ -11,6 +11,7 @@ import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
+import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
 import com.hello.widget.listener.SimpleSynthesizerListener;
@@ -311,15 +312,22 @@ public class AIUIHolder {
                     }
                     case "scheduleX": {
                         //state表示了提醒任务是否完成
-                        String state = resultJson.getJSONObject("state")
-                                .getJSONObject("fg::scheduleX::default::reminderFinished")
+                        String state = resultJson.getJSONObject("used_state")
                                 .getString("state");
-                        if ("reminderFinished".equals(state)) {
+                        if ("reminderFinished".equals(state) || "clockFinished".equals(state)) {
                             JSONArray array = resultJson.getJSONArray("semantic")
                                     .getJSONObject(0).getJSONArray("slots");
-                            String content = array.getJSONObject(0).getString("value");
-                            String suggestTime = new JSONObject(array.getJSONObject(1)
-                                    .getString("normValue")).getString("suggestDatetime");
+                            String content;
+                            String suggestTime;
+                            if ("reminderFinished".equals(state)) {
+                                content = array.getJSONObject(0).getString("value");
+                                suggestTime = new JSONObject(array.getJSONObject(1)
+                                        .getString("normValue")).getString("suggestDatetime");
+                            } else {
+                                content = array.getJSONObject(1).getString("value");
+                                suggestTime = new JSONObject(array.getJSONObject(0)
+                                        .getString("normValue")).getString("suggestDatetime");
+                            }
                             Calendar time = Calendar.getInstance();
                             try {
                                 LocalDateTime dateTime = LocalDateTime.parse(suggestTime);
@@ -337,7 +345,11 @@ public class AIUIHolder {
                                     time.add(Calendar.DATE, 1);
                                 }
                             }
-                            CalendarUtil.addCalendarEvent(context, time, content);
+                            if ("reminderFinished".equals(state)) {
+                                CalendarUtil.addCalendarEvent(context, time, content);
+                            } else {
+                                AlarmUtil.addAlarmEvent(context, time, content);
+                            }
                         }
 
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));

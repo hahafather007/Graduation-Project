@@ -5,6 +5,8 @@
     <!-- 系统日历读写权限 -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <!--设置闹钟权限-->
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM " />
     <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!--获取手机录音机使用权限，听写、识别、语义理解需要用到此权限 -->
