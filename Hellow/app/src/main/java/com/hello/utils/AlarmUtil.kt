@@ -5,7 +5,6 @@ import android.content.Intent
 import android.provider.AlarmClock
 import java.util.*
 
-
 object AlarmUtil {
     //添加闹钟事件
     @JvmStatic
@@ -15,7 +14,6 @@ object AlarmUtil {
         alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, time.get(Calendar.HOUR_OF_DAY))
         alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, time.get(Calendar.MINUTE))
         alarmIntent.putExtra(AlarmClock.EXTRA_SKIP_UI, true)
-        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(alarmIntent)
     }
 }
