@@ -15,6 +15,7 @@
     <string name="text_send">发送</string>
     <string name="text_touch_to_speak">按住说话</string>
     <string name="text_no_permission_calendar">非常抱歉，请授予日历读写权限</string>
+    <string name="text_no_permission_alarm">非常抱歉，请授予闹钟设置权限</string>
     <string name="text_ingredient">准备材料：</string>
     <string name="text_steps">步骤：</string>
     <string name="test_network_error">网络似乎有些不太稳定~</string>
