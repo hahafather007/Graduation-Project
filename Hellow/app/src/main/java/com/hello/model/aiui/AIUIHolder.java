@@ -294,9 +294,14 @@ public class AIUIHolder {
                         break;
                     }
                     case "cookbook": {
-                        aiuiResult.onNext(Optional.of(new Gson().fromJson(resultJson.toString(),
-                                CookResult.class)));
-                        speech.startSpeaking(mTalkText, speechListener);
+                        String msg = resultJson.getJSONArray("semantic").getJSONObject(0)
+                                .getJSONArray("slots").getJSONObject(0)
+                                .getString("value") + "的做法如下：";
+                        CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
+                        cook.getAnswer().setText(msg);
+
+                        aiuiResult.onNext(Optional.of(cook));
+                        speech.startSpeaking(msg, speechListener);
 
                         break;
                     }
