@@ -6,14 +6,17 @@ import android.content.Context;
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
 import com.hello.R;
+import com.hello.model.data.ChatData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
+import com.hello.model.service.ChatService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
+import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -64,6 +67,8 @@ public class AIUIHolder {
     private boolean recording;
     //当前的状态
     private int status;
+    //用户说的话
+    private String userMsg;
 
     //返回的结果
     public Subject<Optional<Object>> aiuiResult = PublishSubject.create();
@@ -72,6 +77,8 @@ public class AIUIHolder {
 
     @Inject
     Context context;
+    @Inject
+    ChatService chatService;
 
     @Inject
     AIUIHolder() {
@@ -179,8 +186,9 @@ public class AIUIHolder {
                                 Log.i("结果：" + resultStr);
 
                                 JSONObject resultJson = new JSONObject(resultStr);
-                                aiuiResult.onNext(Optional.of(new UserTalkData(
-                                        resultJson.getString("text"))));
+                                userMsg = resultJson.getString("text");
+                                aiuiResult.onNext(Optional.of(new UserTalkData(userMsg)));
+
                                 analyzeResult(resultJson);
                             }
                         }
@@ -384,8 +392,13 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {
-            aiuiResult.onNext(Optional.of(new HelloTalkData(context.getString(R.string.aiui_no_result))));
-            speech.startSpeaking(context.getString(R.string.aiui_no_result), speechListener);
+            chatService.getNews(userMsg)
+                    .compose(Singles.async())
+                    .map(ChatData::getContent)
+                    .subscribe(v -> {
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(v)));
+                        speech.startSpeaking(v, speechListener);
+                    });
         }
     }
 }
