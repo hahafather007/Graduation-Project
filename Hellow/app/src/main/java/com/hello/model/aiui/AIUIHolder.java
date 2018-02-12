@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
-import com.hello.R;
 import com.hello.model.data.ChatData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
@@ -137,6 +136,7 @@ public class AIUIHolder {
         agent.sendMessage(message);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private String getAIUIParams() {
         String params = "";
         try {
