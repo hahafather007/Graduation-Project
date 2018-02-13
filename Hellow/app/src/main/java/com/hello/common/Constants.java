@@ -9,6 +9,8 @@ public class Constants {
     public final static String NEWS_KEY = "c116bf742a3fa1f619a4632b1059c051";
     //这个聊天机器人会骂人
     public final static String BAD_TAKL_ROBUT = "http://api.qingyunke.com/";
+    //图灵机器人key
+    public final static String TULING_KEY = "b59d4513ab5d4e48adc362996732b9ac";
     //下面三个为日历的URL
     public final static Uri CALENDAR_URL = Uri.parse("content://com.android.calendar/calendars");
     public final static Uri CALENDAR_EVENT_URL = Uri.parse("content://com.android.calendar/events");
@@ -22,4 +24,6 @@ public class Constants {
     public final static String CALENDARS_DISPLAY_NAME = "哈喽助手";
     //网页URL参数的标识
     public final static String URL = "url";
+    //Kotpref的名字
+    public final static String KOTPREF_NAME = "hello_pref";
 }

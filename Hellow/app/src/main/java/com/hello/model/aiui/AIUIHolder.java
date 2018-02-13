@@ -5,13 +5,13 @@ import android.content.Context;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
-import com.hello.model.data.ChatData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
-import com.hello.model.service.ChatService;
+import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
+import static com.hello.common.Constants.TULING_KEY;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
@@ -77,7 +78,7 @@ public class AIUIHolder {
     @Inject
     Context context;
     @Inject
-    ChatService chatService;
+    TuLingService tuLingService;
 
     @Inject
     AIUIHolder() {
@@ -381,6 +382,15 @@ public class AIUIHolder {
 
                         break;
                     }
+                    case "translation": {
+                        String msg = resultJson.getJSONObject("data").getJSONArray("result")
+                                .getJSONObject(0).getString("translated");
+
+                        aiuiResult.onNext(Optional.of(new HelloTalkData(msg)));
+                        speech.startSpeaking(msg, speechListener);
+
+                        break;
+                    }
                     default: {
                         aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
                         speech.startSpeaking(mTalkText, speechListener);
@@ -392,12 +402,12 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {
-            chatService.getNews(userMsg)
+            TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, "1");
+            tuLingService.getResult(data)
                     .compose(Singles.async())
-                    .map(ChatData::getContent)
                     .subscribe(v -> {
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(v)));
-                        speech.startSpeaking(v, speechListener);
+                        aiuiResult.onNext(Optional.of(v));
+                        speech.startSpeaking(v.getText(), speechListener);
                     });
         }
     }

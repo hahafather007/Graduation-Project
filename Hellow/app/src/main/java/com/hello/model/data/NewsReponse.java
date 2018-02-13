@@ -1,4 +1,4 @@
-package com.hello.model.data.response;
+package com.hello.model.data;
 
 
 import com.google.gson.annotations.SerializedName;

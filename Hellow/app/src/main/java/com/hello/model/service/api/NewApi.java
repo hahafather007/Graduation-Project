@@ -1,6 +1,6 @@
 package com.hello.model.service.api;
 
-import com.hello.model.data.response.NewsReponse;
+import com.hello.model.data.NewsReponse;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;

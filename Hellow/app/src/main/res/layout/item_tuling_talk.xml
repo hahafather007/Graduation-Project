@@ -7,7 +7,11 @@
 
         <variable
             name="data"
-            type="com.hello.model.data.DescriptionData" />
+            type="com.hello.model.data.TuLingData" />
+
+        <variable
+            name="fragment"
+            type="com.hello.view.fragment.SecondaryHelloFragment" />
     </data>
 
     <FrameLayout
@@ -17,7 +21,7 @@
         android:paddingTop="8dp">
 
         <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="80dp"
             android:layout_marginStart="16dp"
@@ -26,7 +30,7 @@
             app:cardUseCompatPadding="true">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/colorGhostWhite"
                 android:orientation="vertical"
@@ -36,28 +40,31 @@
                 android:paddingTop="8dp">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{data.title}"
+                    android:text="@{data.text}"
                     android:textColor="@color/colorText"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    tools:text="闽剧经典唱段合集" />
+                    tools:text="我有一只小毛驴我从来也不骑~" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginBottom="6dp"
                     android:layout_marginTop="6dp"
-                    android:background="@color/colorLine" />
+                    android:background="@color/colorLine"
+                    app:visible="@{data.url != null}" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{data.description}"
-                    android:textColor="@color/colorText"
-                    android:textSize="14sp"
-                    tools:text="闽剧又称福州戏，福建汉族戏曲之一。是现存唯一用福州方言演唱、念白的戏曲剧种，流行于闽中、闽东、闽北地区，并传播到台湾和东南亚各地。" />
+                    android:background="@color/colorGhostWhite"
+                    android:text="@{data.url}"
+                    android:textColor="@color/colorDarkBlue"
+                    android:textSize="12sp"
+                    app:onSingleClick="@{() -> fragment.openUrl(data.url)}"
+                    app:visible="@{data.url != null}"
+                    tools:text="http://www.tuling123.com/help/h_cent_webapi.jhtml?nav=doc" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </FrameLayout>
