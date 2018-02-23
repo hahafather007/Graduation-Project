@@ -5,24 +5,23 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import com.annimon.stream.function.Supplier;
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
 import com.hello.utils.ToastUtil;
 import com.hello.viewmodel.TodayToDoViewModel;
 import com.hello.widget.listener.SimpleTextWatcher;
-import com.hello.widget.view.VerticalViewPager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -30,8 +29,7 @@ import static android.view.View.VISIBLE;
 public class TodayTodoFragment extends AppFragment {
     private FragmentTodayTodoBinding binding;
     private InputMethodManager inputMethodManager;
-    private VerticalViewPager verticalPager;
-    private boolean editClick;
+    private ViewTag viewTag;
 
     @Inject
     TodayToDoViewModel viewModel;
@@ -56,16 +54,12 @@ public class TodayTodoFragment extends AppFragment {
     }
 
     private void initView() {
-        initViewPager();
+        viewTag = ViewTag.NEWS;
 
-        binding.editVoice.setOnClickListener(view -> {
-            if (verticalPager.getCurrentItem() == 0) {
-                verticalPager.setCurrentItem(1);
-                editClick = true;
-            }
-        });
         binding.editVoice.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
+                setupHello();
+
                 binding.holderView.setVisibility(VISIBLE);
             }
         });
@@ -89,50 +83,41 @@ public class TodayTodoFragment extends AppFragment {
                 .subscribe(__ -> ToastUtil.showToast(getContext(), R.string.test_network_error));
     }
 
-    private void initViewPager() {
-        List<Fragment> fragments = new ArrayList<>();
-        fragments.add(new SecondaryNewsFragment());
-        fragments.add(new SecondaryHelloFragment());
+    private void setPrimaryItem(Class clazz, Supplier<Fragment> constructor) {
+        FragmentManager fm = getChildFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 
-        verticalPager = binding.verticalPager;
-        verticalPager.setAdapter(new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return fragments.get(position);
-            }
+        Observable.fromIterable(fm.getFragments())
+                .doOnNext(transaction::hide)
+                .filter(clazz::isInstance)
+                .lastOrError()
+                .subscribe(transaction::show, __ -> transaction.add(R.id.holderLayout, constructor.get()));
+        transaction.commitNowAllowingStateLoss();
+    }
 
-            @Override
-            public int getCount() {
-                return fragments.size();
-            }
-        });
-        verticalPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if (position == 0 && positionOffsetPixels == 0) {
-                    //当viewpager滚动完毕缩回选项
-                    binding.holderView.setVisibility(VISIBLE);
-                    binding.editVoice.setFocusable(false);
-                    binding.editVoice.setFocusableInTouchMode(false);
-                } else if (position == 1 && positionOffsetPixels == 0) {
-                    binding.editVoice.setFocusable(true);
-                    binding.editVoice.setFocusableInTouchMode(true);
-                    /*若点击EditTextView，弹出软键盘的同时切换页面，可能会导致页面高度计算不正确，
-                    所以设置在切换前不能获得焦点，等待页面切换完成后再获取焦点弹出软键盘*/
-                    if (editClick) {
-                        editClick = false;
-                        binding.editVoice.requestFocus();
-                        inputMethodManager.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
-                    }
-                }
-            }
-        });
+    private void setupNews() {
+        if (viewTag != ViewTag.NEWS) {
+            viewTag = ViewTag.NEWS;
+
+            binding.holderView.setVisibility(VISIBLE);
+            setPrimaryItem(SecondaryNewsFragment.class, SecondaryNewsFragment::new);
+        }
+    }
+
+    private void setupHello() {
+        if (viewTag != ViewTag.HELLO) {
+            viewTag = ViewTag.HELLO;
+
+            setPrimaryItem(SecondaryHelloFragment.class, SecondaryHelloFragment::new);
+        }
     }
 
     public void showMore() {
+        setupHello();
+
         //将控件焦点清除
         binding.editVoice.clearFocus();
-        verticalPager.setCurrentItem(1);
         if (binding.holderView.getVisibility() == VISIBLE) {//将holder隐藏，选项顶上去
             inputMethodManager.hideSoftInputFromWindow(binding.editVoice.getWindowToken(), 0);
             binding.holderView.setVisibility(GONE);
@@ -142,8 +127,9 @@ public class TodayTodoFragment extends AppFragment {
     }
 
     public void startOrStopRecording() {
+        setupHello();
+
         binding.editVoice.clearFocus();
-        verticalPager.setCurrentItem(1);
         viewModel.startOrStopRecording();
     }
 
@@ -155,7 +141,7 @@ public class TodayTodoFragment extends AppFragment {
     public void showMoreClick(View view) {
         switch (view.getId()) {
             case R.id.more_back:
-                verticalPager.setCurrentItem(0);
+                setupNews();
         }
     }
 
@@ -164,6 +150,8 @@ public class TodayTodoFragment extends AppFragment {
         binding.btnVoice.setVisibility(VISIBLE);
         binding.icEdit.setVisibility(VISIBLE);
         binding.icVoice.setVisibility(GONE);
+        binding.editVoice.clearFocus();
+        inputMethodManager.hideSoftInputFromWindow(binding.editVoice.getWindowToken(), 0);
     }
 
     public void editMethod() {
@@ -171,5 +159,10 @@ public class TodayTodoFragment extends AppFragment {
         binding.editVoice.setVisibility(VISIBLE);
         binding.icVoice.setVisibility(VISIBLE);
         binding.icEdit.setVisibility(GONE);
+    }
+
+    private enum ViewTag {
+        NEWS,
+        HELLO
     }
 }

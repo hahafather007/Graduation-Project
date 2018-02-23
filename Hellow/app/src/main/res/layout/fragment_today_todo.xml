@@ -14,20 +14,21 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
-        <ScrollView
+        <FrameLayout
+            android:id="@+id/holderLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:fillViewport="true"
             app:layout_constraintBottom_toTopOf="@+id/voiceLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.hello.widget.view.VerticalViewPager
-                android:id="@+id/verticalPager"
+            <fragment
+                android:name="com.hello.view.fragment.SecondaryNewsFragment"
                 android:layout_width="match_parent"
-                android:layout_height="0dp" />
-        </ScrollView>
+                android:layout_height="match_parent"
+                tools:layout="@layout/fragment_secondary_news" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/voiceLayout"
@@ -65,8 +66,6 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="56dp"
                 android:background="@color/colorTransparent"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
                 android:hint="@string/todo_wantoSay"
                 android:paddingBottom="6dp"
                 android:paddingStart="10dp"

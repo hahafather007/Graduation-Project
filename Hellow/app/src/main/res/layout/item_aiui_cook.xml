@@ -57,6 +57,7 @@
                 app:itemLayout="@{@layout/item_aiui_cook_item}"
                 app:items="@{data.data.result}"
                 app:layoutManager="@string/linear_layout_manager"
+                app:nestedScrollingEnabled="@{false}"
                 app:onBindItem="@{fragment::onBindItem}" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
