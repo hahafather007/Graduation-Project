@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.hello">
 
     <!-- 系统日历读写权限 -->
@@ -38,8 +39,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/image_logo"
         android:label="@string/app_name"
+        android:resizeableActivity="false"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:targetApi="n">
         <activity
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">

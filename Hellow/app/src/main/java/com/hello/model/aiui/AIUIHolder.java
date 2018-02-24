@@ -15,6 +15,7 @@ import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
+import com.hello.utils.MacIdUtil;
 import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
@@ -402,7 +403,9 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {
-            TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, "1");
+            TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, MacIdUtil.getId(context));
+            Log.i(data);
+
             tuLingService.getResult(data)
                     .compose(Singles.async())
                     .subscribe(v -> {
