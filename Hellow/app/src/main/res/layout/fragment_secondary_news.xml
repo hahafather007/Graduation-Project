@@ -53,6 +53,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingBottom="6dp"
@@ -92,6 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingBottom="6dp"
@@ -119,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
-                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="6dp"
                     android:text="@string/title_news_top"
                     android:textColor="@color/colorText"
@@ -129,10 +131,10 @@
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
                     app:itemLayout="@{@layout/item_news_top}"
                     app:items="@{viewModel.newsList}"
                     app:layoutManager="@string/linear_layout_manager"
+                    app:nestedScrollingEnabled="@{false}"
                     app:onBindItem="@{fragment::onBindItem}"
                     app:visible="@{viewModel.newsList.size() != 0}" />
             </LinearLayout>

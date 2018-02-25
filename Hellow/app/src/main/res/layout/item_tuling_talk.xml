@@ -58,7 +58,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorGhostWhite"
+                    android:ellipsize="end"
+                    android:maxLines="3"
                     android:text="@{data.url}"
                     android:textColor="@color/colorDarkBlue"
                     android:textSize="12sp"

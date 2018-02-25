@@ -34,6 +34,8 @@ public class SecondaryNewsViewModel {
     }
 
     public void refresh() {
-        init();
+        if (!loading.get()) {
+            init();
+        }
     }
 }

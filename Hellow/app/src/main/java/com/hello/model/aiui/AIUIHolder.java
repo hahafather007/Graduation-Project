@@ -402,7 +402,7 @@ public class AIUIHolder {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
+        } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
             TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, MacIdUtil.getId(context));
             Log.i(data);
 

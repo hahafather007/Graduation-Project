@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.annimon.stream.Optional;
 import com.hello.R;
 import com.hello.databinding.FragmentSecondaryHelloBinding;
 import com.hello.databinding.ItemAiuiCookBinding;
@@ -50,6 +51,15 @@ public class SecondaryHelloFragment extends AppFragment {
         binding.setViewModel(viewModel);
 
         initView();
+        addChangeListener();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void addChangeListener() {
+        viewModel.urlOpen
+                .map(Optional::get)
+                .filter(v -> !v.isEmpty())
+                .subscribe(v -> BrowserUtil.openUrl(getContext(), v));
     }
 
     private void initView() {
@@ -85,6 +95,7 @@ public class SecondaryHelloFragment extends AppFragment {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void openUrl(String url) {
         BrowserUtil.openUrl(getContext(), url);
     }

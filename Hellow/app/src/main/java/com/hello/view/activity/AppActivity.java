@@ -1,5 +1,6 @@
 package com.hello.view.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import com.hello.R;
 
 import dagger.android.AndroidInjection;
 
+@SuppressLint("Registered")
 public class AppActivity extends AppCompatActivity {
 
     @Override
@@ -27,7 +29,6 @@ public class AppActivity extends AppCompatActivity {
         super.onContentChanged();
 
         initToolBar();
-
     }
 
     private void initToolBar() {
