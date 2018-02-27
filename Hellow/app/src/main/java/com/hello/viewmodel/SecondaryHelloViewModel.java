@@ -6,6 +6,7 @@ import android.databinding.ObservableList;
 import com.annimon.stream.Optional;
 import com.hello.model.aiui.AIUIHolder;
 import com.hello.model.data.TuLingData;
+import com.hello.utils.Log;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,7 @@ public class SecondaryHelloViewModel {
         aiuiHolder.aiuiResult
                 .map(Optional::get)
                 .subscribe(v -> {
+                    Log.i(v.toString());
                     items.add(v);
                     if (v instanceof TuLingData) {
                         urlOpen.onNext(Optional.of(((TuLingData) v).getUrl()));

@@ -15,7 +15,7 @@ import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
-import com.hello.utils.MacIdUtil;
+import com.hello.utils.DeviceIdUtil;
 import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
@@ -403,7 +403,7 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
-            TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, MacIdUtil.getId(context));
+            TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, DeviceIdUtil.getId(context));
             Log.i(data);
 
             tuLingService.getResult(data)
