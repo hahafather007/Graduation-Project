@@ -5,15 +5,19 @@ import android.content.Context;
 
 import com.annimon.stream.Optional;
 import com.google.gson.Gson;
+import com.hello.common.Constants;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
+import com.hello.utils.DeviceIdUtil;
 import com.hello.utils.Log;
+import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -400,14 +404,15 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
-//            Log.i(TuLingDataUtil.sendText(userMsg, context));
-//
-//            tuLingService.getResult(data)
-//                    .compose(Singles.async())
-//                    .subscribe(v -> {
-//                        aiuiResult.onNext(v);
-//                        speech.startSpeaking(v.getText(), speechListener);
-//                    });
+            TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
+                    null, DeviceIdUtil.getId(context));
+
+            tuLingService.getResult(data)
+                    .compose(Singles.async())
+                    .subscribe(v -> {
+                        aiuiResult.onNext(v);
+                        speech.startSpeaking(v.getText(), speechListener);
+                    });
         }
     }
 }
