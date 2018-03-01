@@ -7,6 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface TuLingApi {
-    @POST("/openapi/api/v2")
+    @POST("/openapi/api")
     fun getResult(@Body body: TuLingSendData): Single<TuLingData>
 }

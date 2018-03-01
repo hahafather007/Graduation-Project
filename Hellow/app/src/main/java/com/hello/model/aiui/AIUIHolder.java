@@ -8,16 +8,12 @@ import com.google.gson.Gson;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
-import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
-import com.hello.utils.DeviceIdUtil;
-import com.hello.utils.TuLingDataUtil;
-import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
@@ -46,7 +42,6 @@ import javax.inject.Singleton;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-import static com.hello.common.Constants.TULING_KEY;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
@@ -405,15 +400,14 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
-            TuLingSendData data = TuLingDataUtil.sendText(userMsg, context);
-            Log.i(TuLingDataUtil.sendText(userMsg, context));
-
-            tuLingService.getResult(data)
-                    .compose(Singles.async())
-                    .subscribe(v -> {
-                        aiuiResult.onNext(v);
-                        speech.startSpeaking(v.getText(), speechListener);
-                    });
+//            Log.i(TuLingDataUtil.sendText(userMsg, context));
+//
+//            tuLingService.getResult(data)
+//                    .compose(Singles.async())
+//                    .subscribe(v -> {
+//                        aiuiResult.onNext(v);
+//                        speech.startSpeaking(v.getText(), speechListener);
+//                    });
         }
     }
 }
