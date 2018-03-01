@@ -240,10 +240,9 @@ public class AIUIHolder {
     private void analyzeResult(JSONObject resultJson) throws JSONException {
         int rc = resultJson.getInt("rc");
         if (rc == 0 || rc == 3) {//0表示语义理解成功，3表示业务失败但有信息返回
-            String mTalkText = resultJson.getJSONObject("answer").getString("text");
-
-            //按照类别选择不同方式
             try {
+                String mTalkText = resultJson.getJSONObject("answer").getString("text");
+                //按照类别选择不同方式
                 switch (resultJson.getString("service")) {
                     case "joke": {
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
@@ -400,19 +399,23 @@ public class AIUIHolder {
                         break;
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (JSONException e) {
+                useTuLing();
             }
         } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
-            TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
-                    null, DeviceIdUtil.getId(context));
-
-            tuLingService.getResult(data)
-                    .compose(Singles.async())
-                    .subscribe(v -> {
-                        aiuiResult.onNext(v);
-                        speech.startSpeaking(v.getText(), speechListener);
-                    });
+            useTuLing();
         }
+    }
+
+    private void useTuLing() {
+        TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
+                null, DeviceIdUtil.getId(context));
+
+        tuLingService.getResult(data)
+                .compose(Singles.async())
+                .subscribe(v -> {
+                    aiuiResult.onNext(v);
+                    speech.startSpeaking(v.getText(), speechListener);
+                });
     }
 }
