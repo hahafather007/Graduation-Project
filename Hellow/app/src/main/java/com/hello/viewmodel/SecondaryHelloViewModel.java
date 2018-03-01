@@ -3,7 +3,6 @@ package com.hello.viewmodel;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 
-import com.annimon.stream.Optional;
 import com.hello.model.aiui.AIUIHolder;
 import com.hello.model.data.TuLingData;
 import com.hello.utils.Log;
@@ -16,7 +15,7 @@ import io.reactivex.subjects.Subject;
 public class SecondaryHelloViewModel {
     public ObservableList<Object> items = new ObservableArrayList<>();
 
-    public Subject<Optional<String>> urlOpen = PublishSubject.create();
+    public Subject<TuLingData> tuLing = PublishSubject.create();
 
     @Inject
     AIUIHolder aiuiHolder;
@@ -28,12 +27,11 @@ public class SecondaryHelloViewModel {
     @Inject
     void init() {
         aiuiHolder.aiuiResult
-                .map(Optional::get)
                 .subscribe(v -> {
                     Log.i(v.toString());
                     items.add(v);
                     if (v instanceof TuLingData) {
-                        urlOpen.onNext(Optional.of(((TuLingData) v).getUrl()));
+                        tuLing.onNext(((TuLingData) v));
                     }
                 });
     }

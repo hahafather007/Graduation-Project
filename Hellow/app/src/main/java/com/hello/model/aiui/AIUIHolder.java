@@ -16,6 +16,7 @@ import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
 import com.hello.utils.DeviceIdUtil;
+import com.hello.utils.TuLingDataUtil;
 import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
@@ -49,6 +50,7 @@ import static com.hello.common.Constants.TULING_KEY;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
+import static com.hello.utils.UtilKt.*;
 
 @Singleton
 public class AIUIHolder {
@@ -72,7 +74,7 @@ public class AIUIHolder {
     private String userMsg;
 
     //返回的结果
-    public Subject<Optional<Object>> aiuiResult = PublishSubject.create();
+    public Subject<Object> aiuiResult = PublishSubject.create();
     //错误信息
     public Subject<Optional> error = PublishSubject.create();
 
@@ -100,7 +102,7 @@ public class AIUIHolder {
         speechListener = new SimpleSynthesizerListener() {
             @Override
             public void onCompleted(@Nullable SpeechError errorMsg) {
-                if (errorMsg != null && !errorMsg.getMessage().isEmpty()) {
+                if (errorMsg != null && isStrValid(errorMsg.getMessage())) {
                     error.onNext(Optional.empty());
                 }
             }
@@ -189,7 +191,7 @@ public class AIUIHolder {
 
                                 JSONObject resultJson = new JSONObject(resultStr);
                                 userMsg = resultJson.getString("text");
-                                aiuiResult.onNext(Optional.of(new UserTalkData(userMsg)));
+                                aiuiResult.onNext(new UserTalkData(userMsg));
 
                                 analyzeResult(resultJson);
                             }
@@ -253,7 +255,7 @@ public class AIUIHolder {
                         DescriptionData data = new DescriptionData(object.getString("title"),
                                 object.getString("content"));
 
-                        aiuiResult.onNext(Optional.of(data));
+                        aiuiResult.onNext(data);
                         speech.startSpeaking(mTalkText, speechListener);
 
                         break;
@@ -263,7 +265,7 @@ public class AIUIHolder {
                         String url = new JSONObject(array.getString(new Random()
                                 .nextInt(array.length()))).getString("url");
 
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        aiuiResult.onNext(new HelloTalkData(mTalkText));
                         playMusic(url, () -> error.onNext(Optional.empty()));
 
                         break;
@@ -298,7 +300,7 @@ public class AIUIHolder {
                                 .replaceFirst(" ~ ", "至");
 
                         assert weather != null;
-                        aiuiResult.onNext(Optional.of(weather));
+                        aiuiResult.onNext(weather);
                         speech.startSpeaking(mTalkText, speechListener);
 
                         break;
@@ -310,7 +312,7 @@ public class AIUIHolder {
                         CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
                         cook.getAnswer().setText(msg);
 
-                        aiuiResult.onNext(Optional.of(cook));
+                        aiuiResult.onNext(cook);
                         speech.startSpeaking(msg, speechListener);
 
                         break;
@@ -320,7 +322,7 @@ public class AIUIHolder {
                         JSONObject object = array.getJSONObject(0);
                         String url = object.getString("url");
 
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        aiuiResult.onNext(new HelloTalkData(mTalkText));
                         playMusic(url, () -> error.onNext(Optional.empty()));
 
                         break;
@@ -367,7 +369,7 @@ public class AIUIHolder {
                             }
                         }
 
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
 
                         break;
@@ -378,7 +380,7 @@ public class AIUIHolder {
                         DescriptionData data = new DescriptionData(object.getString("album"),
                                 object.getString("description"));
 
-                        aiuiResult.onNext(Optional.of(data));
+                        aiuiResult.onNext(data);
                         playMusic(object.getString("url"), () -> error.onNext(Optional.empty()));
 
                         break;
@@ -387,13 +389,13 @@ public class AIUIHolder {
                         String msg = resultJson.getJSONObject("data").getJSONArray("result")
                                 .getJSONObject(0).getString("translated");
 
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(msg)));
+                        aiuiResult.onNext(new HelloTalkData(msg));
                         speech.startSpeaking(msg, speechListener);
 
                         break;
                     }
                     default: {
-                        aiuiResult.onNext(Optional.of(new HelloTalkData(mTalkText)));
+                        aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
 
                         break;
@@ -403,13 +405,13 @@ public class AIUIHolder {
                 e.printStackTrace();
             }
         } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
-            TuLingSendData data = new TuLingSendData(TULING_KEY, userMsg, null, DeviceIdUtil.getId(context));
-            Log.i(data);
+            TuLingSendData data = TuLingDataUtil.sendText(userMsg, context);
+            Log.i(TuLingDataUtil.sendText(userMsg, context));
 
             tuLingService.getResult(data)
                     .compose(Singles.async())
                     .subscribe(v -> {
-                        aiuiResult.onNext(Optional.of(v));
+                        aiuiResult.onNext(v);
                         speech.startSpeaking(v.getText(), speechListener);
                     });
         }

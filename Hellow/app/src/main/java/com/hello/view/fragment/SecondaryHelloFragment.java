@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.annimon.stream.Optional;
 import com.hello.R;
 import com.hello.databinding.FragmentSecondaryHelloBinding;
 import com.hello.databinding.ItemAiuiCookBinding;
@@ -20,6 +19,7 @@ import com.hello.model.data.TuLingData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.BrowserUtil;
+import com.hello.utils.UtilKt;
 import com.hello.view.Binding;
 import com.hello.viewmodel.SecondaryHelloViewModel;
 
@@ -56,9 +56,9 @@ public class SecondaryHelloFragment extends AppFragment {
 
     @SuppressWarnings("ConstantConditions")
     private void addChangeListener() {
-        viewModel.urlOpen
-                .map(Optional::get)
-                .filter(v -> !v.isEmpty())
+        viewModel.tuLing
+                .map(TuLingData::getUrl)
+                .filter(UtilKt::isStrValid)
                 .subscribe(v -> BrowserUtil.openUrl(getContext(), v));
     }
 
