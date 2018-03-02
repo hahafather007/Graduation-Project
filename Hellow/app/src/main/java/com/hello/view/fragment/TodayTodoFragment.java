@@ -1,5 +1,6 @@
 package com.hello.view.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -15,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.annimon.stream.function.Supplier;
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
+import com.hello.utils.Log;
 import com.hello.utils.ToastUtil;
 import com.hello.viewmodel.TodayToDoViewModel;
 import com.hello.widget.listener.SimpleTextWatcher;
@@ -53,6 +56,7 @@ public class TodayTodoFragment extends AppFragment {
                 (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         viewTag = ViewTag.NEWS;
 
@@ -76,11 +80,29 @@ public class TodayTodoFragment extends AppFragment {
                 }
             }
         });
+
+        binding.btnVoice.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    startOrStopRecording();
+                    binding.recordPopup.getRoot().setVisibility(VISIBLE);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    startOrStopRecording();
+                    binding.recordPopup.getRoot().setVisibility(GONE);
+                    break;
+            }
+            return false;
+        });
     }
 
     private void addChangeListener() {
         viewModel.error
                 .subscribe(__ -> ToastUtil.showToast(getContext(), R.string.test_network_error));
+
+        viewModel.volume
+                .doOnNext(Log::i)
+                .subscribe(v -> binding.recordPopup.icon.getDrawable().setLevel(3000 + 6000 * v / 100));
     }
 
     private void setPrimaryItem(Class clazz, Supplier<Fragment> constructor) {

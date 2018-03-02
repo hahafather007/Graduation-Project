@@ -1,5 +1,6 @@
 package com.hello.model.service
 
+import com.hello.model.data.CookData
 import com.hello.model.data.TuLingData
 import com.hello.model.data.TuLingSendData
 import com.hello.model.service.api.TuLingApi
@@ -33,5 +34,9 @@ class TuLingService @Inject constructor() {
 
     fun getResult(body: TuLingSendData): Single<TuLingData> {
         return api.getResult(body)
+    }
+
+    fun getCook(body: TuLingSendData): Single<CookData> {
+        return api.getCook(body)
     }
 }

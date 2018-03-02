@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.hello.model.data.CookData.CookItem" />
+
+        <import type="com.hello.utils.BrowserUtil" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:scaleType="fitXY"
+            android:src="@{data.icon}"
+            app:layout_constraintDimensionRatio="4:3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/img_emoji" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{data.name}"
+            android:textColor="@color/colorText"
+            app:layout_constraintTop_toBottomOf="@id/icon"
+            tools:text="猪腿肉、泡椒、姜、蒜、葱、水发木耳、胡萝卜、白糖、香醋(保宁醋/镇江香醋)、老抽、生抽、盐、清汤、淀粉" />
+
+        <TextView
+            android:id="@+id/url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="@{data.url}"
+            android:textColor="@color/colorDarkBlue"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:onSingleClick="@{() -> }"
+            app:visible="@{data.url != null}"
+            tools:text="http://www.tuling123.com/help/h_cent_webapi.jhtml?nav=doc" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginTop="6dp"
+            android:background="@color/colorLine"
+            app:layout_constraintTop_toBottomOf="@id/url" />
+    </android.support.constraint.ConstraintLayout>
+</layout>

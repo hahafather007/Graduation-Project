@@ -10,6 +10,7 @@ import io.reactivex.subjects.Subject;
 
 public class TodayToDoViewModel {
     public Subject<Optional> error = PublishSubject.create();
+    public Subject<Integer> volume = PublishSubject.create();
 
     @Inject
     AIUIHolder aiuiHolder;

@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import com.hello.R;
 import com.hello.databinding.FragmentSecondaryHelloBinding;
 import com.hello.databinding.ItemAiuiCookBinding;
+import com.hello.databinding.ItemTulingCookBinding;
 import com.hello.databinding.ItemTulingTalkBinding;
+import com.hello.model.data.CookData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
@@ -75,6 +77,8 @@ public class SecondaryHelloFragment extends AppFragment {
                 o instanceof DescriptionData, R.layout.item_aiui_description);
         Binding.Linker linkerTuLing = Binding.Linker.of(o ->
                 o instanceof TuLingData, R.layout.item_tuling_talk);
+        Binding.Linker linkerTuLingCook = Binding.Linker.of(o ->
+                o instanceof CookData, R.layout.item_tuling_cook);
 
         linkers = new ArrayList<>();
         linkers.add(linkerUserTalk);
@@ -83,6 +87,7 @@ public class SecondaryHelloFragment extends AppFragment {
         linkers.add(linkerWeather);
         linkers.add(linkerDescription);
         linkers.add(linkerTuLing);
+        linkers.add(linkerTuLingCook);
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
@@ -92,6 +97,9 @@ public class SecondaryHelloFragment extends AppFragment {
         } else if (data instanceof TuLingData) {
             ItemTulingTalkBinding talkBinding = (ItemTulingTalkBinding) binding;
             talkBinding.setFragment(this);
+        } else if (data instanceof CookData) {
+            ItemTulingCookBinding cookBinding = (ItemTulingCookBinding) binding;
+            cookBinding.cookView.setData(((CookData) data));
         }
     }
 

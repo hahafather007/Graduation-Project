@@ -76,6 +76,8 @@ public class AIUIHolder {
     public Subject<Object> aiuiResult = PublishSubject.create();
     //错误信息
     public Subject<Optional> error = PublishSubject.create();
+    //音量大小变化回调
+    public Subject<Integer> volume = PublishSubject.create();
 
     @Inject
     Context context;
@@ -221,9 +223,18 @@ public class AIUIHolder {
                     status = event.arg1;
                     break;
                 }
+                //音频的状态
+                case AIUIConstant.EVENT_VAD: {
+                    if (event.arg1 == 1) {
+                        Log.i("音量：" + event.arg2);
+                        volume.onNext(event.arg2);
+                    }
+                    break;
+                }
                 //开始录音
                 case AIUIConstant.EVENT_START_RECORD: {
                     recording = true;
+
                     break;
                 }
                 //结束录音
@@ -304,14 +315,21 @@ public class AIUIHolder {
                         break;
                     }
                     case "cookbook": {
-                        String msg = resultJson.getJSONArray("semantic").getJSONObject(0)
-                                .getJSONArray("slots").getJSONObject(0)
-                                .getString("value") + "的做法如下：";
-                        CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
-                        cook.getAnswer().setText(msg);
+//                        String msg = resultJson.getJSONArray("semantic").getJSONObject(0)
+//                                .getJSONArray("slots").getJSONObject(0)
+//                                .getString("value") + "的做法如下：";
+//                        CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
+//                        cook.getAnswer().setText(msg);
 
-                        aiuiResult.onNext(cook);
-                        speech.startSpeaking(msg, speechListener);
+                        TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
+                                null, DeviceIdUtil.getId(context));
+
+                        tuLingService.getCook(data)
+                                .compose(Singles.async())
+                                .subscribe(v -> {
+                                    aiuiResult.onNext(v);
+                                    speech.startSpeaking(v.getText(), speechListener);
+                                });
 
                         break;
                     }

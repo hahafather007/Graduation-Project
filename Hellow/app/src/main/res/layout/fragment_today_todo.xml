@@ -12,8 +12,9 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true">
-
+        android:animateLayoutChanges="true"
+        android:splitMotionEvents="false">
+        <!--android:splitMotionEvents="false"用来关闭多点触控-->
         <FrameLayout
             android:id="@+id/holderLayout"
             android:layout_width="0dp"
@@ -28,6 +29,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_secondary_news" />
+
+            <include
+                android:id="@+id/recordPopup"
+                layout="@layout/popup_recorder"
+                android:visibility="gone" />
         </FrameLayout>
 
         <LinearLayout
@@ -92,8 +98,7 @@
                 app:backgroundTint="@color/colorWhite"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/voiceLayout"
-                app:onSingleClick="@{() -> fragment.startOrStopRecording()}" />
+                app:layout_constraintTop_toTopOf="@+id/voiceLayout" />
         </LinearLayout>
 
         <FrameLayout
