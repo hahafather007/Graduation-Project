@@ -34,28 +34,27 @@ public class CookView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setData(CookData data) {
+    public void updateData(CookData data) {
         this.data = data;
 
+        removeAllViews();
         initView();
     }
 
     private void initView() {
         setOrientation(VERTICAL);
 
-        //等待100毫秒在载入，防止recyclerView跳动
-        Observable.just(data.getList())
-                .delay(100, TimeUnit.MILLISECONDS)
-                .take(5)
+        Observable.fromIterable(data.getList())
+                .take(4)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(d -> Stream.of(d).forEach(v -> {
+                .subscribe(v -> {
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context
                             .LAYOUT_INFLATER_SERVICE);
                     ItemTulingCookItemBinding binding = DataBindingUtil.inflate(inflater,
                             R.layout.item_tuling_cook_item, this, false);
                     binding.setData(v);
                     addView(binding.getRoot());
-                }));
+                });
     }
 }

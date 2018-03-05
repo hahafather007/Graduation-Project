@@ -21,7 +21,7 @@ import com.hello.model.data.TuLingData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.BrowserUtil;
-import com.hello.utils.UtilKt;
+import com.hello.utils.ValidUtilKt;
 import com.hello.view.Binding;
 import com.hello.viewmodel.SecondaryHelloViewModel;
 
@@ -60,7 +60,7 @@ public class SecondaryHelloFragment extends AppFragment {
     private void addChangeListener() {
         viewModel.tuLing
                 .map(TuLingData::getUrl)
-                .filter(UtilKt::isStrValid)
+                .filter(ValidUtilKt::isStrValid)
                 .subscribe(v -> BrowserUtil.openUrl(getContext(), v));
     }
 
@@ -99,7 +99,7 @@ public class SecondaryHelloFragment extends AppFragment {
             talkBinding.setFragment(this);
         } else if (data instanceof CookData) {
             ItemTulingCookBinding cookBinding = (ItemTulingCookBinding) binding;
-            cookBinding.cookView.setData(((CookData) data));
+            cookBinding.cookView.updateData(((CookData) data));
         }
     }
 

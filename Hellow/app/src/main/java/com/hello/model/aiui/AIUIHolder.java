@@ -4,9 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.annimon.stream.Optional;
-import com.google.gson.Gson;
 import com.hello.common.Constants;
-import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.TuLingSendData;
@@ -49,7 +47,7 @@ import io.reactivex.subjects.Subject;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
-import static com.hello.utils.UtilKt.*;
+import static com.hello.utils.ValidUtilKt.*;
 
 @Singleton
 public class AIUIHolder {
@@ -315,13 +313,13 @@ public class AIUIHolder {
                         break;
                     }
                     case "cookbook": {
-//                        String msg = resultJson.getJSONArray("semantic").getJSONObject(0)
-//                                .getJSONArray("slots").getJSONObject(0)
-//                                .getString("value") + "的做法如下：";
+                        String cookName = resultJson.getJSONArray("semantic").getJSONObject(0)
+                                .getJSONArray("slots").getJSONObject(0)
+                                .getString("value");
 //                        CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
 //                        cook.getAnswer().setText(msg);
 
-                        TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
+                        TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, cookName,
                                 null, DeviceIdUtil.getId(context));
 
                         tuLingService.getCook(data)
@@ -358,7 +356,7 @@ public class AIUIHolder {
                                         .getString("normValue")).getString("suggestDatetime");
                             } else {
                                 content = array.getJSONObject(1).getString("value");
-                                suggestTime = new JSONObject(array.getJSONObject(0)
+                                suggestTime = new JSONObject(array.getJSONObject(1)
                                         .getString("normValue")).getString("suggestDatetime");
                             }
                             Calendar time = Calendar.getInstance();
@@ -418,6 +416,8 @@ public class AIUIHolder {
                     }
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
+
                 useTuLing();
             }
         } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
