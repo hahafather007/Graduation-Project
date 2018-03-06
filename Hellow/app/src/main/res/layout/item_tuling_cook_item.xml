@@ -52,7 +52,7 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             app:onSingleClick="@{() -> BrowserUtil.openUrl(url.getContext(), data.url)}"
             app:visible="@{data.url != null}"
-            tools:text="http://www.tuling123.com/help/h_cent_webapi.jhtml?nav=doc" />
+            tools:text="http://www.tuling123.com/help/h_cent_webapi.asdasdasdasdjhtml?nav=doc" />
 
         <View
             android:layout_width="match_parent"

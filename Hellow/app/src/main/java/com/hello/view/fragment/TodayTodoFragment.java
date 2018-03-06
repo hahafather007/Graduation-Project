@@ -19,6 +19,8 @@ import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
 import com.hello.utils.Log;
 import com.hello.utils.ToastUtil;
+import com.hello.utils.rx.RxField;
+import com.hello.utils.rx.RxLifeCycle;
 import com.hello.viewmodel.TodayToDoViewModel;
 import com.hello.widget.listener.SimpleTextWatcher;
 
@@ -85,6 +87,7 @@ public class TodayTodoFragment extends AppFragment {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     startOrStopRecording();
+                    binding.recordPopup.getRoot().bringToFront();
                     binding.recordPopup.getRoot().setVisibility(VISIBLE);
                     break;
                 case MotionEvent.ACTION_UP:
@@ -100,9 +103,9 @@ public class TodayTodoFragment extends AppFragment {
         viewModel.error
                 .subscribe(__ -> ToastUtil.showToast(getContext(), R.string.test_network_error));
 
-        viewModel.volume
-                .doOnNext(Log::i)
-                .subscribe(v -> binding.recordPopup.icon.getDrawable().setLevel(3000 + 6000 * v / 100));
+        RxField.of(viewModel.volume)
+                .compose(RxLifeCycle.with(this))
+                .subscribe(v -> binding.recordPopup.icon.getDrawable().setLevel(3000 + 7000 * v / 30));
     }
 
     private void setPrimaryItem(Class clazz, Supplier<Fragment> constructor) {

@@ -11,6 +11,7 @@ import com.annimon.stream.Stream;
 import com.hello.R;
 import com.hello.databinding.ItemTulingCookItemBinding;
 import com.hello.model.data.CookData;
+import com.hello.utils.ValidUtilKt;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,10 +36,12 @@ public class CookView extends LinearLayout {
     }
 
     public void updateData(CookData data) {
-        this.data = data;
+        if (ValidUtilKt.isListValid(data.getList())) {
+            this.data = data;
 
-        removeAllViews();
-        initView();
+            removeAllViews();
+            initView();
+        }
     }
 
     private void initView() {
@@ -46,8 +49,6 @@ public class CookView extends LinearLayout {
 
         Observable.fromIterable(data.getList())
                 .take(4)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(v -> {
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context
                             .LAYOUT_INFLATER_SERVICE);

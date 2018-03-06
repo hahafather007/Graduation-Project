@@ -1,5 +1,7 @@
 package com.hello.viewmodel;
 
+import android.databinding.ObservableInt;
+
 import com.annimon.stream.Optional;
 import com.hello.model.aiui.AIUIHolder;
 
@@ -9,8 +11,8 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 public class TodayToDoViewModel {
+    public ObservableInt volume = new ObservableInt();
     public Subject<Optional> error = PublishSubject.create();
-    public Subject<Integer> volume = PublishSubject.create();
 
     @Inject
     AIUIHolder aiuiHolder;
@@ -23,6 +25,9 @@ public class TodayToDoViewModel {
     void init() {
         aiuiHolder.error
                 .subscribe(__ -> error.onNext(Optional.empty()));
+
+        aiuiHolder.volume
+                .subscribe(volume::set);
     }
 
     public void startOrStopRecording() {
