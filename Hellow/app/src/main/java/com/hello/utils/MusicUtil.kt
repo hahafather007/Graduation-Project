@@ -38,10 +38,18 @@ object MusicUtil {
     }
 
     @JvmStatic
-    fun stopMusic() {
-        if (player.isPlaying) {
-            player.stop()
-        }
+    fun stopMusic() {//停止播放
+        player.stop()
+    }
+
+    @JvmStatic
+    fun pauseMusic() {//暂停播放
+        player.pause()
+    }
+
+    @JvmStatic
+    fun contiuneMusic() {//继续播放
+        player.start()
     }
 
     interface MediaErrorListener {

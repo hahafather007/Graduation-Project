@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import com.hello.dagger.component.DaggerApplicationComponent;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import javax.inject.Inject;
 
@@ -31,6 +32,8 @@ public class HelloApplication extends Application
     @Override
     public void onCreate() {
         super.onCreate();
+
+        FlowManager.init(this);
 
         SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + AIUI_APPID);
 

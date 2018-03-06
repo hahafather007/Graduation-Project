@@ -84,7 +84,6 @@ public class AIUIHolder {
 
     @Inject
     AIUIHolder() {
-
     }
 
     @Inject

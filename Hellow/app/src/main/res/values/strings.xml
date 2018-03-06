@@ -21,7 +21,7 @@
     <string name="text_steps">步骤：</string>
     <string name="test_network_error">网络似乎有些不太稳定~</string>
     <string name="exit_warn_msg">再按一次退出</string>
-    <string name="book_title">小哈说书</string>
+    <string name="book_title">语音笔记</string>
     <string name="todo_newRemind">新建提醒</string>
     <string name="todo_sportMsg">运动情况</string>
     <string name="todo_wantoSay">你想说点啥呢？</string>
