@@ -7,17 +7,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-import com.annimon.stream.Stream;
 import com.hello.R;
 import com.hello.databinding.ItemTulingCookItemBinding;
 import com.hello.model.data.CookData;
 import com.hello.utils.ValidUtilKt;
 
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 //菜谱使用的View
 public class CookView extends LinearLayout {

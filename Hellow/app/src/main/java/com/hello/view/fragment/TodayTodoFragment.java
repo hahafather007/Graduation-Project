@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,7 +18,6 @@ import android.view.inputmethod.InputMethodManager;
 import com.annimon.stream.function.Supplier;
 import com.hello.R;
 import com.hello.databinding.FragmentTodayTodoBinding;
-import com.hello.utils.Log;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
@@ -40,13 +40,13 @@ public class TodayTodoFragment extends AppFragment {
     TodayToDoViewModel viewModel;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_today_todo, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         binding = DataBindingUtil.bind(view);

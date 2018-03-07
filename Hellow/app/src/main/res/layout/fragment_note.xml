@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.hello.viewmodel.NoteViewModel" />
+
+        <variable
+            name="fragment"
+            type="com.hello.view.fragment.NoteFragment" />
+    </data>
+    <!--</layout><com.scwang.smartrefresh.layout.SmartRefreshLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:animateLayoutChanges="true">-->
+
+    <!--<com.scwang.smartrefresh.header.FunGameBattleCityHeader-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:fgvBackColor="@color/colorPrimary"-->
+    <!--app:fgvMiddleColor="@color/colorLine"-->
+    <!--app:fgvRightColor="@color/colorLine" />-->
+
+
+    <!--</com.scwang.smartrefresh.layout.SmartRefreshLayout>-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorLineSpace"
+            app:itemLayout="@{@layout/item_voice_note}"
+            app:items="@{viewModel.notes}"
+            app:layoutManager="@string/linear_layout_manager"
+            app:onBindItem="@{fragment::onBindItem}"
+            tools:listitem="@layout/item_voice_note" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="32dp"
+            android:layout_marginEnd="32dp"
+            android:src="@drawable/btn_plus"
+            app:backgroundTint="@color/colorPrimary" />
+    </FrameLayout>
+</layout>

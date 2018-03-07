@@ -6,11 +6,11 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.joda.time.LocalDateTime;
-
 //语音笔记的表
 @Table(database = HelloDB.class)
 public class Note extends BaseModel {
+    //自增id，主键
+    @Column
     @PrimaryKey(autoincrement = true)
     public long id;
     @Column
@@ -18,9 +18,9 @@ public class Note extends BaseModel {
     @Column
     public String content;
     @Column
-    public LocalDateTime time;
+    public String time;
 
-    public Note(String title, String content, LocalDateTime time) {
+    public Note(String title, String content, String time) {
         this.title = title;
         this.content = content;
         this.time = time;

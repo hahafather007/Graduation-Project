@@ -3,7 +3,7 @@ package com.hello.dagger.component;
 import com.hello.application.HelloApplication;
 import com.hello.dagger.module.ApplicationModule;
 import com.hello.dagger.module.BookActivityModule;
-import com.hello.dagger.module.BookFragmentMoudle;
+import com.hello.dagger.module.NoteFragmentMoudle;
 import com.hello.dagger.module.MainActivityModule;
 import com.hello.dagger.module.RemindActivityModule;
 import com.hello.dagger.module.SecondaryHelloFragmentModule;
@@ -25,7 +25,7 @@ import dagger.Component;
         SettingActivityModule.class,
         RemindActivityModule.class,
         BookActivityModule.class,
-        BookFragmentMoudle.class,
+        NoteFragmentMoudle.class,
         TodayTodoFragmentMoudle.class,
         SecondaryHelloFragmentModule.class,
         SecondaryNewsFragmentModule.class

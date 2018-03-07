@@ -20,7 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.hello.R;
 import com.hello.databinding.ActivityMainBinding;
 import com.hello.utils.IntentUtil;
-import com.hello.view.fragment.BookFragment;
+import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
 import com.hello.viewmodel.MainActivityViewModel;
 import com.hello.widget.view.HeartFlyView;
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
     private void initViewPager() {
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(new TodayTodoFragment());
-        fragments.add(new BookFragment());
+        fragments.add(new NoteFragment());
 
         List<String> titles = new ArrayList<>();
         titles.add(getString(R.string.today_toda_title));
