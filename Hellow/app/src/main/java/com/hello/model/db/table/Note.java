@@ -20,6 +20,9 @@ public class Note extends BaseModel {
     @Column
     public String time;
 
+    public Note() {
+    }
+
     public Note(String title, String content, String time) {
         this.title = title;
         this.content = content;

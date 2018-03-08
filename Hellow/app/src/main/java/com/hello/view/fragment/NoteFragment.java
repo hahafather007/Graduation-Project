@@ -1,6 +1,7 @@
 package com.hello.view.fragment;
 
 
+import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +33,7 @@ public class NoteFragment extends AppFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
         binding.setViewModel(viewModel);
     }
@@ -41,7 +43,11 @@ public class NoteFragment extends AppFragment {
         noteBinding.setFragment(this);
     }
 
-    public void openNote(long id){
+    public void openNote(long id) {
+
+    }
+
+    public void newsNote(){
 
     }
 }

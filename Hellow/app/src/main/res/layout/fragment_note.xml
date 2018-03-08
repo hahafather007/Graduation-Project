@@ -42,8 +42,8 @@
             tools:listitem="@layout/item_voice_note" />
 
         <android.support.design.widget.FloatingActionButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_gravity="end|bottom"
             android:layout_marginBottom="32dp"
             android:layout_marginEnd="32dp"
