@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_share));
         intent.setType("text/plain");
-        startActivity(Intent.createChooser(intent, getString(R.string.text_share_title)));
+        startActivity(intent);
     }
 
     private void initViewPager() {

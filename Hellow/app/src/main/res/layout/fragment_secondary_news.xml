@@ -18,6 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         app:onRefresh="@{() -> viewModel.refresh()}"
         app:refreshing="@{viewModel.loading}">
 
@@ -31,11 +33,15 @@
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -129,14 +135,24 @@
                     android:textStyle="bold" />
 
                 <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     app:itemLayout="@{@layout/item_news_top}"
-                    app:items="@{viewModel.newsList}"
                     app:layoutManager="@string/linear_layout_manager"
                     app:nestedScrollingEnabled="@{false}"
-                    app:onBindItem="@{fragment::onBindItem}"
-                    app:visible="@{viewModel.newsList.size() != 0}" />
+                    app:onBindItem="@{fragment::onBindItem}" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/text_load_more"
+                    app:onSingleClick="@{() -> viewModel.loadMore()}"
+                    app:visible="@{!viewModel.newsEnd}" />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>

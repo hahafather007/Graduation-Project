@@ -5,6 +5,7 @@ import android.databinding.ObservableList;
 
 import com.hello.model.db.NotesHolder;
 import com.hello.model.db.table.Note;
+import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Singles;
 
@@ -18,12 +19,13 @@ public class NoteViewModel {
 
     @Inject
     NoteViewModel() {
-        notesHolder.getStatusChange()
-                .subscribe(__ -> getNotes());
+
     }
 
     @Inject
     void init() {
+        notesHolder.getStatusChange()
+                .subscribe(__ -> getNotes());
         getNotes();
     }
 
@@ -33,7 +35,7 @@ public class NoteViewModel {
                 .subscribe();
     }
 
-    public void getNotes() {
+    private void getNotes() {
         notesHolder.getNotes()
                 .compose(Singles.async())
                 .subscribe(v -> notes.addAll(v));

@@ -14,6 +14,7 @@ import com.hello.R;
 import com.hello.utils.ToastUtil;
 import com.hello.view.binder.DataBindingItemViewBinder;
 import com.hello.widget.listener.SingleClickListener;
+import com.hello.widget.view.GlideApp;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
@@ -41,7 +42,7 @@ public class Binding {
 
     @BindingAdapter({"android:src", "placeholder"})
     public static void setImageWithHolder(ImageView view, String img, Drawable holder) {
-
+        GlideApp.with(view.getContext()).load(img).placeholder(holder).into(view);
     }
 
     @BindingAdapter("onSingleClick")
