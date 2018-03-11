@@ -20,6 +20,8 @@ public class SecondaryNewsViewModel {
 
     //因为api服务器不支持加载更多，所以本地缓存实现假加载更多
     private List<NewsData> newsHolder;
+    //用来标记是否为新加载的数据
+    private boolean newData;
 
     @Inject
     NewsService newsService;
@@ -34,6 +36,7 @@ public class SecondaryNewsViewModel {
                 .compose(Singles.async())
                 .compose(Singles.status(loading))
                 .subscribe(v -> {
+                    newData = true;
                     newsList.clear();
                     newsList.addAll(v.subList(0, 8));
                     newsEnd.set(false);
@@ -49,6 +52,7 @@ public class SecondaryNewsViewModel {
 
     public void loadMore() {
         if (newsList.size() < newsHolder.size()) {
+            newData = false;
             if (newsHolder.size() >= newsList.size() + 8) {
                 newsList.addAll(newsHolder.subList(newsList.size(), newsList.size() + 8));
             } else {
@@ -56,5 +60,9 @@ public class SecondaryNewsViewModel {
                 newsEnd.set(true);
             }
         }
+    }
+
+    public boolean isNewData() {
+        return newData;
     }
 }

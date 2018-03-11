@@ -186,6 +186,7 @@ public class TodayTodoFragment extends AppFragment {
         binding.icEdit.setVisibility(GONE);
     }
 
+    //用于标记当前的fragment
     private enum ViewTag {
         NEWS,
         HELLO

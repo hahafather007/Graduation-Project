@@ -57,14 +57,14 @@ public class SecondaryNewsFragment extends AppFragment {
                 .subscribe(v -> {
                     MultiTypeAdapter adapter = ((MultiTypeAdapter) binding.recyclerView.getAdapter());
                     int beforeSize = adapter.getItemCount();
-                    if (beforeSize < v.size()) {
+                    if (!viewModel.isNewData()) {
                         adapter.setItems(v);
                         adapter.notifyItemRangeInserted(beforeSize, adapter.getItemCount());
                     } else {
                         adapter.setItems(v);
                         adapter.notifyDataSetChanged();
+                        binding.recyclerView.scheduleLayoutAnimation();
                     }
-                    binding.recyclerView.scheduleLayoutAnimation();
                 });
     }
 
@@ -78,6 +78,6 @@ public class SecondaryNewsFragment extends AppFragment {
     }
 
     public void openNewsDetail(String url) {
-        startActivity(WebViewActivity.intentOfUrl(getContext(), url));
+        startActivity(WebViewActivity.intentOfUrl(getContext(), url, getString(R.string.title_news_top)));
     }
 }

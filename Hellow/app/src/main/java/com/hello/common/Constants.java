@@ -24,6 +24,7 @@ public class Constants {
     public final static String CALENDARS_DISPLAY_NAME = "哈喽助手";
     //网页URL参数的标识
     public final static String URL = "url";
+    public final static String TITLENAME = "title_name";
     //Kotpref的名字
     public final static String KOTPREF_NAME = "hello_pref";
 }

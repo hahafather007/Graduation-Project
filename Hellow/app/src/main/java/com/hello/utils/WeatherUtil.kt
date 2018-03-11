@@ -6,7 +6,8 @@ import com.hello.R
 import java.util.*
 
 object WeatherUtil {
-    private val imgs = listOf(R.drawable.img_weather_cloudy, R.drawable.img_weather_cloudy_night,
+    private val imgs = listOf(
+            R.drawable.img_weather_cloudy, R.drawable.img_weather_cloudy_night,
             R.drawable.img_weather_rain, R.drawable.img_weather_rain_night,
             R.drawable.img_weather_snow, R.drawable.img_weather_snow_night,
             R.drawable.img_weather_sunny, R.drawable.img_weather_sunny_night,

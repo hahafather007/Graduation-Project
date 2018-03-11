@@ -7,17 +7,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.hello.R;
-import com.hello.common.Constants;
 import com.hello.databinding.ActivityWebviewBinding;
 
+import static com.hello.common.Constants.TITLENAME;
 import static com.hello.common.Constants.URL;
 
 public class WebViewActivity extends AppActivity {
     private ActivityWebviewBinding binding;
 
-    public static Intent intentOfUrl(Context context, String url) {
+    public static Intent intentOfUrl(Context context, String url, String title) {
         Intent intent = new Intent(context, WebViewActivity.class);
         intent.putExtra(URL, url);
+        intent.putExtra(TITLENAME, title);
         return intent;
     }
 
@@ -26,10 +27,11 @@ public class WebViewActivity extends AppActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_webview);
+        setTitle(getIntent().getStringExtra(TITLENAME));
         initWebView();
     }
 
     private void initWebView() {
-        binding.webView.loadUrl(getIntent().getStringExtra(Constants.URL));
+        binding.webView.loadUrl(getIntent().getStringExtra(URL));
     }
 }
