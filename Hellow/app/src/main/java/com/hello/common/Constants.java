@@ -23,8 +23,11 @@ public class Constants {
     public final static String CALENDARS_ACCOUNT_TYPE = "com.hello";
     public final static String CALENDARS_DISPLAY_NAME = "哈喽助手";
     //网页URL参数的标识
-    public final static String URL = "url";
-    public final static String TITLENAME = "title_name";
+    public final static String EXTRA_URL = "extra_url";
+    public final static String EXTRA_TITLE = "extra_title";
     //Kotpref的名字
     public final static String KOTPREF_NAME = "hello_pref";
+    //页面传值的标识
+    public final static String EXTRA_ID = "extra_id";
+    public final static String EXTRA_ITEM = "extra_item";
 }

@@ -13,9 +13,12 @@ import android.view.ViewGroup;
 import com.hello.R;
 import com.hello.databinding.FragmentNoteBinding;
 import com.hello.databinding.ItemVoiceNoteBinding;
+import com.hello.view.activity.NoteCreateActivity;
 import com.hello.viewmodel.NoteViewModel;
 
 import javax.inject.Inject;
+
+import static com.hello.utils.IntentUtil.setupActivity;
 
 public class NoteFragment extends AppFragment {
     private FragmentNoteBinding binding;
@@ -43,11 +46,11 @@ public class NoteFragment extends AppFragment {
         noteBinding.setFragment(this);
     }
 
-    public void openNote(long id) {
-
+    public void openNote(long id, String title) {
+        startActivity(NoteCreateActivity.intentOfNote(getContext(), id, title));
     }
 
-    public void newsNote(){
-
+    public void newsNote() {
+        setupActivity(getContext(), NoteCreateActivity.class);
     }
 }

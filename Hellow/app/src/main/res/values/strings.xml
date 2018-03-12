@@ -4,6 +4,7 @@
     <string name="title_activity_interest">书籍管理</string>
     <string name="title_activity_tip">新建日程</string>
     <string name="title_activity_main">哈喽助手</string>
+    <string name="title_activity_note">语音笔记</string>
     <string name="title_news_top">今日头条</string>
     <string name="today_toda_title">今日一览</string>
     <string name="navigation_drawer_open">打开抽屉</string>

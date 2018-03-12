@@ -3,6 +3,7 @@ package com.hello.dagger.component;
 import com.hello.application.HelloApplication;
 import com.hello.dagger.module.ApplicationModule;
 import com.hello.dagger.module.BookActivityModule;
+import com.hello.dagger.module.NoteCreateActivityModule;
 import com.hello.dagger.module.NoteFragmentMoudle;
 import com.hello.dagger.module.MainActivityModule;
 import com.hello.dagger.module.RemindActivityModule;
@@ -28,7 +29,8 @@ import dagger.Component;
         NoteFragmentMoudle.class,
         TodayTodoFragmentMoudle.class,
         SecondaryHelloFragmentModule.class,
-        SecondaryNewsFragmentModule.class
+        SecondaryNewsFragmentModule.class,
+        NoteCreateActivityModule.class
 })
 public interface ApplicationComponent {
     @Component.Builder

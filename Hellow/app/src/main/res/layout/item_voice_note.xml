@@ -22,7 +22,7 @@
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:orientation="vertical"
-        app:onSingleClick="@{() -> fragment.openNote(data.id)}">
+        app:onSingleClick="@{() -> fragment.openNote(data.id, data.title)}">
 
         <View
             android:layout_width="match_parent"
