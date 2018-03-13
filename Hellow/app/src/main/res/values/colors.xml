@@ -13,4 +13,5 @@
     <color name="colorDarkBlue">#1174CD</color>
     <color name="colorGhostWhite">#F8F8FF</color>
     <color name="colorLightSkyBlue">#87CEFA</color>
+    <color name="colorRed">#FF0000</color>
 </resources>

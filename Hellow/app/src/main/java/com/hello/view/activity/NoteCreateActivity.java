@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.hello.R;
 import com.hello.databinding.ActivityNoteCreateBinding;
+import com.hello.utils.DialogUtil;
 import com.hello.viewmodel.NoteCreateViewModel;
 
 import javax.inject.Inject;
@@ -52,6 +54,24 @@ public class NoteCreateActivity extends AppActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_share:
+                showShareView();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showShareView() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_share));
+        intent.setType("text/plain");
+        startActivity(intent);
+    }
+
     private void addChangeListener() {
         viewModel.getError()
                 .subscribe();
@@ -65,6 +85,8 @@ public class NoteCreateActivity extends AppActivity {
     }
 
     public void stopRecord() {
-        viewModel.stopRecord();
+        DialogUtil.showDialog(this, R.string.text_stop_recording,
+                R.string.text_cancel, R.string.text_enter,
+                null, (__, ___) -> viewModel.stopRecord());
     }
 }
