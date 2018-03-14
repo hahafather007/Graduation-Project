@@ -75,7 +75,8 @@
         <activity
             android:name=".view.activity.NoteCreateActivity"
             android:label="@string/title_activity_note"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
 
         <!--百度语音识别的Service-->
         <service

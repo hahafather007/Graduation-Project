@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.hello.R;
 import com.hello.databinding.ActivityNoteCreateBinding;
 import com.hello.utils.DialogUtil;
+import com.hello.utils.ToastUtil;
 import com.hello.viewmodel.NoteCreateViewModel;
 
 import javax.inject.Inject;
@@ -20,6 +21,8 @@ import static com.hello.utils.ValidUtilKt.isStrValid;
 
 public class NoteCreateActivity extends AppActivity {
     private ActivityNoteCreateBinding binding;
+    //录音是否正在播放的状态
+    private boolean recordPlaying;
 
     @Inject
     NoteCreateViewModel viewModel;
@@ -60,6 +63,17 @@ public class NoteCreateActivity extends AppActivity {
             case R.id.nav_share:
                 showShareView();
                 break;
+            case R.id.nav_save:
+                viewModel.saveNote();
+                break;
+            case R.id.nav_play:
+                if (!recordPlaying) {
+                    item.setIcon(R.mipmap.ic_menu_pause);
+                } else {
+                    item.setIcon(R.mipmap.ic_menu_play);
+                }
+                recordPlaying = !recordPlaying;
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -67,7 +81,7 @@ public class NoteCreateActivity extends AppActivity {
 
     private void showShareView() {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_share));
+        intent.putExtra(Intent.EXTRA_TEXT, viewModel.getNoteText().get());
         intent.setType("text/plain");
         startActivity(intent);
     }
@@ -78,6 +92,9 @@ public class NoteCreateActivity extends AppActivity {
 
         viewModel.getDeleteOver()
                 .subscribe();
+
+        viewModel.getSaveOver()
+                .subscribe(__ -> ToastUtil.showToast(this, R.string.text_save_over));
     }
 
     public void startRecord() {

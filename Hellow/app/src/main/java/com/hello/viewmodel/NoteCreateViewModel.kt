@@ -19,6 +19,7 @@ class NoteCreateViewModel @Inject constructor() {
 
     var error: Subject<Optional<*>> = PublishSubject.create()
     var deleteOver: Subject<Optional<*>> = PublishSubject.create()
+    var saveOver: Subject<Optional<*>> = PublishSubject.create()
 
     private lateinit var note: Note
 
@@ -45,7 +46,15 @@ class NoteCreateViewModel @Inject constructor() {
                 }
     }
 
-    fun delete() {
+    fun saveNote() {
+        note.content = noteText.get()
+
+        notesHolder.editNote(note)
+                .compose(Completables.async())
+                .subscribe { saveOver.onNext(Optional.empty<Any>()) }
+    }
+
+    fun deleteNote() {
         notesHolder.deleteNote(note)
                 .compose(Completables.async())
                 .subscribe { deleteOver.onNext(Optional.empty<Any>()) }

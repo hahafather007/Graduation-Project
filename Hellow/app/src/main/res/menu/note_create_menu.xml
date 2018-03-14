@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/nav_play"
+        android:icon="@mipmap/ic_menu_play"
+        android:title="@null"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
     <item
         android:id="@+id/nav_share"
         android:icon="@drawable/ic_menu_share_white"
         android:title="@null"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/nav_save"
+        android:icon="@mipmap/ic_menu_save"
+        android:title="@null"
+        app:showAsAction="always" />
 </menu>
