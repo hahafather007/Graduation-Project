@@ -3,6 +3,7 @@ package com.hello.utils
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.support.v7.app.AlertDialog
+import android.view.View
 import com.hello.R
 
 object DialogUtil {
@@ -19,6 +20,23 @@ object DialogUtil {
         builder.setTitle(R.string.title_dialog)
                 .setMessage(msg)
 
+        show(builder, cancelText, enterText, cancelListener, enterListener)
+    }
+
+    //带有自定义View的dialog
+    @JvmStatic
+    fun showViewDialog(context: Context, title: Int, view: View, cancelText: Int?, enterText: Int?,
+                       cancelListener: OnClickListener?, enterListener: OnClickListener?) {
+        dialog?.dismiss()
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(title)
+                .setView(view)
+
+        show(builder, cancelText, enterText, cancelListener, enterListener)
+    }
+
+    private fun show(builder: AlertDialog.Builder, cancelText: Int?, enterText: Int?,
+                     cancelListener: OnClickListener?, enterListener: OnClickListener?) {
         if (cancelText != null) {
             builder.setNegativeButton(cancelText, cancelListener)
         }

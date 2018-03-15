@@ -29,7 +29,7 @@ class NoteCreateViewModel @Inject constructor() {
     lateinit var notesHolder: NotesHolder
 
     @Inject
-    internal fun init() {
+    fun init() {
         voiceHolder.error
                 .subscribe { error.onNext(Optional.empty<Any>()) }
     }
@@ -45,6 +45,12 @@ class NoteCreateViewModel @Inject constructor() {
                     noteText.set(note.content)
                 }
     }
+
+    fun setNoteTitle(title: String) {
+        note.title = title
+    }
+
+    fun getNoteTitle(): String = note.title
 
     fun saveNote() {
         note.content = noteText.get()

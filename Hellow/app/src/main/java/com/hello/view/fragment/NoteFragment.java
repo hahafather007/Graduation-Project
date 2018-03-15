@@ -50,6 +50,11 @@ public class NoteFragment extends AppFragment {
         startActivity(NoteCreateActivity.intentOfNote(getContext(), id, title));
     }
 
+    //长按item弹出删除选项
+    public void readyDelete(long id) {
+
+    }
+
     public void newsNote() {
         setupActivity(getContext(), NoteCreateActivity.class);
     }

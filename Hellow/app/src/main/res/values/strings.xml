@@ -25,9 +25,13 @@
     <string name="text_steps">步骤：</string>
     <string name="text_cancel">取消</string>
     <string name="text_enter">确定</string>
+    <string name="text_title_save">输入标题</string>
+    <string name="text_title_save_hint">如：Android组3月1日会议</string>
+    <string name="text_no_title">标题不能为空，请输入标题！！！</string>
     <string name="text_stop_recording">是否结束录音？</string>
     <string name="test_network_error">网络似乎有些不太稳定~</string>
     <string name="format_first_line">\n\u3000\u3000%s</string>
+    <string name="format_date_time">yyyy-MM-dd HH:mm:ss</string>
     <string name="exit_warn_msg">再按一次退出</string>
     <string name="book_title">语音笔记</string>
     <string name="todo_newRemind">新建提醒</string>

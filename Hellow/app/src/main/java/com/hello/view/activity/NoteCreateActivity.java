@@ -6,10 +6,13 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.hello.R;
 import com.hello.databinding.ActivityNoteCreateBinding;
 import com.hello.utils.DialogUtil;
+import com.hello.utils.DimensionUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.viewmodel.NoteCreateViewModel;
 
@@ -64,7 +67,7 @@ public class NoteCreateActivity extends AppActivity {
                 showShareView();
                 break;
             case R.id.nav_save:
-                viewModel.saveNote();
+                saveNote();
                 break;
             case R.id.nav_play:
                 if (!recordPlaying) {
@@ -77,6 +80,27 @@ public class NoteCreateActivity extends AppActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveNote() {
+        EditText editText = new EditText(this);
+        int padding = DimensionUtil.dp2px(this, 24);
+        editText.setText(viewModel.getNoteTitle());
+        editText.setHint(R.string.text_title_save_hint);
+
+        DialogUtil.showViewDialog(this, R.string.text_title_save, editText,
+                R.string.text_cancel, R.string.text_enter, null,
+                (__, ___) -> {
+                    if (editText.getText().toString().isEmpty()) {
+                        ToastUtil.showToast(this, R.string.text_no_title);
+                    } else {
+                        viewModel.setNoteTitle(editText.getText().toString());
+                        viewModel.saveNote();
+                    }
+                });
+
+        //让View与title对齐
+        ((ViewGroup.MarginLayoutParams) editText.getLayoutParams()).setMargins(padding, 0, padding, 0);
     }
 
     private void showShareView() {
@@ -94,7 +118,10 @@ public class NoteCreateActivity extends AppActivity {
                 .subscribe();
 
         viewModel.getSaveOver()
-                .subscribe(__ -> ToastUtil.showToast(this, R.string.text_save_over));
+                .subscribe(__ -> {
+                    setTitle(viewModel.getNoteTitle());
+                    ToastUtil.showToast(this, R.string.text_save_over);
+                });
     }
 
     public void startRecord() {

@@ -35,7 +35,12 @@ class NotesHolder @Inject constructor() {
 
     fun getNotes(): Single<List<Note>> {
         return if (cacheNotes.isEmpty())
-            Single.just(Select().from(Note::class.java).queryList()).doOnSuccess { cacheNotes = it }
+            Single.just(Select().from(Note::class.java).queryList())
+                    .map {
+                        it.sortByDescending { it.time }
+                        it
+                    }
+                    .doOnSuccess { cacheNotes = it }
         else
             Single.just(cacheNotes)
     }
@@ -56,6 +61,8 @@ class NotesHolder @Inject constructor() {
     }
 
     fun editNote(note: Note): Completable {
+        note.time = LocalDateTime.now().toString()
+
         return Completable.fromAction { note.update() }
                 .doOnComplete {
                     refreshNotes()
@@ -65,6 +72,10 @@ class NotesHolder @Inject constructor() {
 
     private fun refreshNotes() {
         Single.just(Select().from(Note::class.java).queryList())
+                .map {
+                    it.sortByDescending { it.time }
+                    it
+                }
                 .compose(Singles.async())
                 .subscribe { v ->
                     cacheNotes = v
