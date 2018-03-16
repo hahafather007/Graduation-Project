@@ -25,6 +25,7 @@
     <string name="text_steps">步骤：</string>
     <string name="text_cancel">取消</string>
     <string name="text_enter">确定</string>
+    <string name="text_delete">删除</string>
     <string name="text_title_save">输入标题</string>
     <string name="text_title_save_hint">如：Android组3月1日会议</string>
     <string name="text_no_title">标题不能为空，请输入标题！！！</string>

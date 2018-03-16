@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,13 +16,16 @@ import com.hello.databinding.FragmentNoteBinding;
 import com.hello.databinding.ItemVoiceNoteBinding;
 import com.hello.view.activity.NoteCreateActivity;
 import com.hello.viewmodel.NoteViewModel;
+import com.hello.widget.view.NoteListPopup;
 
 import javax.inject.Inject;
 
 import static com.hello.utils.IntentUtil.setupActivity;
 
-public class NoteFragment extends AppFragment {
+public class NoteFragment extends AppFragment implements View.OnTouchListener {
     private FragmentNoteBinding binding;
+    private int touchX;
+    private int touchY;
 
     @Inject
     NoteViewModel viewModel;
@@ -41,6 +45,17 @@ public class NoteFragment extends AppFragment {
         binding.setViewModel(viewModel);
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                touchX = (int) event.getX();
+                touchY = (int) event.getY();
+                break;
+        }
+        return false;
+    }
+
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
         ItemVoiceNoteBinding noteBinding = ((ItemVoiceNoteBinding) binding);
         noteBinding.setFragment(this);
@@ -51,8 +66,10 @@ public class NoteFragment extends AppFragment {
     }
 
     //长按item弹出删除选项
-    public void readyDelete(long id) {
+    public boolean readyDelete(View view, Long id) {
+        new NoteListPopup(view).show();
 
+        return true;
     }
 
     public void newsNote() {
