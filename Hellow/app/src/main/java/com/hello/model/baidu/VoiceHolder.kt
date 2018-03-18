@@ -9,7 +9,8 @@ import com.google.gson.Gson
 import com.hello.utils.Log
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import java.nio.charset.Charset
+import org.json.JSONException
+import org.json.JSONObject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,6 +18,10 @@ import javax.inject.Singleton
 class VoiceHolder @Inject constructor() {
     //出错的回调
     val error: Subject<Optional<*>> = PublishSubject.create()
+    //得到返回结果的回调
+    val result: Subject<String> = PublishSubject.create()
+    //表示每一局的分隔
+    val part: Subject<Optional<*>> = PublishSubject.create()
 
     lateinit var manager: EventManager
 
@@ -29,14 +34,23 @@ class VoiceHolder @Inject constructor() {
         manager.registerListener { name, params, data, offset, length ->
             when (name) {
                 CALLBACK_EVENT_ASR_READY -> Log.i("百度语音：就绪！！！")
-                CALLBACK_EVENT_ASR_FINISH -> Log.i("百度语音：识别结束！！！")
+                CALLBACK_EVENT_ASR_FINISH -> {
+                    Log.i("百度语音：识别结束！！！")
+                    part.onNext(Optional.empty<Any>())
+                }
                 CALLBACK_EVENT_ASR_ERROR -> {
                     Log.e("百度语音：错误！！！")
                     error.onNext(Optional.empty<Any>())
                 }
                 CALLBACK_EVENT_ASR_PARTIAL -> {
-                    Log.i(params)
-                    Log.i(String(data))
+                    try {
+                        val text = JSONObject(params).getJSONArray("results_recognition").getString(0)
+                        if (text != null) {
+                            result.onNext(text)
+                        }
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
                 }
                 CALLBACK_EVENT_ASR_VOLUME -> Log.i(params)
             }
@@ -47,7 +61,7 @@ class VoiceHolder @Inject constructor() {
         val params = HashMap<String, Any>()
         params[ACCEPT_AUDIO_DATA] = true
         params[ACCEPT_AUDIO_VOLUME] = true
-        params[VAD_ENDPOINT_TIMEOUT] = true
+        params[VAD_ENDPOINT_TIMEOUT] = 0
 
         val paramJson = Gson().toJson(params)
         Log.i(paramJson)

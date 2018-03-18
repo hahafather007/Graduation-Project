@@ -15,6 +15,8 @@
     <string name="text_share">分享一个好玩的应用~</string>
     <string name="text_share_title">分享</string>
     <string name="text_send">发送</string>
+    <string name="text_start_record">点击开始录音</string>
+    <string name="text_stop_record">结束录音</string>
     <string name="text_load_more">点击加载更多</string>
     <string name="text_save_over">已保存！！！</string>
     <string name="text_recording">认真聆听中</string>

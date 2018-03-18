@@ -18,6 +18,7 @@ import com.hello.viewmodel.NoteCreateViewModel;
 
 import javax.inject.Inject;
 
+import static android.view.View.*;
 import static com.hello.common.Constants.EXTRA_ID;
 import static com.hello.common.Constants.EXTRA_TITLE;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -26,6 +27,8 @@ public class NoteCreateActivity extends AppActivity {
     private ActivityNoteCreateBinding binding;
     //录音是否正在播放的状态
     private boolean recordPlaying;
+    //是否正在进行录音状态
+    private boolean recording;
 
     @Inject
     NoteCreateViewModel viewModel;
@@ -50,11 +53,15 @@ public class NoteCreateActivity extends AppActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.note_create_menu, menu);
         String title = getIntent().getStringExtra(EXTRA_TITLE);
+
         if (isStrValid(title)) {
             setTitle(title);
-            //如果是查看之前的note，则显示分享按钮
-            getMenuInflater().inflate(R.menu.note_create_menu, menu);
+            binding.btnPlay.setVisibility(GONE);
+        } else {//如果是查看之前的note，则显示分享按钮，否者不显示
+            menu.setGroupVisible(0, false);
+            binding.btnPlay.setOnClickListener(__ -> startOrStopRecord());
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -85,7 +92,9 @@ public class NoteCreateActivity extends AppActivity {
     private void saveNote() {
         EditText editText = new EditText(this);
         int padding = DimensionUtil.dp2px(this, 24);
-        editText.setText(viewModel.getNoteTitle());
+        if (isStrValid(getIntent().getStringExtra(EXTRA_TITLE))) {
+            editText.setText(viewModel.getNoteTitle());
+        }
         editText.setHint(R.string.text_title_save_hint);
 
         DialogUtil.showViewDialog(this, R.string.text_title_save, editText,
@@ -94,8 +103,12 @@ public class NoteCreateActivity extends AppActivity {
                     if (editText.getText().toString().isEmpty()) {
                         ToastUtil.showToast(this, R.string.text_no_title);
                     } else {
-                        viewModel.setNoteTitle(editText.getText().toString());
-                        viewModel.saveNote();
+                        if (isStrValid(getIntent().getStringExtra(EXTRA_TITLE))) {
+                            viewModel.setNoteTitle(editText.getText().toString());
+                            viewModel.saveNote();
+                        } else {
+                            viewModel.addNote(editText.getText().toString(), viewModel.getNoteText().get());
+                        }
                     }
                 });
 
@@ -124,13 +137,20 @@ public class NoteCreateActivity extends AppActivity {
                 });
     }
 
-    public void startRecord() {
-        viewModel.startRecord();
-    }
+    public void startOrStopRecord() {
+        if (!recording) {
+            viewModel.startRecord();
+            binding.btnPlay.setText(R.string.text_stop_record);
+        } else {
+            DialogUtil.showDialog(this, R.string.text_stop_recording,
+                    R.string.text_cancel, R.string.text_enter,
+                    null, (__, ___) -> {
+                        viewModel.stopRecord();
+                        binding.btnPlay.setVisibility(GONE);
+                        binding.toolbar.getMenu().setGroupVisible(0, true);
+                    });
+        }
 
-    public void stopRecord() {
-        DialogUtil.showDialog(this, R.string.text_stop_recording,
-                R.string.text_cancel, R.string.text_enter,
-                null, (__, ___) -> viewModel.stopRecord());
+        recording = !recording;
     }
 }

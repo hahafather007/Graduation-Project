@@ -52,5 +52,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/appBarLayout"
             tools:text="这篇文章主要给大家介绍了关于如何更改Dialog的标题与按钮颜色的相关资料，文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值，需要的朋友可以参考借鉴，下面跟着小编来一起学习学习吧。" />
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_talk_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:text="@string/text_start_record"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
 </layout>
