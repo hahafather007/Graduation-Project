@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    signingConfigs {
+    }
     compileSdkVersion 27
     buildToolsVersion "26.0.2"
     defaultConfig {
@@ -11,6 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -81,7 +84,7 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
     implementation 'joda-time:joda-time:2.9.9'
     testImplementation 'junit:junit:4.12'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.30'
     implementation files('libs/bdasr_V3_20171108_9800a2a.jar')
 }
 repositories {
