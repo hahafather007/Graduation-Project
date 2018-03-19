@@ -10,8 +10,10 @@ import com.hello.dagger.module.RemindActivityModule;
 import com.hello.dagger.module.SecondaryHelloFragmentModule;
 import com.hello.dagger.module.SecondaryNewsFragmentModule;
 import com.hello.dagger.module.SettingActivityModule;
+import com.hello.dagger.module.SportActivityModule;
 import com.hello.dagger.module.SystemServiceModule;
 import com.hello.dagger.module.TodayTodoFragmentMoudle;
+import com.hello.view.activity.SportActivity;
 
 import javax.inject.Singleton;
 
@@ -30,7 +32,8 @@ import dagger.Component;
         TodayTodoFragmentMoudle.class,
         SecondaryHelloFragmentModule.class,
         SecondaryNewsFragmentModule.class,
-        NoteCreateActivityModule.class
+        NoteCreateActivityModule.class,
+        SportActivityModule.class
 })
 public interface ApplicationComponent {
     @Component.Builder

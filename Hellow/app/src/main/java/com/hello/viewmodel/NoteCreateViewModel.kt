@@ -17,9 +17,9 @@ import io.reactivex.subjects.Subject
 class NoteCreateViewModel @Inject constructor() {
     var noteText = ObservableField<String>()
 
-    var error: Subject<Optional<*>> = PublishSubject.create()
-    var deleteOver: Subject<Optional<*>> = PublishSubject.create()
-    var saveOver: Subject<Optional<*>> = PublishSubject.create()
+    val error: Subject<Optional<*>> = PublishSubject.create()
+    val deleteOver: Subject<Optional<*>> = PublishSubject.create()
+    val saveOver: Subject<Optional<*>> = PublishSubject.create()
 
     private var holderText = ""
 

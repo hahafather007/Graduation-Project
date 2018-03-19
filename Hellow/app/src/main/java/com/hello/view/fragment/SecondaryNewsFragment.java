@@ -1,8 +1,10 @@
 package com.hello.view.fragment;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -15,7 +17,7 @@ import com.hello.databinding.FragmentSecondaryNewsBinding;
 import com.hello.databinding.ItemNewsTopBinding;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
-import com.hello.view.activity.RemindActivity;
+import com.hello.view.activity.SportActivity;
 import com.hello.view.activity.WebViewActivity;
 import com.hello.viewmodel.SecondaryNewsViewModel;
 
@@ -73,8 +75,13 @@ public class SecondaryNewsFragment extends AppFragment {
         itemBinding.setFragment(this);
     }
 
-    public void setupRemindActivity() {
-        setupActivity(getContext(), RemindActivity.class);
+    //打开系统自带新建提醒界面
+    public void openCreateCalender() {
+        startActivity(new Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI));
+    }
+
+    public void setupSportActivity() {
+        setupActivity(getContext(), SportActivity.class);
     }
 
     public void openNewsDetail(String url) {

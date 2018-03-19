@@ -16,51 +16,72 @@
             type="com.hello.model.db.table.Note" />
     </data>
 
-    <LinearLayout
-        android:id="@+id/root"
+    <com.daimajia.swipe.SwipeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
-        android:background="@color/colorWhite"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:onLongClick="@{() -> fragment.readyDelete(root, data.id)}"
-        android:orientation="vertical"
-        app:onSingleClick="@{() -> fragment.openNote(data.id, data.title)}">
+        android:background="@color/colorWhite">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="6dp"
-            android:background="@color/colorLine" />
+        <FrameLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:onSingleClick="@{() -> fragment.readyDelete(data)}">
 
-        <TextView
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/img_delete" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/root"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="48dp"
-            android:layout_marginStart="16dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:text="@{data.title}"
-            android:textColor="@color/colorText"
-            android:textSize="16sp"
-            tools:text="小组会小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议议" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:orientation="vertical"
+            app:onSingleClick="@{() -> fragment.openNote(data.id, data.title)}">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginBottom="6dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@{LocalDateTime.parse(data.time).toString(@string/format_date_time)}"
-            android:textColor="@color/colorTransBlack"
-            android:textSize="12sp"
-            tools:text="2017-12-31 12:30:20" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="6dp"
+                android:background="@color/colorLine" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorLine" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
+                android:layout_marginStart="16dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@{data.title}"
+                android:textColor="@color/colorText"
+                android:textSize="16sp"
+                tools:text="小组会小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议小组会议议" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginBottom="6dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@{LocalDateTime.parse(data.time).toString(@string/format_date_time)}"
+                android:textColor="@color/colorTransBlack"
+                android:textSize="12sp"
+                tools:text="2017-12-31 12:30:20" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLine" />
+        </LinearLayout>
+    </com.daimajia.swipe.SwipeLayout>
 </layout>
