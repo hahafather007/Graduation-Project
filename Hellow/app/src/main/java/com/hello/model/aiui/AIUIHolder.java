@@ -34,7 +34,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -47,7 +46,7 @@ import io.reactivex.subjects.Subject;
 import static com.hello.common.SpeechPeople.XIAO_QI;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
-import static com.hello.utils.ValidUtilKt.*;
+import static com.hello.utils.ValidUtilKt.isStrValid;
 
 @Singleton
 public class AIUIHolder {
@@ -360,20 +359,15 @@ public class AIUIHolder {
                             }
                             Calendar time = Calendar.getInstance();
                             try {
-                                LocalDateTime dateTime = LocalDateTime.parse(suggestTime);
-                                time.set(dateTime.getYear(), dateTime.getMonthOfYear() - 1,
-                                        dateTime.getDayOfMonth(), dateTime.getHourOfDay(),
-                                        dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
-                            } catch (IllegalArgumentException e) {
-                                String dayTime = new SimpleDateFormat("yyyy-MM-dd")
-                                        .format(Calendar.getInstance().getTime());
-                                LocalDateTime dateTime = LocalDateTime.parse(dayTime + suggestTime);
+                                LocalDateTime dateTime = LocalDateTime.parse(suggestTime.replace(" ", ""));
                                 time.set(dateTime.getYear(), dateTime.getMonthOfYear() - 1,
                                         dateTime.getDayOfMonth(), dateTime.getHourOfDay(),
                                         dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
                                 if (mTalkText.contains("明天")) {
                                     time.add(Calendar.DATE, 1);
                                 }
+                            } catch (IllegalArgumentException e) {
+                                e.printStackTrace();
                             }
                             if ("reminderFinished".equals(state)) {
                                 CalendarUtil.addCalendarEvent(context, time, content);
@@ -425,6 +419,9 @@ public class AIUIHolder {
     }
 
     private void useTuLing() {
+        if (userMsg.contains("你的") && userMsg.contains("照片")) {
+            userMsg = "美女图片";
+        }
         TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
                 null, DeviceIdUtil.getId(context));
 
