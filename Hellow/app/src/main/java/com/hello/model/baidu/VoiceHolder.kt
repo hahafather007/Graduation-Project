@@ -12,9 +12,7 @@ import io.reactivex.subjects.Subject
 import org.json.JSONException
 import org.json.JSONObject
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class VoiceHolder @Inject constructor() {
     //出错的回调
     val error: Subject<Optional<*>> = PublishSubject.create()
@@ -23,7 +21,7 @@ class VoiceHolder @Inject constructor() {
     //表示每一局的分隔
     val part: Subject<Optional<*>> = PublishSubject.create()
     //声音分贝
-    val decibe: Subject<Int> = PublishSubject.create()
+    val decibel: Subject<Int> = PublishSubject.create()
 
     lateinit var manager: EventManager
 
@@ -56,7 +54,7 @@ class VoiceHolder @Inject constructor() {
                 }
                 CALLBACK_EVENT_ASR_VOLUME -> {
                     Log.i(params)
-                    decibe.onNext(JSONObject(params).getInt("volume"))
+                    decibel.onNext(JSONObject(params).getInt("volume"))
                 }
             }
         }

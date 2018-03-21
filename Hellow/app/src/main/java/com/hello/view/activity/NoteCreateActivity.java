@@ -136,7 +136,7 @@ public class NoteCreateActivity extends AppActivity {
                     ToastUtil.showToast(this, R.string.text_save_over);
                 });
 
-//        RxField.of(viewModel.getDecibe())
+//        RxField.of(viewModel.getDecibel())
 //                .skip(0)
 //                .map(v -> v / 100f)
 //                .compose(RxLifeCycle.resumed(this))

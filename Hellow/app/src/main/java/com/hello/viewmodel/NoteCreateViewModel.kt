@@ -45,7 +45,7 @@ class NoteCreateViewModel @Inject constructor() {
         voiceHolder.result
                 .subscribe { noteText.set(holderText + it) }
 
-        voiceHolder.decibe
+        voiceHolder.decibel
                 .subscribe { decibe.set(it) }
     }
 

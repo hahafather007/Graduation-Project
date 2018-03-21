@@ -13,7 +13,6 @@ import io.reactivex.subjects.Subject
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class StepHolder @Inject constructor() {
     val step: Subject<Int> = PublishSubject.create()
 

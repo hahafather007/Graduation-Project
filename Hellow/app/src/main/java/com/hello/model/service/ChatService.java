@@ -5,7 +5,6 @@ import com.hello.model.service.api.ChatApi;
 import com.hello.model.service.interceptor.AppHttpLoggingInterceptor;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
@@ -13,7 +12,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-@Singleton
 public class ChatService {
     private final String url = "http://api.qingyunke.com/";
     private final ChatApi api;

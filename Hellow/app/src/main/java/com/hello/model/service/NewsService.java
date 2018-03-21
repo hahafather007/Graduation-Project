@@ -7,7 +7,6 @@ import com.hello.model.service.interceptor.AppHttpLoggingInterceptor;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
@@ -15,7 +14,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-@Singleton
 public class NewsService {
     private final String url = "http://v.juhe.cn/toutiao/";
     private final NewApi api;

@@ -11,9 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class TuLingService @Inject constructor() {
     private val url = "http://www.tuling123.com/"
     private val api: TuLingApi
