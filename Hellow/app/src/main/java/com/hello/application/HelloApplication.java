@@ -2,6 +2,7 @@ package com.hello.application;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 
 import com.hello.dagger.component.DaggerApplicationComponent;
@@ -21,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import static com.hello.common.Constants.AIUI_APPID;
 
 
-public class HelloApplication extends Application
+public class HelloApplication extends MultiDexApplication
         implements HasActivityInjector, HasSupportFragmentInjector {
 
     @Inject

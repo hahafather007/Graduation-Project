@@ -18,7 +18,6 @@ import com.hello.viewmodel.NoteCreateViewModel;
 
 import javax.inject.Inject;
 
-import static android.view.View.*;
 import static com.hello.common.Constants.EXTRA_ID;
 import static com.hello.common.Constants.EXTRA_TITLE;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -58,10 +57,11 @@ public class NoteCreateActivity extends AppActivity {
 
         if (isStrValid(title)) {
             setTitle(title);
-            binding.btnPlay.setVisibility(GONE);
+            menu.getItem(3).setVisible(false);
         } else {//如果是查看之前的note，则显示分享按钮，否者不显示
-            menu.setGroupVisible(0, false);
-            binding.btnPlay.setOnClickListener(__ -> startOrStopRecord());
+            for (int i = 0; i < 3; i++) {
+                menu.getItem(i).setVisible(false);
+            }
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -83,6 +83,9 @@ public class NoteCreateActivity extends AppActivity {
                     item.setIcon(R.mipmap.ic_menu_play);
                 }
                 recordPlaying = !recordPlaying;
+                break;
+            case R.id.nav_voice:
+                startOrStopRecord();
                 break;
         }
 
@@ -127,27 +130,31 @@ public class NoteCreateActivity extends AppActivity {
         viewModel.getError()
                 .subscribe();
 
-        viewModel.getDeleteOver()
-                .subscribe();
-
         viewModel.getSaveOver()
                 .subscribe(__ -> {
                     setTitle(viewModel.getNoteTitle());
                     ToastUtil.showToast(this, R.string.text_save_over);
                 });
+
+//        RxField.of(viewModel.getDecibe())
+//                .skip(0)
+//                .map(v -> v / 100f)
+//                .compose(RxLifeCycle.resumed(this))
+//                .subscribe(v -> binding.waveView.updateAmplitude(v));
     }
 
     public void startOrStopRecord() {
         if (!recording) {
             viewModel.startRecord();
-            binding.btnPlay.setText(R.string.text_stop_record);
         } else {
             DialogUtil.showDialog(this, R.string.text_stop_recording,
                     R.string.text_cancel, R.string.text_enter,
                     null, (__, ___) -> {
                         viewModel.stopRecord();
-                        binding.btnPlay.setVisibility(GONE);
-                        binding.toolbar.getMenu().setGroupVisible(0, true);
+                        binding.toolbar.getMenu().getItem(3).setVisible(false);
+                        for (int i = 0; i < 3; i++) {
+                            binding.toolbar.getMenu().getItem(i).setVisible(true);
+                        }
                     });
         }
 

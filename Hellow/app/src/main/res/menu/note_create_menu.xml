@@ -18,4 +18,9 @@
         android:icon="@mipmap/ic_menu_save"
         android:title="@null"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/nav_voice"
+        android:icon="@mipmap/ic_menu_voice"
+        android:title="@null"
+        app:showAsAction="always" />
 </menu>

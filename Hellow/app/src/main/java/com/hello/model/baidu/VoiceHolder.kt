@@ -22,6 +22,8 @@ class VoiceHolder @Inject constructor() {
     val result: Subject<String> = PublishSubject.create()
     //表示每一局的分隔
     val part: Subject<Optional<*>> = PublishSubject.create()
+    //声音分贝
+    val decibe: Subject<Int> = PublishSubject.create()
 
     lateinit var manager: EventManager
 
@@ -52,7 +54,10 @@ class VoiceHolder @Inject constructor() {
                         e.printStackTrace()
                     }
                 }
-                CALLBACK_EVENT_ASR_VOLUME -> Log.i(params)
+                CALLBACK_EVENT_ASR_VOLUME -> {
+                    Log.i(params)
+                    decibe.onNext(JSONObject(params).getInt("volume"))
+                }
             }
         }
     }

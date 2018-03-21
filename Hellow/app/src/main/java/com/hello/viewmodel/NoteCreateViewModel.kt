@@ -1,6 +1,7 @@
 package com.hello.viewmodel
 
 import android.databinding.ObservableField
+import android.databinding.ObservableInt
 
 import com.annimon.stream.Optional
 import com.hello.model.baidu.VoiceHolder
@@ -15,15 +16,15 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
 class NoteCreateViewModel @Inject constructor() {
-    var noteText = ObservableField<String>()
+    val noteText = ObservableField<String>()
+    val decibe = ObservableInt()
 
     val error: Subject<Optional<*>> = PublishSubject.create()
-    val deleteOver: Subject<Optional<*>> = PublishSubject.create()
     val saveOver: Subject<Optional<*>> = PublishSubject.create()
 
     private var holderText = ""
-
-    private lateinit var note: Note
+    private var cacheTitle = ""
+    private var note: Note? = null
 
     @Inject
     lateinit var voiceHolder: VoiceHolder
@@ -43,6 +44,9 @@ class NoteCreateViewModel @Inject constructor() {
 
         voiceHolder.result
                 .subscribe { noteText.set(holderText + it) }
+
+        voiceHolder.decibe
+                .subscribe { decibe.set(it) }
     }
 
     fun initNote(id: Long) {
@@ -53,20 +57,20 @@ class NoteCreateViewModel @Inject constructor() {
                 .compose(Singles.async())
                 .subscribe { v ->
                     note = v
-                    noteText.set(note.content)
+                    noteText.set(note?.content)
                 }
     }
 
     fun setNoteTitle(title: String) {
-        note.title = title
+        note!!.title = title
     }
 
-    fun getNoteTitle(): String = note.title
+    fun getNoteTitle(): String = note?.title ?: cacheTitle
 
     fun saveNote() {
-        note.content = noteText.get()
+        note!!.content = noteText.get()
 
-        notesHolder.editNote(note)
+        notesHolder.editNote(note!!)
                 .compose(Completables.async())
                 .subscribe { saveOver.onNext(Optional.empty<Any>()) }
     }
@@ -74,13 +78,8 @@ class NoteCreateViewModel @Inject constructor() {
     fun addNote(title: String, content: String) {
         notesHolder.addNote(title, content)
                 .compose(Completables.async())
+                .doOnComplete { cacheTitle = title }
                 .subscribe { saveOver.onNext(Optional.empty<Any>()) }
-    }
-
-    fun deleteNote() {
-        notesHolder.deleteNote(note)
-                .compose(Completables.async())
-                .subscribe { deleteOver.onNext(Optional.empty<Any>()) }
     }
 
     fun startRecord() {
