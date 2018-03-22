@@ -5,6 +5,7 @@ import android.app.Application;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 
+import com.chibatching.kotpref.Kotpref;
 import com.hello.dagger.component.DaggerApplicationComponent;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
@@ -35,6 +36,7 @@ public class HelloApplication extends MultiDexApplication
         super.onCreate();
 
         FlowManager.init(this);
+        Kotpref.INSTANCE.init(this);
 
         SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + AIUI_APPID);
 

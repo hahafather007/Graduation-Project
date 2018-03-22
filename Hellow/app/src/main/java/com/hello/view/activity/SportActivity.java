@@ -24,6 +24,8 @@ public class SportActivity extends AppActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sport);
 
         addChangeListener();
+
+        viewModel.initStepInfoes();
     }
 
     private void addChangeListener() {

@@ -8,7 +8,9 @@ object SystemTimeUtil {
     //获取系统开机时间
     @JvmStatic
     fun getPowerUpTime(): LocalDate {
-        val upTime = (System.currentTimeMillis() - SystemClock.elapsedRealtime()).toInt()
+        val upTime = SystemClock.elapsedRealtime().toInt()
+
+        Log.i("upTime==$upTime")
 
         return LocalDateTime.now().minusSeconds(upTime / 1000).toLocalDate()
     }
