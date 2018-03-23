@@ -7,6 +7,7 @@ import android.hardware.Sensor.TYPE_STEP_COUNTER
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import com.annimon.stream.Optional
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
@@ -26,8 +27,12 @@ class StepHolder @Inject constructor() {
     //系统开机时间
     private val powerUpTime = SystemTimeUtil.getPowerUpTime()
     private var stepCount: Int = 0
+    //用于记录第一次数据
+    private var firstSaveStep: Boolean = false
+    private var cacheStepInfo: List<StepInfo> = emptyList()
 
     val step: Subject<Int> = PublishSubject.create()
+    val stepInfoChange: Subject<Optional<*>> = PublishSubject.create()
 
     @Inject
     lateinit var context: Context
@@ -47,22 +52,20 @@ class StepHolder @Inject constructor() {
             }
         }, detector, SensorManager.SENSOR_DELAY_UI)
 
-        HelloPref.stepCount = stepCount
-
-        Log.i(powerUpTime)
+        saveStepInfo()
     }
 
     //获得所有计步信息
     fun getStepInfoes(): Single<List<StepInfo>> {
         return Single.just(Select().from(StepInfo::class.java).queryList())
                 .map { it.sortedBy { it.time } }
-                .doOnSuccess { saveStepInfo(it) }
+                .doOnSuccess { cacheStepInfo = it }
     }
 
-    private fun saveStepInfo(infoes: List<StepInfo>) {
+    private fun saveStepInfo() {
         Observable.interval(30, TimeUnit.SECONDS)
                 .flatMap {
-                    for (info in infoes) {
+                    for (info in cacheStepInfo) {
                         if (info.time == LocalDate.now().toString()) {
                             info.stepCount = stepCount
                             return@flatMap Observable.just(info.save())
@@ -70,6 +73,7 @@ class StepHolder @Inject constructor() {
                     }
                     return@flatMap Observable.just(
                             StepInfo(LocalDate.now().toString(), stepCount).save())
+                            .doOnSubscribe { stepInfoChange.onNext(Optional.empty<Any>()) }
                 }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -89,6 +93,10 @@ class StepHolder @Inject constructor() {
             count - HelloPref.stepCount
         }
 
+        if (!firstSaveStep) {
+            HelloPref.stepCount = stepCount
+            firstSaveStep = true
+        }
         step.onNext(stepCount)
     }
 }
