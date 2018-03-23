@@ -95,6 +95,8 @@ class StepHolder @Inject constructor() {
 
         if (!firstSaveStep) {
             HelloPref.stepCount = stepCount
+            stepInfoChange.onNext(Optional.empty<Any>())
+
             firstSaveStep = true
         }
         step.onNext(stepCount)

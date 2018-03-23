@@ -32,8 +32,6 @@ public class SportActivity extends AppActivity {
 
         initChart();
         addChangeListener();
-
-        viewModel.initStepInfoes();
     }
 
     private void addChangeListener() {
@@ -46,7 +44,7 @@ public class SportActivity extends AppActivity {
                 .subscribe(v -> {
                     List<BarEntry> entries = new ArrayList<>();
                     for (int i = 0; i < v.size(); i++) {
-                        entries.add(new BarEntry(i + 1, v.get(i)));
+                        entries.add(new BarEntry(i*9 + 1, v.get(i)));
                     }
 
                     BarDataSet dataSet = new BarDataSet(entries, "哈哈哈");

@@ -146,14 +146,12 @@
                     app:nestedScrollingEnabled="@{false}"
                     app:onBindItem="@{fragment::onBindItem}" />
 
-                <Button
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginBottom="6dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/shape_load_btn"
+                    android:gravity="center"
                     android:text="@string/text_load_more"
+                    android:textColor="@color/colorText"
                     app:onSingleClick="@{() -> viewModel.loadMore()}"
                     app:visible="@{!viewModel.newsEnd &amp; !viewModel.newsList.empty}" />
             </LinearLayout>

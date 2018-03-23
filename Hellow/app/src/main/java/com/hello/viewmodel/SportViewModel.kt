@@ -25,7 +25,7 @@ class SportViewModel @Inject constructor() {
                 .subscribe { initStepInfoes() }
     }
 
-    fun initStepInfoes() {
+    private fun initStepInfoes() {
         stepHolder.getStepInfoes()
                 .map {
                     val steps = it.map { it.stepCount }.take(7).toMutableList()
