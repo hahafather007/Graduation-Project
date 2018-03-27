@@ -30,6 +30,13 @@
     <string name="text_cancel">取消</string>
     <string name="text_enter">确定</string>
     <string name="text_delete">删除</string>
+    <string name="text_days_steps">每天的步数</string>
+    <string name="text_uss_energy">消耗能量：</string>
+    <string name="text_uss_energy_end">大卡</string>
+    <string name="text_no_have">无</string>
+    <string name="text_local_sport">近期运动情况：</string>
+    <string name="text_today">今天</string>
+    <string name="text_joule">焦</string>
     <string name="text_title_save">输入标题</string>
     <string name="text_title_save_hint">如：Android组3月1日会议</string>
     <string name="text_no_title">标题不能为空，请输入标题！！！</string>
@@ -38,6 +45,7 @@
     <string name="test_network_error">网络似乎有些不太稳定~</string>
     <string name="format_first_line">\n\u3000\u3000%s</string>
     <string name="format_date_time">yyyy-MM-dd HH:mm:ss</string>
+    <string name="format_date">yyyy-MM-dd</string>
     <string name="exit_warn_msg">再按一次退出</string>
     <string name="book_title">语音笔记</string>
     <string name="todo_newRemind">新建提醒</string>
@@ -51,4 +59,5 @@
     <string name="menu_share">分享</string>
     <string name="refresh_finish">刷新完毕</string>
     <string name="aiui_no_result">不好意思，我好像没听懂。。。 </string>
+    <string name="symbol_about">≈</string>
 </resources>

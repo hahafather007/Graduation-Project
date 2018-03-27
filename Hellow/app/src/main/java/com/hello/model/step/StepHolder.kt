@@ -66,13 +66,13 @@ class StepHolder @Inject constructor() {
         Observable.interval(30, TimeUnit.SECONDS)
                 .flatMap {
                     for (info in cacheStepInfo) {
-                        if (info.time == LocalDate.now().toString()) {
+                        if (info.time == LocalDate.now().toString("yyyy-MM-dd")) {
                             info.stepCount = stepCount
                             return@flatMap Observable.just(info.save())
                         }
                     }
                     return@flatMap Observable.just(
-                            StepInfo(LocalDate.now().toString(), stepCount).save())
+                            StepInfo(LocalDate.now().toString("yyyy-MM-dd"), stepCount).save())
                             .doOnSubscribe { stepInfoChange.onNext(Optional.empty<Any>()) }
                 }
                 .subscribeOn(Schedulers.computation())

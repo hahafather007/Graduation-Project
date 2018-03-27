@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -43,16 +44,94 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
+                <TextView
+                    android:id="@+id/energyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/text_uss_energy"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/stepView" />
+
+                <me.trojx.dancingnumber.DancingNumberView
+                    android:id="@+id/jouleDanceText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:textSize="40sp"
+                    app:layout_constraintBottom_toBottomOf="@id/energyDanceText"
+                    app:layout_constraintEnd_toStartOf="@id/jouleEndText"
+                    tools:text="5000" />
+
+                <TextView
+                    android:id="@+id/jouleEndText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:text="@string/text_joule"
+                    android:textColor="@color/colorRed"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/energyDanceText"
+                    app:layout_constraintEnd_toStartOf="@id/symbolAboutText" />
+
+                <TextView
+                    android:id="@+id/symbolAboutText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:text="@string/symbol_about"
+                    android:textColor="@color/colorText"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="@id/energyDanceText"
+                    app:layout_constraintEnd_toStartOf="@id/energyDanceText"
+                    app:layout_constraintTop_toTopOf="@id/energyDanceText" />
+
+                <me.trojx.dancingnumber.DancingNumberView
+                    android:id="@+id/energyDanceText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:textSize="40sp"
+                    app:layout_constraintEnd_toStartOf="@id/energyEndText"
+                    app:layout_constraintTop_toBottomOf="@id/energyText"
+                    tools:text="5000" />
+
+                <TextView
+                    android:id="@+id/energyEndText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/text_uss_energy_end"
+                    android:textColor="@color/colorRed"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/energyDanceText"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/barText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/text_local_sport"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/energyDanceText" />
+
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/barChart"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
                     app:layout_constraintDimensionRatio="5:3"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/stepView" />
+                    app:layout_constraintTop_toBottomOf="@id/barText" />
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
     </LinearLayout>
