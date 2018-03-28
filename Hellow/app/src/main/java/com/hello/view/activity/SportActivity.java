@@ -1,6 +1,5 @@
 package com.hello.view.activity;
 
-import android.content.res.ColorStateList;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 
@@ -40,11 +39,18 @@ public class SportActivity extends AppActivity {
         addChangeListener();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     private void addChangeListener() {
         RxField.of(viewModel.getStep())
                 .skip(1)
                 .compose(RxLifeCycle.resumed(this))
-                .subscribe(v -> {
+                .doOnNext(v -> {
                     binding.stepView.setCurrentCount(10000, v);
                     binding.energyDanceText.setText(String.valueOf(v * 0.04f));
                     binding.jouleDanceText.setText(String.valueOf(v * 0.04f * 4.1859f));
@@ -72,11 +78,12 @@ public class SportActivity extends AppActivity {
 
                         textDanced = true;
                     }
-                });
+                })
+                .subscribe();
 
         RxField.of(viewModel.getStepInfoes())
                 .compose(RxLifeCycle.resumed(this))
-                .subscribe(v -> {
+                .doOnNext(v -> {
                     List<BarEntry> entries = new ArrayList<>();
                     for (int i = 0; i < v.size(); i++) {
                         entries.add(new BarEntry(i, v.get(i).stepCount));
@@ -89,7 +96,8 @@ public class SportActivity extends AppActivity {
 
                     binding.barChart.setData(new BarData(iBarDataSets));
                     binding.barChart.invalidate();
-                });
+                })
+                .subscribe();
     }
 
     private void initChart() {

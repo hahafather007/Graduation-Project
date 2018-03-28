@@ -52,11 +52,18 @@ public class SecondaryNewsFragment extends AppFragment {
         addChangeListener();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     private void addChangeListener() {
         RxField.of(viewModel.newsList)
                 .skip(1)
                 .compose(RxLifeCycle.with(this))
-                .subscribe(v -> {
+                .doOnNext(v -> {
                     MultiTypeAdapter adapter = ((MultiTypeAdapter) binding.recyclerView.getAdapter());
                     int beforeSize = adapter.getItemCount();
                     if (!viewModel.isNewData()) {
@@ -67,7 +74,8 @@ public class SecondaryNewsFragment extends AppFragment {
                         adapter.notifyDataSetChanged();
                         binding.recyclerView.scheduleLayoutAnimation();
                     }
-                });
+                })
+                .subscribe();
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {

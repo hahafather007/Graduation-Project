@@ -8,6 +8,7 @@ import com.hello.model.baidu.VoiceHolder
 import com.hello.model.db.NotesHolder
 import com.hello.model.db.table.Note
 import com.hello.utils.rx.Completables
+import com.hello.utils.rx.Observables
 import com.hello.utils.rx.Singles
 
 import javax.inject.Inject
@@ -15,7 +16,7 @@ import javax.inject.Inject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
-class NoteCreateViewModel @Inject constructor() {
+class NoteCreateViewModel @Inject constructor() : ViewModel() {
     val noteText = ObservableField<String>()
     val decibe = ObservableInt()
 
@@ -34,19 +35,27 @@ class NoteCreateViewModel @Inject constructor() {
     @Inject
     fun init() {
         voiceHolder.error
-                .subscribe { error.onNext(Optional.empty<Any>()) }
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { error.onNext(Optional.empty<Any>()) }
+                .subscribe()
 
         voiceHolder.part
-                .subscribe {
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext {
                     noteText.set(noteText.get() + "，")
-                    holderText = noteText.get()
+                    holderText = noteText.get() ?: ""
                 }
+                .subscribe()
 
         voiceHolder.result
-                .subscribe { noteText.set(holderText + it) }
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { noteText.set(holderText + it) }
+                .subscribe()
 
         voiceHolder.decibel
-                .subscribe { decibe.set(it) }
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { decibe.set(it) }
+                .subscribe()
     }
 
     fun initNote(id: Long) {
@@ -55,10 +64,12 @@ class NoteCreateViewModel @Inject constructor() {
 
         notesHolder.getNote(id)
                 .compose(Singles.async())
-                .subscribe { v ->
-                    note = v
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess {
+                    note = it
                     noteText.set(note?.content)
                 }
+                .subscribe()
     }
 
     fun setNoteTitle(title: String) {
@@ -72,14 +83,20 @@ class NoteCreateViewModel @Inject constructor() {
 
         notesHolder.editNote(note!!)
                 .compose(Completables.async())
-                .subscribe { saveOver.onNext(Optional.empty<Any>()) }
+                .compose(Completables.disposable(compositeDisposable))
+                .doOnComplete { saveOver.onNext(Optional.empty<Any>()) }
+                .subscribe()
     }
 
     fun addNote(title: String, content: String) {
         notesHolder.addNote(title, content)
                 .compose(Completables.async())
-                .doOnComplete { cacheTitle = title }
-                .subscribe { saveOver.onNext(Optional.empty<Any>()) }
+                .compose(Completables.disposable(compositeDisposable))
+                .doOnComplete {
+                    cacheTitle = title
+                    saveOver.onNext(Optional.empty<Any>())
+                }
+                .subscribe()
     }
 
     fun startRecord() {

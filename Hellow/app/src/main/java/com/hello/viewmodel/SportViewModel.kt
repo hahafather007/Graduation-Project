@@ -6,10 +6,11 @@ import android.databinding.ObservableList
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.model.step.StepHolder
+import com.hello.utils.rx.Observables
 import com.hello.utils.rx.Singles
 import javax.inject.Inject
 
-class SportViewModel @Inject constructor() {
+class SportViewModel @Inject constructor() : ViewModel() {
     val stepInfoes: ObservableList<StepInfo> = ObservableArrayList()
     val step = ObservableInt()
 
@@ -20,9 +21,12 @@ class SportViewModel @Inject constructor() {
     fun init() {
         stepHolder.step
                 .take(1)
-                .subscribe { step.set(it) }
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { step.set(it) }
+                .subscribe()
 
         stepHolder.stepInfoChange
+                .compose(Observables.disposable(compositeDisposable))
                 .subscribe { initStepInfoes() }
     }
 
@@ -45,9 +49,11 @@ class SportViewModel @Inject constructor() {
                     return@map steps
                 }
                 .compose(Singles.async())
-                .subscribe { v ->
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess { v ->
                     stepInfoes.clear()
                     stepInfoes.addAll(v)
                 }
+                .subscribe()
     }
 }

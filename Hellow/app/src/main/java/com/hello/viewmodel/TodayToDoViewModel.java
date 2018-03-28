@@ -4,13 +4,14 @@ import android.databinding.ObservableInt;
 
 import com.annimon.stream.Optional;
 import com.hello.model.aiui.AIUIHolder;
+import com.hello.utils.rx.Observables;
 
 import javax.inject.Inject;
 
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class TodayToDoViewModel {
+public class TodayToDoViewModel extends ViewModel {
     public ObservableInt volume = new ObservableInt();
     public Subject<Optional> error = PublishSubject.create();
 
@@ -24,10 +25,14 @@ public class TodayToDoViewModel {
     @Inject
     void init() {
         aiuiHolder.error
-                .subscribe(__ -> error.onNext(Optional.empty()));
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(__ -> error.onNext(Optional.empty()))
+                .subscribe();
 
         aiuiHolder.volume
-                .subscribe(volume::set);
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(volume::set)
+                .subscribe();
     }
 
     public void startOrStopRecording() {

@@ -23,6 +23,8 @@ import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.BrowserUtil;
 import com.hello.utils.ValidUtilKt;
+import com.hello.utils.rx.Observables;
+import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.Binding;
 import com.hello.viewmodel.SecondaryHelloViewModel;
 
@@ -57,12 +59,21 @@ public class SecondaryHelloFragment extends AppFragment {
         addChangeListener();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     @SuppressWarnings("ConstantConditions")
     private void addChangeListener() {
         viewModel.tuLing
                 .map(TuLingData::getUrl)
                 .filter(ValidUtilKt::isStrValid)
-                .subscribe(v -> BrowserUtil.openUrl(getContext(), v));
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(v -> BrowserUtil.openUrl(getContext(), v))
+                .subscribe();
     }
 
     private void initView() {

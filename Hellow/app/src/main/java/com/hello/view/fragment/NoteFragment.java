@@ -14,6 +14,8 @@ import com.hello.databinding.FragmentNoteBinding;
 import com.hello.databinding.ItemVoiceNoteBinding;
 import com.hello.model.db.table.Note;
 import com.hello.utils.DialogUtil;
+import com.hello.utils.rx.Observables;
+import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.activity.NoteCreateActivity;
 import com.hello.viewmodel.NoteViewModel;
 
@@ -45,9 +47,18 @@ public class NoteFragment extends AppFragment {
         addChangeListener();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     private void addChangeListener() {
         viewModel.deleteOver
-                .subscribe(__ -> showToast(getContext(), R.string.text_delete_over));
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(__ -> showToast(getContext(), R.string.text_delete_over))
+                .subscribe();
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {

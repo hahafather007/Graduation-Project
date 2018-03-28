@@ -6,14 +6,13 @@ import android.databinding.ObservableList;
 
 import com.hello.model.data.NewsData;
 import com.hello.model.service.NewsService;
-import com.hello.utils.Log;
 import com.hello.utils.rx.Singles;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class SecondaryNewsViewModel {
+public class SecondaryNewsViewModel extends ViewModel {
     public ObservableList<NewsData> newsList = new ObservableArrayList<>();
     public ObservableBoolean loading = new ObservableBoolean();
     public ObservableBoolean newsEnd = new ObservableBoolean();
@@ -35,13 +34,15 @@ public class SecondaryNewsViewModel {
         newsService.getNews()
                 .compose(Singles.async())
                 .compose(Singles.status(loading))
-                .subscribe(v -> {
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess(v -> {
                     newData = true;
                     newsList.clear();
                     newsList.addAll(v.subList(0, 8));
                     newsEnd.set(false);
                     newsHolder = v;
-                }, Log::e);
+                })
+                .subscribe();
     }
 
     public void refresh() {

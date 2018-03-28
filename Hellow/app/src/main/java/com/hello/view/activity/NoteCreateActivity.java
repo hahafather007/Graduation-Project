@@ -14,6 +14,7 @@ import com.hello.databinding.ActivityNoteCreateBinding;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.DimensionUtil;
 import com.hello.utils.ToastUtil;
+import com.hello.utils.rx.RxLifeCycle;
 import com.hello.viewmodel.NoteCreateViewModel;
 
 import javax.inject.Inject;
@@ -92,6 +93,13 @@ public class NoteCreateActivity extends AppActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     private void saveNote() {
         EditText editText = new EditText(this);
         int padding = DimensionUtil.dp2px(this, 24);
@@ -110,7 +118,8 @@ public class NoteCreateActivity extends AppActivity {
                             viewModel.setNoteTitle(editText.getText().toString());
                             viewModel.saveNote();
                         } else {
-                            viewModel.addNote(editText.getText().toString(), viewModel.getNoteText().get());
+                            String content = viewModel.getNoteText().get();
+                            viewModel.addNote(editText.getText().toString(), content != null ? content : "");
                         }
                     }
                 });
@@ -128,13 +137,16 @@ public class NoteCreateActivity extends AppActivity {
 
     private void addChangeListener() {
         viewModel.getError()
+                .compose(RxLifeCycle.resumed(this))
                 .subscribe();
 
         viewModel.getSaveOver()
-                .subscribe(__ -> {
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(__ -> {
                     setTitle(viewModel.getNoteTitle());
                     ToastUtil.showToast(this, R.string.text_save_over);
-                });
+                })
+                .subscribe();
 
 //        RxField.of(viewModel.getDecibel())
 //                .skip(0)

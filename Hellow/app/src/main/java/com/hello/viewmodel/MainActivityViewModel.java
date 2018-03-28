@@ -2,7 +2,7 @@ package com.hello.viewmodel;
 
 import javax.inject.Inject;
 
-public class MainActivityViewModel {
+public class MainActivityViewModel extends ViewModel{
     @Inject
     MainActivityViewModel() {
     }

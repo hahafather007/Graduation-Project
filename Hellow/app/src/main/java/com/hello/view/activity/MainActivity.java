@@ -87,6 +87,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     private void initDrawer() {
         Toolbar toolbar = binding.appBarMain.toolbar;
         toolbar.setTitle(R.string.app_name);

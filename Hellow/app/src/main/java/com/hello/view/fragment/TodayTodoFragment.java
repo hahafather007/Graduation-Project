@@ -58,6 +58,13 @@ public class TodayTodoFragment extends AppFragment {
                 (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        viewModel.onCleared();
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         viewTag = ViewTag.NEWS;
@@ -101,13 +108,17 @@ public class TodayTodoFragment extends AppFragment {
 
     private void addChangeListener() {
         viewModel.error
-                .subscribe(__ -> ToastUtil.showToast(getContext(), R.string.test_network_error));
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(__ -> ToastUtil.showToast(getContext(), R.string.test_network_error))
+                .subscribe();
 
         RxField.of(viewModel.volume)
                 .compose(RxLifeCycle.with(this))
-                .subscribe(v -> binding.recordPopup.icon.getDrawable().setLevel(3000 + 7000 * v / 30));
+                .doOnNext(v -> binding.recordPopup.icon.getDrawable().setLevel(3000 + 7000 * v / 30))
+                .subscribe();
     }
 
+    @SuppressLint("CheckResult")
     private void setPrimaryItem(Class clazz, Supplier<Fragment> constructor) {
         FragmentManager fm = getChildFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();

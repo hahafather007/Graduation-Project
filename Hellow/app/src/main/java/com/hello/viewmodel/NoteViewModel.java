@@ -7,6 +7,7 @@ import com.annimon.stream.Optional;
 import com.hello.model.db.NotesHolder;
 import com.hello.model.db.table.Note;
 import com.hello.utils.rx.Completables;
+import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.Singles;
 
 import javax.inject.Inject;
@@ -14,7 +15,7 @@ import javax.inject.Inject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class NoteViewModel {
+public class NoteViewModel extends ViewModel {
     public ObservableList<Note> notes = new ObservableArrayList<>();
 
     public Subject<Optional> deleteOver = PublishSubject.create();
@@ -30,10 +31,12 @@ public class NoteViewModel {
     @Inject
     void init() {
         notesHolder.getStatusChange()
-                .subscribe(v -> {
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(v -> {
                     notes.clear();
                     notes.addAll(v);
-                });
+                })
+                .subscribe();
 
         getNotes();
     }
@@ -41,12 +44,16 @@ public class NoteViewModel {
     public void deleteNote(Note note) {
         notesHolder.deleteNote(note)
                 .compose(Completables.async())
-                .subscribe(() -> deleteOver.onNext(Optional.empty()));
+                .compose(Completables.disposable(compositeDisposable))
+                .doOnComplete(() -> deleteOver.onNext(Optional.empty()))
+                .subscribe();
     }
 
     private void getNotes() {
         notesHolder.getNotes()
                 .compose(Singles.async())
-                .subscribe(v -> notes.addAll(v));
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess(v -> notes.addAll(v))
+                .subscribe();
     }
 }
