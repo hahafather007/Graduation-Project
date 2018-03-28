@@ -27,6 +27,8 @@
     <string name="text_no_permission_alarm">非常抱歉，请授予闹钟设置权限</string>
     <string name="text_ingredient">准备材料：</string>
     <string name="text_steps">步骤：</string>
+    <string name="text_version">版本：%s</string>
+    <string name="text_scan">若有疑问，扫描下方二维码与我们取得联系</string>
     <string name="text_cancel">取消</string>
     <string name="text_enter">确定</string>
     <string name="text_delete">删除</string>
@@ -34,6 +36,7 @@
     <string name="text_uss_energy">消耗能量：</string>
     <string name="text_uss_energy_end">大卡</string>
     <string name="text_no_have">无</string>
+    <string name="text_copyRight">CopyRight©️2017–2018</string>
     <string name="text_local_sport">近期运动情况：</string>
     <string name="text_today">今天</string>
     <string name="text_joule">焦</string>
@@ -55,7 +58,7 @@
     <string name="menu_setting">设置</string>
     <string name="menu_bookmanage">书籍管理</string>
     <string name="menu_checkUpdate">检查更新</string>
-    <string name="menu_aboutUs">关于我们</string>
+    <string name="menu_aboutUs">关于</string>
     <string name="menu_share">分享</string>
     <string name="refresh_finish">刷新完毕</string>
     <string name="aiui_no_result">不好意思，我好像没听懂。。。 </string>

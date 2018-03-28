@@ -322,10 +322,11 @@ public class AIUIHolder {
 
                         tuLingService.getCook(data)
                                 .compose(Singles.async())
-                                .subscribe(v -> {
+                                .doOnSuccess(v -> {
                                     aiuiResult.onNext(v);
                                     speech.startSpeaking(v.getText(), speechListener);
-                                });
+                                })
+                                .subscribe();
 
                         break;
                     }
@@ -363,7 +364,8 @@ public class AIUIHolder {
                                 time.set(dateTime.getYear(), dateTime.getMonthOfYear() - 1,
                                         dateTime.getDayOfMonth(), dateTime.getHourOfDay(),
                                         dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
-                                if (mTalkText.contains("明天")) {
+                                if (mTalkText.contains("明天") &&
+                                        dateTime.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()) {
                                     time.add(Calendar.DATE, 1);
                                 }
                             } catch (IllegalArgumentException e) {
@@ -401,6 +403,18 @@ public class AIUIHolder {
 
                         break;
                     }
+                    case "story": {
+                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                        JSONObject object = new JSONObject(array.getString(new Random()
+                                .nextInt(array.length())));
+
+                        mTalkText = "请听故事：" + object.getString("name");
+
+                        aiuiResult.onNext(new HelloTalkData(mTalkText));
+                        playMusic(object.getString("playUrl"), () -> error.onNext(Optional.empty()));
+
+                        break;
+                    }
                     default: {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
@@ -427,9 +441,10 @@ public class AIUIHolder {
 
         tuLingService.getResult(data)
                 .compose(Singles.async())
-                .subscribe(v -> {
+                .doOnSuccess(v -> {
                     aiuiResult.onNext(v);
                     speech.startSpeaking(v.getText(), speechListener);
-                });
+                })
+                .subscribe();
     }
 }

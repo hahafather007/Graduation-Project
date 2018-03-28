@@ -19,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.hello.R;
 import com.hello.databinding.ActivityMainBinding;
-import com.hello.utils.IntentUtil;
 import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
 import com.hello.viewmodel.MainActivityViewModel;
@@ -32,6 +31,7 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
 
 public class MainActivity extends AppCompatActivity
@@ -71,13 +71,16 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_setting:
-                IntentUtil.setupActivity(this, SettingActivity.class);
+                setupActivity(this, SettingActivity.class);
                 break;
             case R.id.nav_book:
-                IntentUtil.setupActivity(this, BookActivity.class);
+                setupActivity(this, BookActivity.class);
                 break;
             case R.id.nav_checkUpdate:
                 showToast(this, R.string.toast_checkUpdate);
+                break;
+            case R.id.nav_about:
+                setupActivity(this, AboutActivity.class);
                 break;
             case R.id.nav_share:
                 showShareView();

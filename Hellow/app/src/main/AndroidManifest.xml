@@ -81,6 +81,11 @@
             android:name=".view.activity.SportActivity"
             android:label="@string/title_activity_sport"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.activity.AboutActivity"
+            android:label="@string/menu_aboutUs"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!--百度语音识别的Service-->
         <service
             android:name="com.baidu.speech.VoiceRecognitionService"

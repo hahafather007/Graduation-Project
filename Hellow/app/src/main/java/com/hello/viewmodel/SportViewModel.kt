@@ -3,7 +3,6 @@ package com.hello.viewmodel
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableInt
 import android.databinding.ObservableList
-import com.hello.common.Constants
 import com.hello.common.Constants.DATA_FORMAT
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
@@ -64,5 +63,11 @@ class SportViewModel @Inject constructor() : ViewModel() {
                     stepInfoes.addAll(v)
                 }
                 .subscribe()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        stepHolder.onCleared()
     }
 }
