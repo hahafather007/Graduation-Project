@@ -3,11 +3,14 @@ package com.hello.viewmodel
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableInt
 import android.databinding.ObservableList
+import com.hello.common.Constants
+import com.hello.common.Constants.DATA_FORMAT
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.model.step.StepHolder
 import com.hello.utils.rx.Observables
 import com.hello.utils.rx.Singles
+import org.joda.time.LocalDate
 import javax.inject.Inject
 
 class SportViewModel @Inject constructor() : ViewModel() {
@@ -42,9 +45,15 @@ class SportViewModel @Inject constructor() : ViewModel() {
                             steps.add(0, StepInfo("", 0))
                             index++
                         }
-
                     }
-                    steps[6].stepCount = HelloPref.stepCount
+
+                    //确保表格当前的步数是准确的
+                    if (steps[6].time == LocalDate.now().toString(DATA_FORMAT)) {
+                        steps[6].stepCount = HelloPref.stepCount
+                    } else {
+                        steps.remove(steps[0])
+                        steps.add(StepInfo(LocalDate.now().toString(DATA_FORMAT), HelloPref.stepCount))
+                    }
 
                     return@map steps
                 }

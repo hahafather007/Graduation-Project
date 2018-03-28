@@ -8,6 +8,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.annimon.stream.Optional
+import com.hello.common.Constants.DATA_FORMAT
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
@@ -66,13 +67,13 @@ class StepHolder @Inject constructor() {
         Observable.interval(30, TimeUnit.SECONDS)
                 .flatMap {
                     for (info in cacheStepInfo) {
-                        if (info.time == LocalDate.now().toString("yyyy-MM-dd")) {
+                        if (info.time == LocalDate.now().toString(DATA_FORMAT)) {
                             info.stepCount = stepCount
                             return@flatMap Observable.just(info.save())
                         }
                     }
                     return@flatMap Observable.just(
-                            StepInfo(LocalDate.now().toString("yyyy-MM-dd"), stepCount).save())
+                            StepInfo(LocalDate.now().toString(DATA_FORMAT), stepCount).save())
                             .doOnSubscribe { stepInfoChange.onNext(Optional.empty<Any>()) }
                 }
                 .subscribeOn(Schedulers.computation())

@@ -30,4 +30,6 @@ public class Constants {
     //页面传值的标识
     public final static String EXTRA_ID = "extra_id";
     public final static String EXTRA_ITEM = "extra_item";
+
+    public final static String DATA_FORMAT = "yyyy-MM-dd";
 }
