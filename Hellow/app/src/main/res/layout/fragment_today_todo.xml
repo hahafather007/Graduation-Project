@@ -39,7 +39,7 @@
         <LinearLayout
             android:id="@+id/voiceLayout"
             android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="56dp"
             android:animateLayoutChanges="true"
             android:background="@color/colorPrimary"
             android:focusable="true"
