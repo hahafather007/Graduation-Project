@@ -3,6 +3,7 @@ package com.hello.viewmodel;
 import android.databinding.ObservableInt;
 
 import com.annimon.stream.Optional;
+import com.hello.common.RxController;
 import com.hello.model.aiui.AIUIHolder;
 import com.hello.utils.rx.Observables;
 
@@ -11,7 +12,7 @@ import javax.inject.Inject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class TodayToDoViewModel extends ViewModel {
+public class TodayToDoViewModel extends RxController {
     public ObservableInt volume = new ObservableInt();
     public Subject<Optional> error = PublishSubject.create();
 

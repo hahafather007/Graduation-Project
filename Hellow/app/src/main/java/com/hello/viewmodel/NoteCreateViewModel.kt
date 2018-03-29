@@ -4,6 +4,7 @@ import android.databinding.ObservableField
 import android.databinding.ObservableInt
 
 import com.annimon.stream.Optional
+import com.hello.common.RxController
 import com.hello.model.baidu.VoiceHolder
 import com.hello.model.db.NotesHolder
 import com.hello.model.db.table.Note
@@ -16,7 +17,7 @@ import javax.inject.Inject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
-class NoteCreateViewModel @Inject constructor() : ViewModel() {
+class NoteCreateViewModel @Inject constructor() : RxController() {
     val noteText = ObservableField<String>()
     val decibe = ObservableInt()
 

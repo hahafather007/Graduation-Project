@@ -4,6 +4,7 @@ import android.databinding.ObservableArrayList
 import android.databinding.ObservableInt
 import android.databinding.ObservableList
 import com.hello.common.Constants.DATA_FORMAT
+import com.hello.common.RxController
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.model.step.StepHolder
@@ -12,7 +13,7 @@ import com.hello.utils.rx.Singles
 import org.joda.time.LocalDate
 import javax.inject.Inject
 
-class SportViewModel @Inject constructor() : ViewModel() {
+class SportViewModel @Inject constructor() : RxController() {
     val stepInfoes: ObservableList<StepInfo> = ObservableArrayList()
     val step = ObservableInt()
 

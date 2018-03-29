@@ -3,6 +3,8 @@ package com.hello.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -23,6 +25,7 @@ import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
 import com.hello.viewmodel.MainActivityViewModel;
 import com.hello.widget.view.HeartFlyView;
+import com.zhouwei.blurlibrary.EasyBlur;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,10 +54,12 @@ public class MainActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
 
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
         initDrawer();
         initViewPager();
         initFlyView();
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        initUserGround();
     }
 
     @Override
@@ -120,6 +125,15 @@ public class MainActivity extends AppCompatActivity
             flyView.setBottomPadding(-flyView.getHeight());
             flyView.startAnimation(flyView.getWidth(), flyView.getHeight());
         });
+    }
+
+    //初始化用户头像背景
+    private void initUserGround() {
+        binding.navView.getHeaderView(0).findViewById(R.id.headerLayout)
+                .setBackground(new BitmapDrawable(EasyBlur.with(this)
+                        .bitmap(BitmapFactory.decodeResource(getResources(), R.drawable.img_user_ground))
+                        .radius(10)
+                        .blur()));
     }
 
     private void showShareView() {

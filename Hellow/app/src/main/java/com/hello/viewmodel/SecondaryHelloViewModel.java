@@ -3,6 +3,7 @@ package com.hello.viewmodel;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 
+import com.hello.common.RxController;
 import com.hello.model.aiui.AIUIHolder;
 import com.hello.model.data.TuLingData;
 import com.hello.utils.Log;
@@ -13,7 +14,7 @@ import javax.inject.Inject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class SecondaryHelloViewModel extends ViewModel {
+public class SecondaryHelloViewModel extends RxController {
     public ObservableList<Object> items = new ObservableArrayList<>();
 
     public Subject<TuLingData> tuLing = PublishSubject.create();

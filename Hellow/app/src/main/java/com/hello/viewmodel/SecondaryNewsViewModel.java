@@ -4,6 +4,7 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
 
+import com.hello.common.RxController;
 import com.hello.model.data.NewsData;
 import com.hello.model.service.NewsService;
 import com.hello.utils.rx.Singles;
@@ -12,7 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class SecondaryNewsViewModel extends ViewModel {
+public class SecondaryNewsViewModel extends RxController {
     public ObservableList<NewsData> newsList = new ObservableArrayList<>();
     public ObservableBoolean loading = new ObservableBoolean();
     public ObservableBoolean newsEnd = new ObservableBoolean();

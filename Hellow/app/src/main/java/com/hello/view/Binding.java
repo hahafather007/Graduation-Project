@@ -82,7 +82,8 @@ public class Binding {
     }
 
     @BindingAdapter({"linkers", "onBindItem"})
-    public static void setAdapter(RecyclerView view, List<Linker> linkers, OnBindItem onBindItem) {
+    public static void setAdapter(RecyclerView view, List<Linker> linkers, OnBindItem
+            onBindItem) {
         final MultiTypeAdapter adapter = getOrCreateAdapter(view);
         //noinspection unchecked
         final ItemViewBinder[] binders = Stream.of(linkers)

@@ -5,9 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.annimon.stream.function.Supplier;
 import com.hello.view.fragment.ViewModelHolder;
-import com.hello.viewmodel.ViewModel;
+import com.hello.common.RxController;
 
-public interface ViewModelInjector<T extends ViewModel> {
+public interface ViewModelInjector<T extends RxController> {
     void inject(T instance);
 
     default T get(AppCompatActivity activity, Supplier<T> constructor) {
@@ -24,7 +24,7 @@ public interface ViewModelInjector<T extends ViewModel> {
         return viewModel;
     }
 
-    interface Builder<T extends ViewModel> {
+    interface Builder<T extends RxController> {
         ViewModelInjector<T> build();
     }
 }

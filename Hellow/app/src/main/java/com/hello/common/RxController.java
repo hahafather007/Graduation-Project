@@ -1,8 +1,8 @@
-package com.hello.viewmodel;
+package com.hello.common;
 
 import io.reactivex.disposables.CompositeDisposable;
 
-public abstract class ViewModel {
+public abstract class RxController {
     protected CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public void onCleared() {

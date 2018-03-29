@@ -4,6 +4,7 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 
 import com.annimon.stream.Optional;
+import com.hello.common.RxController;
 import com.hello.model.db.NotesHolder;
 import com.hello.model.db.table.Note;
 import com.hello.utils.rx.Completables;
@@ -15,7 +16,7 @@ import javax.inject.Inject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class NoteViewModel extends ViewModel {
+public class NoteViewModel extends RxController {
     public ObservableList<Note> notes = new ObservableArrayList<>();
 
     public Subject<Optional> deleteOver = PublishSubject.create();

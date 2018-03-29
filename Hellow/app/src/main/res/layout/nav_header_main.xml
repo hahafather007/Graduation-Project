@@ -1,40 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
-    android:background="@drawable/side_nav_bar"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.hello.widget.view.HeartFlyView
-        android:id="@+id/flyView"
+    <data>
+
+        <import type="com.hello.R" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="@dimen/nav_header_height"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
-
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/image_logo_head"
-            app:riv_corner_radius="100dp"
-            app:riv_oval="true" />
-
-        <TextView
+        <com.hello.widget.view.HeartFlyView
+            android:id="@+id/flyView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="12dp"
-            android:text="@string/drawer_click_to_login"
-            android:textColor="@color/colorWhite"
-            android:textSize="14sp"
-            tools:ignore="RtlSymmetry" />
-    </LinearLayout>
-</RelativeLayout>
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/image_logo_head"
+                app:riv_corner_radius="100dp"
+                app:riv_oval="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:text="@string/drawer_click_to_login"
+                android:textColor="@color/colorWhite"
+                android:textSize="14sp"
+                tools:ignore="RtlSymmetry" />
+        </LinearLayout>
+    </RelativeLayout>
+</layout>
