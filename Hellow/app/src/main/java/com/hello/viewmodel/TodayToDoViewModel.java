@@ -36,7 +36,14 @@ public class TodayToDoViewModel extends ViewModel {
     }
 
     public void startOrStopRecording() {
-        aiuiHolder.startOrStopRecording();
+    }
+
+    public void startRecording(){
+        aiuiHolder.startRecording();
+    }
+
+    public void stopRecording(){
+        aiuiHolder.stopRecording();
     }
 
     public void sendMessage(String msg) {

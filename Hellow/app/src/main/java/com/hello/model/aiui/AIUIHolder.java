@@ -10,6 +10,7 @@ import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
+import com.hello.model.pref.HelloPref;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
@@ -43,7 +44,6 @@ import javax.inject.Singleton;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-import static com.hello.common.SpeechPeople.XIAO_QI;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -94,7 +94,8 @@ public class AIUIHolder {
         wakeupMsg = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, "", null);
 
         speech = SpeechSynthesizer.createSynthesizer(context, null);
-        speech.setParameter(SpeechConstant.VOICE_NAME, XIAO_QI);
+        //获取语音发音人
+        speech.setParameter(SpeechConstant.VOICE_NAME, HelloPref.INSTANCE.getTalkPeople());
         speech.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
         speechListener = new SimpleSynthesizerListener() {
             @Override
@@ -107,21 +108,21 @@ public class AIUIHolder {
     }
 
     //外部调用该方法控制录音开始和结束
-    public void startOrStopRecording() {
+    public void startRecording() {
         stopMusic();
         speech.stopSpeaking();
 
-        if (!recording) {
-            if (AIUIConstant.STATE_WORKING != status) {
-                agent.sendMessage(wakeupMsg);
-            }
-            message = new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0,
-                    "sample_rate=16000,data_type=audio", null);
-            agent.sendMessage(message);
-        } else {
-            message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "", null);
-            agent.sendMessage(message);
+        if (AIUIConstant.STATE_WORKING != status) {
+            agent.sendMessage(wakeupMsg);
         }
+        message = new AIUIMessage(AIUIConstant.CMD_START_RECORD, 0, 0,
+                "sample_rate=16000,data_type=audio", null);
+        agent.sendMessage(message);
+    }
+
+    public void stopRecording() {
+        message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "", null);
+        agent.sendMessage(message);
     }
 
     //外部调用该方法发送本文消息

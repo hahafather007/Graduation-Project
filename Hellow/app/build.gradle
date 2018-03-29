@@ -12,6 +12,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk{
+            abiFilters "armeabi"
+            abiFilters "x86"
+        }
     }
     buildTypes {
         release {
@@ -42,6 +46,8 @@ android {
 }
 
 dependencies {
+    implementation files('libs/AIUI.jar')
+    implementation files('libs/Msc.jar')
     implementation files('libs/Msc.jar')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {

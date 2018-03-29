@@ -91,14 +91,18 @@ public class TodayTodoFragment extends AppFragment {
         });
 
         binding.btnVoice.setOnTouchListener((v, event) -> {
+            setupHello();
+            binding.editVoice.clearFocus();
+            viewModel.startOrStopRecording();
+
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    startOrStopRecording();
+                    viewModel.startRecording();
                     binding.recordPopup.getRoot().bringToFront();
                     binding.recordPopup.getRoot().setVisibility(VISIBLE);
                     break;
                 case MotionEvent.ACTION_UP:
-                    startOrStopRecording();
+                    viewModel.stopRecording();
                     binding.recordPopup.getRoot().setVisibility(GONE);
                     break;
             }
@@ -160,13 +164,6 @@ public class TodayTodoFragment extends AppFragment {
         } else {//holder显示，选项缩回
             binding.holderView.setVisibility(VISIBLE);
         }
-    }
-
-    public void startOrStopRecording() {
-        setupHello();
-
-        binding.editVoice.clearFocus();
-        viewModel.startOrStopRecording();
     }
 
     public void sendMessage() {

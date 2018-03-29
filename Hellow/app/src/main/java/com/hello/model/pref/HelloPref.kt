@@ -8,7 +8,7 @@ object HelloPref : KotprefModel() {
     override val kotprefName = Constants.KOTPREF_NAME
 
     //语音合成发音人
-    var talkPeople: String by stringPref(default = XIAO_QI)
+    var talkPeople: String by stringPref(default = XIAO_YAN)
     //计步信息
     var stepCount: Int by intPref(default = 0)
 }
