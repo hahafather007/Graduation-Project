@@ -29,13 +29,13 @@
     <!--</com.scwang.smartrefresh.layout.SmartRefreshLayout>-->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorLineSpace">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorLineSpace"
+            android:layout_height="match_parent"
             app:itemLayout="@{@layout/item_voice_note}"
             app:items="@{viewModel.notes}"
             app:layoutManager="@string/linear_layout_manager"

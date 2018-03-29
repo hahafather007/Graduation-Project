@@ -17,6 +17,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorLineSpace"
         app:itemsScroll="@{viewModel.items}"
         app:layoutManager="@string/linear_layout_manager"
         app:linkers="@{fragment.linkers}"

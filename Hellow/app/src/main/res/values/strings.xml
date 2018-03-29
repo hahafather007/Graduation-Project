@@ -28,10 +28,12 @@
     <string name="text_ingredient">准备材料：</string>
     <string name="text_steps">步骤：</string>
     <string name="text_version">版本：%s</string>
-    <string name="text_scan">若有疑问，扫描下方二维码与我们取得联系</string>
+    <string name="text_scan">扫描下方二维码与我们取得联系</string>
     <string name="text_cancel">取消</string>
     <string name="text_enter">确定</string>
     <string name="text_delete">删除</string>
+    <string name="text_help">帮助</string>
+    <string name="text_contact_us">联系我们</string>
     <string name="text_days_steps">每天的步数</string>
     <string name="text_uss_energy">消耗能量：</string>
     <string name="text_uss_energy_end">大卡</string>

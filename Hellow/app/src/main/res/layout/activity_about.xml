@@ -9,11 +9,16 @@
         <variable
             name="version"
             type="String" />
+
+        <variable
+            name="activity"
+            type="com.hello.view.activity.AboutActivity" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorLineSpace">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appBarLayout"
@@ -54,7 +59,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -64,25 +70,83 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <!--<TextView-->
-        <!--android:id="@+id/scanText"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="24dp"-->
-        <!--android:text="@string/text_scan"-->
-        <!--android:textColor="@color/colorText"-->
-        <!--android:textSize="14sp"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@id/versionLayout" />-->
+        <LinearLayout
+            android:id="@+id/helpLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:background="@color/colorWhite"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!--<ImageView-->
-        <!--android:layout_width="160dp"-->
-        <!--android:layout_height="160dp"-->
-        <!--android:src="@drawable/img_code_2333"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@id/scanText" />-->
+            <include layout="@layout/line_view" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                app:onSingleClick="@{() -> activity.showHelpDialog()}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/text_help"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+                <include
+                    layout="@layout/right_view"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="end|center" />
+            </FrameLayout>
+
+            <include layout="@layout/line_view" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/helpLayout">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                app:onSingleClick="@{() -> activity.setupHelp()}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/text_contact_us"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+                <include
+                    layout="@layout/right_view"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="end|center" />
+            </FrameLayout>
+
+            <include layout="@layout/line_view" />
+
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

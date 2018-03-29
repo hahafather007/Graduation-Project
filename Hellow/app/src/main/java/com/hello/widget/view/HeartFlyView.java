@@ -15,13 +15,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.hello.R;
+import com.hello.utils.rx.Observables;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static com.hello.utils.DimensionUtil.dp2px;
 
@@ -111,22 +111,25 @@ public class HeartFlyView extends RelativeLayout {
     public void startAnimation(final int rankWidth, final int rankHeight) {
         Observable.timer(innerDelay, TimeUnit.MILLISECONDS)
                 .repeat((int) (Math.random() * (maxHeartNum - minHeartNum)) + minHeartNum)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(__ -> bubbleAnimation(rankWidth, rankHeight));
+                .compose(Observables.async())
+                .doOnNext(__ -> bubbleAnimation(rankWidth, rankHeight))
+                .subscribe();
     }
 
     public void startAnimation(final int rankWidth, final int rankHeight, int count) {
         Observable.timer(innerDelay, TimeUnit.MILLISECONDS)
                 .repeat(count)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(__ -> bubbleAnimation(rankWidth, rankHeight));
+                .compose(Observables.async())
+                .doOnNext(__ -> bubbleAnimation(rankWidth, rankHeight))
+                .subscribe();
     }
 
     public void startAnimation(final int rankWidth, final int rankHeight, int delay, int count) {
         Observable.timer(delay, TimeUnit.MILLISECONDS)
                 .repeat(count)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(__ -> bubbleAnimation(rankWidth, rankHeight));
+                .compose(Observables.async())
+                .doOnNext(__ -> bubbleAnimation(rankWidth, rankHeight))
+                .subscribe();
     }
 
     private void bubbleAnimation(int rankWidth, int rankHeight) {
