@@ -93,7 +93,6 @@ public class TodayTodoFragment extends AppFragment {
         binding.btnVoice.setOnTouchListener((v, event) -> {
             setupHello();
             binding.editVoice.clearFocus();
-            viewModel.startOrStopRecording();
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:

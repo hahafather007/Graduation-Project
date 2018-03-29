@@ -36,9 +36,6 @@ public class TodayToDoViewModel extends RxController {
                 .subscribe();
     }
 
-    public void startOrStopRecording() {
-    }
-
     public void startRecording(){
         aiuiHolder.startRecording();
     }

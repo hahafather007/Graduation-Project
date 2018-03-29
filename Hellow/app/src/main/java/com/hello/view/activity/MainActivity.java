@@ -3,7 +3,6 @@ package com.hello.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.hello.R;
@@ -129,11 +129,12 @@ public class MainActivity extends AppCompatActivity
 
     //初始化用户头像背景
     private void initUserGround() {
-        binding.navView.getHeaderView(0).findViewById(R.id.headerLayout)
-                .setBackground(new BitmapDrawable(EasyBlur.with(this)
-                        .bitmap(BitmapFactory.decodeResource(getResources(), R.drawable.img_user_ground))
-                        .radius(10)
-                        .blur()));
+        View view = binding.navView.getHeaderView(0).findViewById(R.id.headerLayout);
+        view.setBackground(new BitmapDrawable(EasyBlur.with(this)
+                .policy(EasyBlur.BlurPolicy.FAST_BLUR)
+                .bitmap(((BitmapDrawable) view.getBackground()).getBitmap())
+                .radius(10)
+                .blur()));
     }
 
     private void showShareView() {

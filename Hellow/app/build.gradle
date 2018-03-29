@@ -16,9 +16,6 @@ android {
             abiFilters "armeabi"
             abiFilters "x86"
         }
-        //使用renderscript 兼容包
-        renderscriptTargetApi 27
-        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
