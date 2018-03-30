@@ -14,50 +14,57 @@
             type="com.hello.view.activity.NoteCreateActivity" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <android.support.v7.widget.FitWindowsFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorLineSpace"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:background="@color/colorPrimary"
+        android:fitsSystemWindows="true">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appBarLayout"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:layout_height="match_parent"
+            android:background="@color/colorLineSpace"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appBarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
-        </android.support.design.widget.AppBarLayout>
+                android:theme="@style/AppTheme.AppBarOverlay">
 
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/colorWhite"
-            android:clipToPadding="false"
-            android:gravity="top"
-            android:paddingBottom="8dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:text="@={viewModel.noteText}"
-            android:textColor="@color/colorText"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/appBarLayout"
-            tools:text="这篇文章主要给大家介绍了关于如何更改Dialog的标题与按钮颜色的相关资料，文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值，需要的朋友可以参考借鉴，下面跟着小编来一起学习学习吧。" />
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/actionBarSize"
+                    android:background="@color/colorPrimary"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+            </android.support.design.widget.AppBarLayout>
 
-        <!--<com.hello.widget.view.WaveformView-->
-        <!--android:id="@+id/waveView"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="80dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent" />-->
-    </android.support.constraint.ConstraintLayout>
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/colorWhite"
+                android:clipToPadding="false"
+                android:gravity="top"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@={viewModel.noteText}"
+                android:textColor="@color/colorText"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+                tools:text="这篇文章主要给大家介绍了关于如何更改Dialog的标题与按钮颜色的相关资料，文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值，需要的朋友可以参考借鉴，下面跟着小编来一起学习学习吧。" />
+
+            <!--<com.hello.widget.view.WaveformView-->
+            <!--android:id="@+id/waveView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="80dp"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent" />-->
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.FitWindowsFrameLayout>
 </layout>

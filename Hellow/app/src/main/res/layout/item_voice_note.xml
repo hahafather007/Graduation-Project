@@ -23,7 +23,7 @@
         android:background="@color/colorWhite">
 
         <FrameLayout
-            android:layout_width="50dp"
+            android:layout_width="66dp"
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
             android:clickable="true"

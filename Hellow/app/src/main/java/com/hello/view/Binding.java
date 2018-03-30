@@ -1,6 +1,7 @@
 package com.hello.view;
 
 import android.databinding.BindingAdapter;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.hello.widget.listener.SingleClickListener;
 import com.hello.widget.view.GlideApp;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.zhouwei.blurlibrary.EasyBlur;
 
 import java.util.List;
 
@@ -48,6 +50,15 @@ public class Binding {
     @BindingAdapter("onSingleClick")
     public static void setOnSingleClickListener(View view, SingleClickListener listener) {
         view.setOnClickListener(listener);
+    }
+
+    @BindingAdapter("blurryGround")
+    public static void setBlurryGround(View view, Drawable drawable) {
+        view.setBackgroundDrawable(new BitmapDrawable(EasyBlur.with(view.getContext())
+                .policy(EasyBlur.BlurPolicy.FAST_BLUR)
+                .bitmap(((BitmapDrawable) drawable).getBitmap())
+                .radius(10)
+                .blur()));
     }
 
     @BindingAdapter("items")

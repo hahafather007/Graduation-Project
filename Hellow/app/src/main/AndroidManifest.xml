@@ -54,35 +54,35 @@
         <activity
             android:name=".view.activity.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
         <activity
             android:name=".view.activity.SettingActivity"
             android:label="@string/title_activity_setting"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
         <activity
             android:name=".view.activity.BookActivity"
             android:label="@string/title_activity_interest"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
         <activity
             android:name=".view.activity.RemindActivity"
             android:label="@string/title_activity_tip"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
         <activity
             android:name=".view.activity.WebViewActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
         <activity
             android:name=".view.activity.NoteCreateActivity"
             android:label="@string/title_activity_note"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppStyle"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.activity.SportActivity"
             android:label="@string/title_activity_sport"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
         <activity
             android:name=".view.activity.AboutActivity"
             android:label="@string/menu_aboutUs"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppStyle" />
 
         <!--百度语音识别的Service-->
         <service

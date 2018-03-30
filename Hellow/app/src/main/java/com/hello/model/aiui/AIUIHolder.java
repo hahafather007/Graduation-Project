@@ -121,7 +121,8 @@ public class AIUIHolder {
     }
 
     public void stopRecording() {
-        message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0, "", null);
+        message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0,
+                "sample_rate=16000,data_type=audio", null);
         agent.sendMessage(message);
     }
 

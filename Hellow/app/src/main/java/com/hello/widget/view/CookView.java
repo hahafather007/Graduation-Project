@@ -44,13 +44,14 @@ public class CookView extends LinearLayout {
 
         Observable.fromIterable(data.getList())
                 .take(4)
-                .subscribe(v -> {
+                .doOnNext(v -> {
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context
                             .LAYOUT_INFLATER_SERVICE);
                     ItemTulingCookItemBinding binding = DataBindingUtil.inflate(inflater,
                             R.layout.item_tuling_cook_item, this, false);
                     binding.setData(v);
                     addView(binding.getRoot());
-                });
+                })
+                .subscribe();
     }
 }

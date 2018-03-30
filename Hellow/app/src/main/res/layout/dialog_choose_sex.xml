@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="com.hello.viewmodel.SettingViewModel.HelloSex" />
+
+        <variable
+            name="helloSex"
+            type="com.hello.viewmodel.SettingViewModel.HelloSex" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_dialog_sex_msg"
+            android:textColor="@color/colorBlack"
+            android:textSize="16sp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{helloSex == HelloSex.GIRL}"
+                android:text="@string/text_girl"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{helloSex == HelloSex.BOY}"
+                android:text="@string/text_boy"
+                android:textSize="14sp" />
+        </RadioGroup>
+    </LinearLayout>
+</layout>
