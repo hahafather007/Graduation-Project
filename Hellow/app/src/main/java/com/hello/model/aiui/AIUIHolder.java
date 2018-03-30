@@ -7,6 +7,7 @@ import com.annimon.stream.Optional;
 import com.hello.common.Constants;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.MusicData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -45,7 +46,6 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_YAN;
-import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isStrValid;
 
@@ -76,6 +76,8 @@ public class AIUIHolder {
     public Subject<Optional> error = PublishSubject.create();
     //音量大小变化回调
     public Subject<Integer> volume = PublishSubject.create();
+    //音乐数据
+    public Subject<MusicData> music = PublishSubject.create();
 
     @Inject
     Context context;
@@ -270,11 +272,12 @@ public class AIUIHolder {
                     }
                     case "news": {
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
-                        String url = new JSONObject(array.getString(new Random()
-                                .nextInt(array.length()))).getString("url");
+                        JSONObject object = new JSONObject(array.getString(new Random()
+                                .nextInt(array.length())));
 
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
-                        playMusic(url, () -> error.onNext(Optional.empty()));
+                        music.onNext(new MusicData(object.getString("url"),
+                                object.getString("imgUrl"), object.getString("title")));
 
                         break;
                     }
@@ -336,10 +339,10 @@ public class AIUIHolder {
                     case "radio": {
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
                         JSONObject object = array.getJSONObject(0);
-                        String url = object.getString("url");
 
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
-                        playMusic(url, () -> error.onNext(Optional.empty()));
+                        music.onNext(new MusicData(object.getString("url"),
+                                object.getString("img"), object.getString("name")));
 
                         break;
                     }
@@ -393,7 +396,8 @@ public class AIUIHolder {
                                 object.getString("description"));
 
                         aiuiResult.onNext(data);
-                        playMusic(object.getString("url"), () -> error.onNext(Optional.empty()));
+                        music.onNext(new MusicData(object.getString("url"),
+                                null, object.getString("name")));
 
                         break;
                     }
@@ -414,7 +418,8 @@ public class AIUIHolder {
                         mTalkText = "请听故事：" + object.getString("name");
 
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
-                        playMusic(object.getString("playUrl"), () -> error.onNext(Optional.empty()));
+                        music.onNext(new MusicData(object.getString("playUrl"),
+                                null, object.getString("name")));
 
                         break;
                     }

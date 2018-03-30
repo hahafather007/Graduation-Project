@@ -22,8 +22,11 @@ import com.hello.model.data.TuLingData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.BrowserUtil;
+import com.hello.utils.MusicUtil;
+import com.hello.utils.ToastUtil;
 import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.Observables;
+import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.Binding;
 import com.hello.viewmodel.SecondaryHelloViewModel;
@@ -32,6 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class SecondaryHelloFragment extends AppFragment {
     public List<Binding.Linker> linkers;
@@ -73,6 +79,17 @@ public class SecondaryHelloFragment extends AppFragment {
                 .filter(ValidUtilKt::isStrValid)
                 .compose(RxLifeCycle.with(this))
                 .doOnNext(v -> BrowserUtil.openUrl(getContext(), v))
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.music)
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(__ -> {
+                    binding.musicHolder.setVisibility(VISIBLE);
+
+                    MusicUtil.playMusic(viewModel.music.get().getUrl(), () -> {
+                        ToastUtil.showToast(getContext(), R.string.test_network_error);
+                    });
+                })
                 .subscribe();
     }
 
@@ -118,5 +135,21 @@ public class SecondaryHelloFragment extends AppFragment {
     @SuppressWarnings("ConstantConditions")
     public void openUrl(String url) {
         BrowserUtil.openUrl(getContext(), url);
+    }
+
+    public void playOrPauseMusic() {
+        if (viewModel.musicPlaying.get()) {
+            MusicUtil.pauseMusic();
+        } else {
+            MusicUtil.contiuneMusic();
+        }
+
+        viewModel.musicPlaying.set(!viewModel.musicPlaying.get());
+    }
+
+    public void stopMusic() {
+        MusicUtil.stopMusic();
+
+        binding.musicHolder.setVisibility(GONE);
     }
 }

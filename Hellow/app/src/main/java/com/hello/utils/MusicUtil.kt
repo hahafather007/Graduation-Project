@@ -2,6 +2,7 @@ package com.hello.utils
 
 import android.media.AudioManager
 import android.media.MediaPlayer
+import com.hello.common.RxController
 import com.hello.utils.rx.Observables
 import io.reactivex.Observable
 
