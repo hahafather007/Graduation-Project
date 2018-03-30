@@ -48,7 +48,7 @@
                     android:id="@+id/cityText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginStart="16dp"
                     android:text="@{data.city}"
                     android:textColor="@color/colorText"
                     android:textSize="18sp"
@@ -79,7 +79,7 @@
                     android:textColor="@color/colorText"
                     android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/cityText"
+                    app:layout_constraintEnd_toEndOf="parent"
                     tools:text="2018-01-21" />
 
                 <TextView
@@ -90,7 +90,7 @@
                     android:text="@{data.wind}"
                     android:textColor="@color/colorText"
                     app:layout_constraintBottom_toTopOf="@id/dateText"
-                    app:layout_constraintStart_toStartOf="@id/cityText"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cityText"
                     tools:text="西北风3-4级" />
             </android.support.constraint.ConstraintLayout>
