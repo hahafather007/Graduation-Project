@@ -11,6 +11,7 @@ public class Constants {
     public final static String BAD_TAKL_ROBUT = "http://api.qingyunke.com/";
     //图灵机器人key
     public final static String TULING_KEY = "b59d4513ab5d4e48adc362996732b9ac";
+    public final static String TULING_KEY_BOY = "13d9c0231e064460809cc96876915dbd";
     //下面三个为日历的URL
     public final static Uri CALENDAR_URL = Uri.parse("content://com.android.calendar/calendars");
     public final static Uri CALENDAR_EVENT_URL = Uri.parse("content://com.android.calendar/events");

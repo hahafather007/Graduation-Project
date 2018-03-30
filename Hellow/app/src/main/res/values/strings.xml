@@ -16,12 +16,12 @@
     <string name="text_share">分享一个好玩的应用~</string>
     <string name="text_share_title">分享</string>
     <string name="text_send">发送</string>
-    <string name="text_dialog_sex_msg">性别改变后会对小哈的性格产生一定的影响！
-     设置保存成功后重启APP生效。</string>
+    <string name="text_dialog_sex_msg">性别改变后会对小哈的性格产生一定的影响！设置保存成功后重启APP生效，重启APP生效，重启APP生效。</string>
     <string name="text_start_record">点击开始录音</string>
     <string name="text_stop_record">结束录音</string>
     <string name="text_load_more">点击加载更多</string>
     <string name="text_save_over">已保存！！！</string>
+    <string name="text_save_error">保存失败，请检查网络</string>
     <string name="text_save">保存</string>
     <string name="text_girl">妹子</string>
     <string name="text_boy">帅锅</string>

@@ -3,25 +3,46 @@ package com.hello.viewmodel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.hello.common.RxController
+import com.hello.common.SpeechPeople.XIAO_YAN
+import com.hello.common.SpeechPeople.XIAO_YU
 import com.hello.model.pref.HelloPref
+import com.hello.utils.rx.Singles
+import com.hello.viewmodel.SettingViewModel.HelloSex.BOY
+import com.hello.viewmodel.SettingViewModel.HelloSex.GIRL
+import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SettingViewModel @Inject constructor() : RxController() {
     val loading = ObservableBoolean()
     val helloSex = ObservableField<HelloSex>()
 
+    val success: Subject<Boolean> = PublishSubject.create()
+
     @Inject
     fun init() {
-        if (HelloPref.helloSex == 0) {
-            helloSex.set(HelloSex.GIRL)
+        //判断当前选择的性别
+        if (HelloPref.talkPeople == XIAO_YAN) {
+            helloSex.set(GIRL)
         } else {
-            helloSex.set(HelloSex.BOY)
+            helloSex.set(BOY)
         }
     }
 
     //保存更改的信息
     fun save() {
-
+        Single.timer(1, TimeUnit.SECONDS)
+                .compose(Singles.async())
+                .compose(Singles.status(loading))
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess {
+                    HelloPref.talkPeople = if (helloSex.get() == GIRL) XIAO_YAN else XIAO_YU
+                    success.onNext(true)
+                }
+                .doOnError { success.onNext(false) }
+                .subscribe()
     }
 
     enum class HelloSex {

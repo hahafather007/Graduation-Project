@@ -11,6 +11,4 @@ object HelloPref : KotprefModel() {
     var talkPeople: String by stringPref(default = XIAO_YAN)
     //计步信息
     var stepCount: Int by intPref(default = 0)
-    //助手的性别，0表示妹子，1表示帅锅
-    var helloSex: Int by intPref(default = 0)
 }

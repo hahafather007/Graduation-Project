@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="com.hello.viewmodel.SettingViewModel.HelloSex" />
+
         <variable
             name="activity"
             type="com.hello.view.activity.SettingActivity" />
@@ -111,7 +113,7 @@
                                     android:layout_height="30dp"
                                     android:layout_gravity="center|end"
                                     android:layout_marginEnd="6dp"
-                                    android:background="@drawable/ic_girl"
+                                    android:background="@{viewModel.helloSex == HelloSex.GIRL ? @drawable/ic_girl : @drawable/ic_boy}"
                                     app:backgroundTint="@color/colorTransBlack2"
                                     app:onSingleClick="@{() -> activity.showSexDialog()}" />
                             </FrameLayout>
@@ -180,7 +182,8 @@
                         android:textColor="@color/colorWhite"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:backgroundTint="@color/colorPrimary" />
+                        app:backgroundTint="@color/colorPrimary"
+                        app:onSingleClick="@{() -> viewModel.save()}" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
         </android.support.design.widget.CoordinatorLayout>

@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
+import static com.hello.common.SpeechPeople.XIAO_YAN;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -319,7 +320,7 @@ public class AIUIHolder {
 //                        CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
 //                        cook.getAnswer().setText(msg);
 
-                        TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, cookName,
+                        TuLingSendData data = new TuLingSendData(getTulingKey(), cookName,
                                 null, DeviceIdUtil.getId(context));
 
                         tuLingService.getCook(data)
@@ -438,7 +439,7 @@ public class AIUIHolder {
         if (userMsg.contains("你的") && userMsg.contains("照片")) {
             userMsg = "美女图片";
         }
-        TuLingSendData data = new TuLingSendData(Constants.TULING_KEY, userMsg,
+        TuLingSendData data = new TuLingSendData(getTulingKey(), userMsg,
                 null, DeviceIdUtil.getId(context));
 
         tuLingService.getResult(data)
@@ -448,5 +449,10 @@ public class AIUIHolder {
                     speech.startSpeaking(v.getText(), speechListener);
                 })
                 .subscribe();
+    }
+
+    private String getTulingKey() {
+        return HelloPref.INSTANCE.getTalkPeople().equals(XIAO_YAN) ?
+                Constants.TULING_KEY : Constants.TULING_KEY_BOY;
     }
 }
