@@ -1,7 +1,6 @@
 package com.hello.application;
 
 import android.app.Activity;
-import android.app.Application;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 

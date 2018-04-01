@@ -12,7 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk{
+        ndk {
             abiFilters "armeabi"
             abiFilters "x86"
         }
@@ -47,7 +47,6 @@ android {
 
 dependencies {
     implementation files('libs/AIUI.jar')
-    implementation files('libs/Msc.jar')
     implementation files('libs/Msc.jar')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -87,14 +86,12 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
     implementation 'com.makeramen:roundedimageview:2.3.0'
     implementation 'com.github.pinguo-zhouwei:EasyBlur:v1.0.0'
-    implementation 'com.github.castorflex.verticalviewpager:library:19.0.1'
     implementation 'me.drakeet.multitype:multitype:3.3.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
     implementation 'joda-time:joda-time:2.9.9'
     testImplementation 'junit:junit:4.12'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.30'
-    implementation files('libs/bdasr_V3_20171108_9800a2a.jar')
 }
 repositories {
     mavenCentral()

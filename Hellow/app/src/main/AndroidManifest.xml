@@ -83,22 +83,6 @@
             android:name=".view.activity.AboutActivity"
             android:label="@string/menu_aboutUs"
             android:theme="@style/AppStyle" />
-
-        <!--百度语音识别的Service-->
-        <service
-            android:name="com.baidu.speech.VoiceRecognitionService"
-            android:exported="false" />
-
-        <!--以下三个为百度语音识别的key-->
-        <meta-data
-            android:name="com.baidu.speech.APP_ID"
-            android:value="10887926" />
-        <meta-data
-            android:name="com.baidu.speech.API_KEY"
-            android:value="XB3ZiPS5CR272vvkmwN47Igy" />
-        <meta-data
-            android:name="com.baidu.speech.SECRET_KEY"
-            android:value="e2b28ad62e87eb8774763d7bf8fe3292" />
     </application>
 
 </manifest>

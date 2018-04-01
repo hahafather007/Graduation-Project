@@ -136,10 +136,6 @@ public class NoteCreateActivity extends AppActivity {
     }
 
     private void addChangeListener() {
-        viewModel.getError()
-                .compose(RxLifeCycle.resumed(this))
-                .subscribe();
-
         viewModel.getSaveOver()
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(__ -> {
