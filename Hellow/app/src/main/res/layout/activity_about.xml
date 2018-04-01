@@ -96,7 +96,7 @@
                     android:foreground="?android:attr/selectableItemBackground"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
-                    app:onSingleClick="@{() -> activity.showHelpDialog()}">
+                    app:onSingleClick="@{() -> activity.setupHelp()}">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
                     android:foreground="?android:attr/selectableItemBackground"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
-                    app:onSingleClick="@{() -> activity.setupHelp()}">
+                    app:onSingleClick="@{() -> activity.showHelpDialog()}">
 
                     <TextView
                         android:layout_width="wrap_content"

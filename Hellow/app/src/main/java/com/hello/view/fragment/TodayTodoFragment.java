@@ -105,7 +105,7 @@ public class TodayTodoFragment extends AppFragment {
                     binding.recordPopup.getRoot().setVisibility(GONE);
                     break;
             }
-            return false;
+            return true;
         });
     }
 

@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.annimon.stream.Optional
 import com.hello.common.Constants.DATA_FORMAT
+import com.hello.common.RxController
 import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
@@ -18,7 +19,6 @@ import com.raizlabs.android.dbflow.sql.language.Select
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
@@ -26,8 +26,7 @@ import org.joda.time.LocalDate
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class StepHolder @Inject constructor() {
-    private val compositeDisposable = CompositeDisposable()
+class StepHolder @Inject constructor() : RxController() {
     //系统开机时间
     private val powerUpTime = SystemTimeUtil.getPowerUpTime()
     private var stepCount: Int = 0
@@ -64,7 +63,7 @@ class StepHolder @Inject constructor() {
     }
 
     //防止内存泄漏
-    fun onCleared() {
+    override fun onCleared() {
         compositeDisposable.clear()
 
         manager.unregisterListener(sensorListener)

@@ -9,7 +9,6 @@ import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.model.step.StepHolder
 import com.hello.utils.rx.Observables
-import com.hello.utils.rx.Singles
 import org.joda.time.LocalDate
 import javax.inject.Inject
 
@@ -29,12 +28,7 @@ class SportViewModel @Inject constructor() : RxController() {
                 .subscribe()
 
         stepHolder.stepInfoChange
-                .compose(Observables.disposable(compositeDisposable))
-                .subscribe { initStepInfoes() }
-    }
-
-    private fun initStepInfoes() {
-        stepHolder.getStepInfoes()
+                .flatMap { stepHolder.getStepInfoes().toObservable() }
                 .map {
                     val steps = it.take(7).toMutableList()
 
@@ -57,11 +51,11 @@ class SportViewModel @Inject constructor() : RxController() {
 
                     return@map steps
                 }
-                .compose(Singles.async())
-                .compose(Singles.disposable(compositeDisposable))
-                .doOnSuccess { v ->
+                .compose(Observables.async())
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext {
                     stepInfoes.clear()
-                    stepInfoes.addAll(v)
+                    stepInfoes.addAll(it)
                 }
                 .subscribe()
     }

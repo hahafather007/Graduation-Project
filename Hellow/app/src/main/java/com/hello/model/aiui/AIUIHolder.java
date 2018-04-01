@@ -63,12 +63,12 @@ public class AIUIHolder {
     private AIUIMessage wakeupMsg;
     //AIUI对象
     private AIUIAgent agent;
-    //用来判断录音的状态
-    private boolean recording;
     //当前的状态
     private int status;
     //用户说的话
     private String userMsg;
+    //用来判断当前是不是正在进行语音笔记
+    private boolean noteWorking;
 
     //返回的结果
     public Subject<Object> aiuiResult = PublishSubject.create();
@@ -78,6 +78,8 @@ public class AIUIHolder {
     public Subject<Integer> volume = PublishSubject.create();
     //音乐数据
     public Subject<MusicData> music = PublishSubject.create();
+    //用于语音笔记数据
+    public Subject<String> noteText = PublishSubject.create();
 
     @Inject
     Context context;
@@ -110,6 +112,13 @@ public class AIUIHolder {
         };
     }
 
+    //开始进行语音笔记
+    public void startNoting() {
+        noteWorking = true;
+
+        startRecording();
+    }
+
     //外部调用该方法控制录音开始和结束
     public void startRecording() {
         stopMusic();
@@ -127,6 +136,8 @@ public class AIUIHolder {
         message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0,
                 "sample_rate=16000,data_type=audio", null);
         agent.sendMessage(message);
+
+        noteWorking = false;
     }
 
     //外部调用该方法发送本文消息
@@ -193,9 +204,15 @@ public class AIUIHolder {
 
                                 JSONObject resultJson = new JSONObject(resultStr);
                                 userMsg = resultJson.getString("text");
-                                aiuiResult.onNext(new UserTalkData(userMsg));
 
-                                analyzeResult(resultJson);
+                                //如果当前状态是正在进行语音笔记，则发送当前每句话的识别结果
+                                if (noteWorking) {
+                                    noteText.onNext(userMsg);
+                                } else {//反之进行结果解析
+                                    aiuiResult.onNext(new UserTalkData(userMsg));
+
+                                    analyzeResult(resultJson);
+                                }
                             }
                         }
                     } catch (Throwable e) {
@@ -219,9 +236,10 @@ public class AIUIHolder {
                     error.onNext(Optional.empty());
                     break;
                 }
-                //状态时间
+                //状态事件
                 case AIUIConstant.EVENT_STATE: {
                     status = event.arg1;
+
                     break;
                 }
                 //音频的状态
@@ -234,13 +252,10 @@ public class AIUIHolder {
                 }
                 //开始录音
                 case AIUIConstant.EVENT_START_RECORD: {
-                    recording = true;
-
                     break;
                 }
                 //结束录音
                 case AIUIConstant.EVENT_STOP_RECORD: {
-                    recording = false;
                     break;
                 }
             }
@@ -320,8 +335,6 @@ public class AIUIHolder {
                         String cookName = resultJson.getJSONArray("semantic").getJSONObject(0)
                                 .getJSONArray("slots").getJSONObject(0)
                                 .getString("value");
-//                        CookResult cook = new Gson().fromJson(resultJson.toString(), CookResult.class);
-//                        cook.getAnswer().setText(msg);
 
                         TuLingSendData data = new TuLingSendData(getTulingKey(), cookName,
                                 null, DeviceIdUtil.getId(context));
