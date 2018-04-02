@@ -68,8 +68,6 @@ public class AIUIHolder extends RxController {
     private int status;
     //用户说的话
     private String userMsg;
-    //用来判断当前是不是正在进行语音笔记
-    private boolean noteWorking;
 
     //返回的结果
     public Subject<Object> aiuiResult = PublishSubject.create();
@@ -115,13 +113,6 @@ public class AIUIHolder extends RxController {
         };
     }
 
-    //开始进行语音笔记
-    public void startNoting() {
-        noteWorking = true;
-
-        startRecording();
-    }
-
     //外部调用该方法控制录音开始和结束
     public void startRecording() {
         stopMusic();
@@ -139,8 +130,6 @@ public class AIUIHolder extends RxController {
         message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0,
                 "sample_rate=16000,data_type=audio", null);
         agent.sendMessage(message);
-
-        noteWorking = false;
     }
 
     //外部调用该方法发送本文消息
@@ -208,14 +197,9 @@ public class AIUIHolder extends RxController {
                                 JSONObject resultJson = new JSONObject(resultStr);
                                 userMsg = resultJson.getString("text");
 
-                                //如果当前状态是正在进行语音笔记，则发送当前每句话的识别结果
-                                if (noteWorking) {
-                                    noteText.onNext(userMsg);
-                                } else {//反之进行结果解析
-                                    aiuiResult.onNext(new UserTalkData(userMsg));
+                                aiuiResult.onNext(new UserTalkData(userMsg));
 
-                                    analyzeResult(resultJson);
-                                }
+                                analyzeResult(resultJson);
                             }
                         }
                     } catch (Throwable e) {
