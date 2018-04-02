@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="com.hello.utils.ValidUtilKt" />
+
         <variable
             name="viewModel"
             type="com.hello.viewmodel.SecondaryHelloViewModel" />
@@ -56,10 +58,12 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="3"
+                android:text="@{viewModel.music.name}"
                 android:textColor="@color/colorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:visible="@{!ValidUtilKt.isStrValid(viewModel.music.image)}"
                 tools:text="小红帽与大灰狼" />
 
             <ImageView

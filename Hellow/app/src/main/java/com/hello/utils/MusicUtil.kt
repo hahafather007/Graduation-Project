@@ -2,21 +2,21 @@ package com.hello.utils
 
 import android.media.AudioManager
 import android.media.MediaPlayer
-import com.hello.common.RxController
 import com.hello.utils.rx.Observables
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 
 object MusicUtil {
     private val player = MediaPlayer()
 
     @JvmStatic
-    fun playMusic(url: String) {
-        playMusic(url, null)
+    fun playMusic(url: String, disposable: CompositeDisposable) {
+        playMusic(url, null, disposable)
     }
 
     @Suppress("DEPRECATION")
     @JvmStatic
-    fun playMusic(url: String, listener: MediaErrorListener?) {
+    fun playMusic(url: String, listener: MediaListener?, disposable: CompositeDisposable) {
         if (player.isPlaying) {
             player.stop()
         }
@@ -27,14 +27,16 @@ object MusicUtil {
                 .map { v ->
                     player.reset()
                     player.setDataSource(v)
-                    player.setOnErrorListener({ _, _, _ ->
+                    player.setOnCompletionListener { listener?.complete() }
+                    player.setOnErrorListener { _, _, _ ->
                         listener?.error()
                         false
-                    })
+                    }
                     player.prepare()
                     player
                 }
                 .compose(Observables.async())
+                .compose(Observables.disposable(disposable))
                 .subscribe(MediaPlayer::start)
     }
 
@@ -49,11 +51,13 @@ object MusicUtil {
     }
 
     @JvmStatic
-    fun contiuneMusic() {//继续播放
+    fun continueMusic() {//继续播放
         player.start()
     }
 
-    interface MediaErrorListener {
+    interface MediaListener {
         fun error()
+
+        fun complete()
     }
 }

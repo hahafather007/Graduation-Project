@@ -25,7 +25,6 @@ import com.hello.utils.BrowserUtil;
 import com.hello.utils.MusicUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.ValidUtilKt;
-import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.Binding;
@@ -36,6 +35,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -43,6 +44,7 @@ public class SecondaryHelloFragment extends AppFragment {
     public List<Binding.Linker> linkers;
 
     private FragmentSecondaryHelloBinding binding;
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     @Inject
     SecondaryHelloViewModel viewModel;
@@ -69,6 +71,7 @@ public class SecondaryHelloFragment extends AppFragment {
     public void onDestroy() {
         super.onDestroy();
 
+        MusicUtil.stopMusic();
         viewModel.onCleared();
     }
 
@@ -86,9 +89,17 @@ public class SecondaryHelloFragment extends AppFragment {
                 .doOnNext(__ -> {
                     binding.musicHolder.setVisibility(VISIBLE);
 
-                    MusicUtil.playMusic(viewModel.music.get().getUrl(), () -> {
-                        ToastUtil.showToast(getContext(), R.string.test_network_error);
-                    });
+                    MusicUtil.playMusic(viewModel.music.get().getUrl(), new MusicUtil.MediaListener() {
+                        @Override
+                        public void error() {
+                            ToastUtil.showToast(getContext(), R.string.test_network_error);
+                        }
+
+                        @Override
+                        public void complete() {
+                            stopMusic();
+                        }
+                    }, disposable);
                 })
                 .subscribe();
     }
@@ -141,7 +152,7 @@ public class SecondaryHelloFragment extends AppFragment {
         if (viewModel.musicPlaying.get()) {
             MusicUtil.pauseMusic();
         } else {
-            MusicUtil.contiuneMusic();
+            MusicUtil.continueMusic();
         }
 
         viewModel.musicPlaying.set(!viewModel.musicPlaying.get());
