@@ -208,10 +208,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getUserInfo() {
-        HelloPref.INSTANCE.setLogin(true);
-
-        binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(true);
-
         QQToken token = tencent.getQQToken();
         UserInfo info = new UserInfo(this, token);
 
@@ -231,6 +227,10 @@ public class MainActivity extends AppCompatActivity
                             .load(image)
                             .into((ImageView) binding.navView.getHeaderView(0).findViewById(R.id.headerView));
                     ((TextView) binding.navView.getHeaderView(0).findViewById(R.id.headerText)).setText(name);
+
+                    HelloPref.INSTANCE.setLogin(true);
+
+                    binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -238,6 +238,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onError(UiError uiError) {
+                tencent.logout(MainActivity.this);
+
+                HelloPref.INSTANCE.setLogin(false);
+                HelloPref.INSTANCE.setExpires(null);
+                HelloPref.INSTANCE.setToken(null);
+                HelloPref.INSTANCE.setOpenId(null);
+                HelloPref.INSTANCE.setImage(null);
+                HelloPref.INSTANCE.setName(null);
+
+                ToastUtil.showToast(MainActivity.this, R.string.text_reLogin);
             }
 
             @Override

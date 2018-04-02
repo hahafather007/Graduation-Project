@@ -44,6 +44,7 @@
     <string name="text_login_error">登录出错，请稍后再试</string>
     <string name="text_login_success">登陆成功！</string>
     <string name="text_logout_success">已注销！</string>
+    <string name="text_reLogin">身份已过期，请重新登录</string>
     <string name="text_contact_us">联系我们</string>
     <string name="text_days_steps">每天的步数</string>
     <string name="text_uss_energy">消耗能量：</string>

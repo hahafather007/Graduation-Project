@@ -15,7 +15,6 @@ import com.hello.model.pref.HelloPref;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
-import com.hello.utils.DeviceIdUtil;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
@@ -336,10 +335,7 @@ public class AIUIHolder {
                                 .getJSONArray("slots").getJSONObject(0)
                                 .getString("value");
 
-                        TuLingSendData data = new TuLingSendData(getTulingKey(), cookName,
-                                null, DeviceIdUtil.getId(context));
-
-                        tuLingService.getCook(data)
+                        tuLingService.getCook(getTuLingSendData(cookName))
                                 .compose(Singles.async())
                                 .doOnSuccess(v -> {
                                     aiuiResult.onNext(v);
@@ -454,19 +450,27 @@ public class AIUIHolder {
     }
 
     private void useTuLing() {
-        if (userMsg.contains("你的") && userMsg.contains("照片")) {
-            userMsg = "美女图片";
+        if (userMsg.contains("你的") && (userMsg.contains("照片") || userMsg.contains("自拍"))) {
+            if (HelloPref.INSTANCE.getTalkPeople().equals(XIAO_YAN)) {
+                userMsg = "美女图片";
+            } else {
+                userMsg = "帅哥图片";
+            }
         }
-        TuLingSendData data = new TuLingSendData(getTulingKey(), userMsg,
-                null, DeviceIdUtil.getId(context));
 
-        tuLingService.getResult(data)
+        tuLingService.getResult(getTuLingSendData(userMsg))
                 .compose(Singles.async())
                 .doOnSuccess(v -> {
                     aiuiResult.onNext(v);
                     speech.startSpeaking(v.getText(), speechListener);
                 })
                 .subscribe();
+    }
+
+    //若openid为null，则表示用户使用的是公用数据
+    private TuLingSendData getTuLingSendData(String userMsg) {
+        return new TuLingSendData(getTulingKey(), userMsg,
+                null, HelloPref.INSTANCE.getOpenId());
     }
 
     private String getTulingKey() {

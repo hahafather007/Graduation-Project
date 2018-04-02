@@ -7,6 +7,10 @@ import com.hello.common.SpeechPeople.*
 object HelloPref : KotprefModel() {
     override val kotprefName = Constants.KOTPREF_NAME
 
+    //是否自动备份
+    var isAutoBackup: Boolean by booleanPref(default = false)
+    //是否能后台唤醒
+    var isCanWakeup: Boolean by booleanPref(default = false)
     //语音合成发音人
     var talkPeople: String by stringPref(default = XIAO_YAN)
     //计步信息

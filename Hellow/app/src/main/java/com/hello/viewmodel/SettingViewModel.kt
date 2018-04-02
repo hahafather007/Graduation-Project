@@ -18,6 +18,8 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor() : RxController() {
     val loading = ObservableBoolean()
     val helloSex = ObservableField<HelloSex>()
+    val autoBackup = ObservableBoolean()
+    val canWakeup = ObservableBoolean()
 
     val success: Subject<Boolean> = PublishSubject.create()
 
@@ -29,6 +31,9 @@ class SettingViewModel @Inject constructor() : RxController() {
         } else {
             helloSex.set(BOY)
         }
+
+        autoBackup.set(HelloPref.isAutoBackup)
+        canWakeup.set(HelloPref.isCanWakeup)
     }
 
     //保存更改的信息
@@ -39,6 +44,9 @@ class SettingViewModel @Inject constructor() : RxController() {
                 .compose(Singles.disposable(compositeDisposable))
                 .doOnSuccess {
                     HelloPref.talkPeople = if (helloSex.get() == GIRL) XIAO_YAN else XIAO_YU
+                    HelloPref.isAutoBackup = autoBackup.get()
+                    HelloPref.isCanWakeup = canWakeup.get()
+
                     success.onNext(true)
                 }
                 .doOnError { success.onNext(false) }
