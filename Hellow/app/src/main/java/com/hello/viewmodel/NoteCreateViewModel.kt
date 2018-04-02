@@ -32,11 +32,15 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
         voiceHolder.resultText
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext {
+                    val text = StringBuilder()
+
                     if (isStrValid(noteText.get())) {
-                        noteText.set(noteText.get() + "，" + it)
+                        text.append(noteText.get()).append(it).append("。")
                     } else {
-                        noteText.set(it)
+                        text.append(it).append("。")
                     }
+
+                    noteText.set(text.toString().replace(Regex("。，"), "，"))
                 }
                 .subscribe()
     }

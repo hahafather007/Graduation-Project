@@ -6,6 +6,7 @@ import android.os.Environment
 import com.hello.common.RxController
 import com.hello.utils.Log
 import com.hello.utils.SpeechJsonParser
+import com.hello.utils.isStrValid
 import com.hello.utils.rx.Observables
 import com.iflytek.cloud.*
 import io.reactivex.Observable
@@ -36,23 +37,14 @@ class VoiceHolder @Inject constructor() : RxController() {
 
     @Inject
     fun init() {
-        mAsr = SpeechRecognizer.createRecognizer(context, {
-            if (it != ErrorCode.SUCCESS) {
-                Log.e("SpeechRecognizer初始化错误！！！（$it）")
-            }
-        })
-        //设置识别引擎
-        mAsr.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD)
-        //设置返回结果为json格式
-        mAsr.setParameter(SpeechConstant.RESULT_TYPE, "json")
-        // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
-        // 注：AUDIO_FORMAT参数语记需要更新版本才能生效
-        mAsr.setParameter(SpeechConstant.AUDIO_FORMAT, "wav")
-        mAsr.setParameter(SpeechConstant.ASR_AUDIO_PATH,
-                Environment.getExternalStorageDirectory().toString() + "/msc/asr.wav")
+        mAsr = SpeechRecognizer.createRecognizer(context, null)
+        mAsr.setParameter(SpeechConstant.DOMAIN, "iat")
+        mAsr.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
+        mAsr.setParameter(SpeechConstant.ACCENT, "mandarin")
 
         listener = object : RecognizerListener {
             //data表示音频数据
+            //音量值0~30
             override fun onVolumeChanged(vol: Int, data: ByteArray?) {
                 volume.onNext(vol)
                 Log.i("音量：$vol")
@@ -61,8 +53,9 @@ class VoiceHolder @Inject constructor() : RxController() {
             override fun onResult(result: RecognizerResult?, isLast: Boolean) {
                 val text = SpeechJsonParser.parseGrammarResult(result?.resultString)
 
-                Log.i("识别结果：$text")
-                resultText.onNext(text)
+                if (isStrValid(text)) {
+                    resultText.onNext(text)
+                }
 
                 if (speaking && speakTime >= 40) {
                     compositeDisposable.clear()
