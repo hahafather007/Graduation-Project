@@ -3,20 +3,15 @@ package com.hello.viewmodel
 import android.databinding.ObservableField
 import com.annimon.stream.Optional
 import com.hello.common.RxController
-import com.hello.model.aiui.AIUIHolder
+import com.hello.model.aiui.VoiceHolder
 import com.hello.model.db.NotesHolder
 import com.hello.model.db.table.Note
 import com.hello.utils.isStrValid
 import com.hello.utils.rx.Completables
 import com.hello.utils.rx.Observables
 import com.hello.utils.rx.Singles
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class NoteCreateViewModel @Inject constructor() : RxController() {
@@ -24,35 +19,23 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
 
     val saveOver: Subject<Optional<*>> = PublishSubject.create()
 
-    //用来防止计时器内容泄露
-    private val timeDisposable = CompositeDisposable()
     private var cacheTitle = ""
     private var note: Note? = null
-    //用来标识当前语音时间（每50秒一个循环）
-    private var timeSeconds = 0
 
     @Inject
-    lateinit var aiuiHolder: AIUIHolder
-    @Inject
     lateinit var notesHolder: NotesHolder
+    @Inject
+    lateinit var voiceHolder: VoiceHolder
 
     @Inject
     fun init() {
-        aiuiHolder.noteText
+        voiceHolder.resultText
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext {
                     if (isStrValid(noteText.get())) {
                         noteText.set(noteText.get() + "，" + it)
                     } else {
                         noteText.set(it)
-                    }
-
-                    //因为只能识别60秒，故手动循环
-                    if (timeSeconds >= 50) {
-                        stopRecord()
-                        startRecord()
-
-                        timeSeconds = 0
                     }
                 }
                 .subscribe()
@@ -100,19 +83,16 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
     }
 
     fun startRecord() {
-        aiuiHolder.startNoting()
-
-        Observable.interval(1, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(Observables.disposable(timeDisposable))
-                .doOnNext { timeSeconds++ }
-                .subscribe()
+        voiceHolder.startRecording()
     }
 
     fun stopRecord() {
-        aiuiHolder.stopRecording()
+        voiceHolder.stopRecording()
+    }
 
-        timeDisposable.clear()
+    override fun onCleared() {
+        super.onCleared()
+
+        voiceHolder.onCleared()
     }
 }

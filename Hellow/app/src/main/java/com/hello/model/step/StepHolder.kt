@@ -92,11 +92,12 @@ class StepHolder @Inject constructor() : RxController() {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(Observables.disposable(compositeDisposable))
-                .subscribe {
+                .doOnNext {
                     if (powerUpTime == LocalDate.now()) {
                         HelloPref.stepCount = stepCount
                     }
                 }
+                .subscribe()
     }
 
     //转换步数的准确值
