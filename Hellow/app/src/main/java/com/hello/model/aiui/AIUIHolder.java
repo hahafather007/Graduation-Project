@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.annimon.stream.Optional;
 import com.hello.common.Constants;
+import com.hello.common.RxController;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.MusicData;
@@ -12,6 +13,7 @@ import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.model.pref.HelloPref;
+import com.hello.model.service.MusicService;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
@@ -49,7 +51,7 @@ import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isStrValid;
 
 @Singleton
-public class AIUIHolder {
+public class AIUIHolder extends RxController {
     //语音合成器
     private SpeechSynthesizer speech;
     //语音合成监听器
@@ -84,6 +86,8 @@ public class AIUIHolder {
     Context context;
     @Inject
     TuLingService tuLingService;
+    @Inject
+    MusicService musicService;
 
     @Inject
     AIUIHolder() {
@@ -337,6 +341,7 @@ public class AIUIHolder {
 
                         tuLingService.getCook(getTuLingSendData(cookName))
                                 .compose(Singles.async())
+                                .compose(Singles.disposable(compositeDisposable))
                                 .doOnSuccess(v -> {
                                     aiuiResult.onNext(v);
                                     speech.startSpeaking(v.getText(), speechListener);
@@ -432,6 +437,26 @@ public class AIUIHolder {
 
                         break;
                     }
+                    case "musicX": {
+                        String name = mTalkText.substring(mTalkText.indexOf("的") + 1,
+                                mTalkText.indexOf("吧"));
+
+                        Log.i(name);
+
+                        final String taklText = mTalkText;
+
+                        musicService.getMusicList(1, name)
+                                .compose(Singles.async())
+                                .compose(Singles.disposable(compositeDisposable))
+                                .doOnSuccess(v -> {
+                                    aiuiResult.onNext(new HelloTalkData(taklText));
+
+                                    speech.startSpeaking(taklText, speechListener);
+                                })
+                                .subscribe();
+
+                        break;
+                    }
                     default: {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
@@ -460,6 +485,7 @@ public class AIUIHolder {
 
         tuLingService.getResult(getTuLingSendData(userMsg))
                 .compose(Singles.async())
+                .compose(Singles.disposable(compositeDisposable))
                 .doOnSuccess(v -> {
                     aiuiResult.onNext(v);
                     speech.startSpeaking(v.getText(), speechListener);
