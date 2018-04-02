@@ -7,6 +7,9 @@ public class Constants {
     public final static String AIUI_APPID = "59d6f1cb";
     //聚合数据新闻API的key
     public final static String NEWS_KEY = "c116bf742a3fa1f619a4632b1059c051";
+    //下面两个为qq登录的app id和key
+    public final static String QQ_APPID = "1106738863";
+    public final static String QQ_KEY = "tFEWBKzD9alOR9yY";
     //这个聊天机器人会骂人
     public final static String BAD_TAKL_ROBUT = "http://api.qingyunke.com/";
     //图灵机器人key

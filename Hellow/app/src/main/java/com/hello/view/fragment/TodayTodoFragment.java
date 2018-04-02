@@ -21,6 +21,7 @@ import com.hello.databinding.FragmentTodayTodoBinding;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
+import com.hello.view.activity.MainActivity;
 import com.hello.viewmodel.TodayToDoViewModel;
 import com.hello.widget.listener.SimpleTextWatcher;
 
@@ -30,11 +31,14 @@ import io.reactivex.Observable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hello.view.activity.MainActivity.OnPageScrollListener;
 
-public class TodayTodoFragment extends AppFragment {
+public class TodayTodoFragment extends AppFragment implements OnPageScrollListener {
     private FragmentTodayTodoBinding binding;
     private InputMethodManager inputMethodManager;
     private ViewTag viewTag;
+
+    private boolean isRecording;
 
     @Inject
     TodayToDoViewModel viewModel;
@@ -52,17 +56,36 @@ public class TodayTodoFragment extends AppFragment {
         binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
 
-        initView();
-        addChangeListener();
         inputMethodManager =
                 (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).addScrollListener(this);
+        }
+
+        initView();
+        addChangeListener();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).removeScrollListener(this);
+        }
         viewModel.onCleared();
+    }
+
+    //防止按住说话时滑动pager冲突
+    @Override
+    public void onScroll() {
+        if (isRecording) {
+            isRecording = false;
+
+            viewModel.stopRecording();
+            binding.recordPopup.getRoot().setVisibility(GONE);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -96,11 +119,15 @@ public class TodayTodoFragment extends AppFragment {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    isRecording = true;
+
                     viewModel.startRecording();
                     binding.recordPopup.getRoot().bringToFront();
                     binding.recordPopup.getRoot().setVisibility(VISIBLE);
                     break;
                 case MotionEvent.ACTION_UP:
+                    isRecording = false;
+
                     viewModel.stopRecording();
                     binding.recordPopup.getRoot().setVisibility(GONE);
                     break;
@@ -194,7 +221,7 @@ public class TodayTodoFragment extends AppFragment {
     }
 
     //用于标记当前的fragment
-    private enum ViewTag {
+    public enum ViewTag {
         NEWS,
         HELLO
     }

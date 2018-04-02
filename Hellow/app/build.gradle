@@ -48,6 +48,7 @@ android {
 dependencies {
     implementation files('libs/AIUI.jar')
     implementation files('libs/Msc.jar')
+    implementation files('libs/open_sdk_r5990_lite.jar')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

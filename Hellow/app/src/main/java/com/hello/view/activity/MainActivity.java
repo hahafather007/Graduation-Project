@@ -18,14 +18,31 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.annimon.stream.Stream;
+import com.bumptech.glide.Glide;
 import com.hello.R;
+import com.hello.common.Constants;
 import com.hello.databinding.ActivityMainBinding;
+import com.hello.model.pref.HelloPref;
+import com.hello.utils.DialogUtil;
+import com.hello.utils.Log;
+import com.hello.utils.ToastUtil;
 import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
 import com.hello.viewmodel.MainActivityViewModel;
 import com.hello.widget.view.HeartFlyView;
+import com.tencent.connect.UserInfo;
+import com.tencent.connect.auth.QQToken;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 import com.zhouwei.blurlibrary.EasyBlur;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +59,10 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private ActivityMainBinding binding;
     private InputMethodManager inputMethodManager;
+    private List<OnPageScrollListener> listeners;
+    private Tencent tencent;
+    //QQ登录的监听器
+    private IUiListener iUiListener;
     private boolean isExit = false;
 
     @Inject
@@ -55,6 +76,51 @@ public class MainActivity extends AppCompatActivity
         binding.setActivity(this);
 
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        listeners = new ArrayList<>();
+        tencent = Tencent.createInstance(Constants.QQ_APPID, this);
+        iUiListener = new IUiListener() {
+            @Override
+            public void onComplete(Object o) {
+                JSONObject object = (JSONObject) o;
+
+                try {
+                    String openId = object.getString("openid");
+                    String token = object.getString("access_token");
+                    String expires = object.getString("expires_in");
+
+                    HelloPref.INSTANCE.setOpenId(openId);
+                    HelloPref.INSTANCE.setToken(token);
+                    HelloPref.INSTANCE.setExpires(expires);
+
+                    tencent.setOpenId(openId);
+                    tencent.setAccessToken(token, expires);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                getUserInfo();
+
+                ToastUtil.showToast(MainActivity.this, R.string.text_login_success);
+            }
+
+            @Override
+            public void onError(UiError uiError) {
+                ToastUtil.showToast(MainActivity.this, R.string.text_login_error);
+            }
+
+            @Override
+            public void onCancel() {
+                Log.i("登录已取消");
+            }
+        };
+
+        if (HelloPref.INSTANCE.isLogin()) {
+            tencent.setOpenId(HelloPref.INSTANCE.getOpenId());
+            tencent.setAccessToken(HelloPref.INSTANCE.getToken(), HelloPref.INSTANCE.getExpires());
+
+            getUserInfo();
+        } else {
+            binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(false);
+        }
 
         initDrawer();
         initViewPager();
@@ -90,6 +156,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_share:
                 showShareView();
                 break;
+            case R.id.nav_exit:
+                logout();
+                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -100,6 +169,81 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
 
         viewModel.onCleared();
+        listeners.clear();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Tencent.onActivityResultData(requestCode, resultCode, data, iUiListener);
+    }
+
+    public void addScrollListener(OnPageScrollListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeScrollListener(OnPageScrollListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void logout() {
+        DialogUtil.showDialog(this, R.string.text_dialog_logout_msg,
+                R.string.text_cancel, R.string.text_enter, null,
+                (__, ___) -> {
+                    tencent.logout(this);
+
+                    HelloPref.INSTANCE.setLogin(false);
+                    HelloPref.INSTANCE.setExpires(null);
+                    HelloPref.INSTANCE.setToken(null);
+                    HelloPref.INSTANCE.setOpenId(null);
+                    HelloPref.INSTANCE.setImage(null);
+                    HelloPref.INSTANCE.setName(null);
+
+                    binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(false);
+                    ((ImageView) binding.navView.getHeaderView(0)
+                            .findViewById(R.id.headerView)).setImageResource(R.drawable.image_logo_head);
+                    ((TextView) binding.navView.getHeaderView(0)
+                            .findViewById(R.id.headerText)).setText(R.string.drawer_click_to_login);
+                    ToastUtil.showToast(this, R.string.text_logout_success);
+                });
+    }
+
+    private void getUserInfo() {
+        HelloPref.INSTANCE.setLogin(true);
+
+        binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(true);
+
+        QQToken token = tencent.getQQToken();
+        UserInfo info = new UserInfo(this, token);
+
+        info.getUserInfo(new IUiListener() {
+            @Override
+            public void onComplete(Object o) {
+                JSONObject object = (JSONObject) o;
+
+                try {
+                    String name = object.getString("nickname");
+                    String image = object.getString("figureurl_qq_2");
+
+                    HelloPref.INSTANCE.setImage(image);
+                    HelloPref.INSTANCE.setName(name);
+
+                    Glide.with(MainActivity.this)
+                            .load(image)
+                            .into((ImageView) binding.navView.getHeaderView(0).findViewById(R.id.headerView));
+                    ((TextView) binding.navView.getHeaderView(0).findViewById(R.id.headerText)).setText(name);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(UiError uiError) {
+            }
+
+            @Override
+            public void onCancel() {
+            }
+        });
     }
 
     private void initDrawer() {
@@ -111,6 +255,12 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         binding.navView.setNavigationItemSelectedListener(this);
+
+        binding.navView.getHeaderView(0).findViewById(R.id.headerView).setOnClickListener(__ -> {
+            if (!HelloPref.INSTANCE.isLogin()) {
+                tencent.login(this, "all", iUiListener);
+            }
+        });
     }
 
     private void initFlyView() {
@@ -176,6 +326,8 @@ public class MainActivity extends AppCompatActivity
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 inputMethodManager.hideSoftInputFromWindow(
                         getWindow().getDecorView().getWindowToken(), 0);
+
+                Stream.of(listeners).forEach(OnPageScrollListener::onScroll);
             }
         });
     }
@@ -197,5 +349,9 @@ public class MainActivity extends AppCompatActivity
             finish();
             System.exit(0);
         }
+    }
+
+    public interface OnPageScrollListener {
+        void onScroll();
     }
 }

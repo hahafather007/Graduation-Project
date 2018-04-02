@@ -5,9 +5,11 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
+import com.bumptech.glide.Glide;
 import com.hello.R;
 import com.hello.databinding.ActivitySettingBinding;
 import com.hello.databinding.DialogChooseSexBinding;
+import com.hello.model.pref.HelloPref;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.RxLifeCycle;
@@ -31,6 +33,10 @@ public class SettingActivity extends AppActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_setting);
         binding.setActivity(this);
         binding.setViewModel(viewModel);
+
+        if (HelloPref.INSTANCE.isLogin()) {
+            Glide.with(this).load(HelloPref.INSTANCE.getImage()).into(binding.headerView);
+        }
 
         addChangeListener();
     }
