@@ -23,6 +23,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
             android:background="@color/colorLineSpace"
             android:focusable="true"
             android:focusableInTouchMode="true">
@@ -45,26 +46,49 @@
                 android:id="@+id/editText"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@color/colorWhite"
+                android:background="@color/colorLineSpace"
                 android:clipToPadding="false"
                 android:gravity="top"
-                android:paddingBottom="8dp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
                 android:text="@={viewModel.noteText}"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/lineView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/appBarLayout"
                 tools:text="这篇文章主要给大家介绍了关于如何更改Dialog的标题与按钮颜色的相关资料，文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值，需要的朋友可以参考借鉴，下面跟着小编来一起学习学习吧。" />
 
-            <!--<com.hello.widget.view.WaveformView-->
-            <!--android:id="@+id/waveView"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="80dp"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent" />-->
+            <View
+                android:id="@+id/lineView"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorLine"
+                app:layout_constraintBottom_toTopOf="@id/waveView" />
+
+            <com.hello.widget.view.WaveformView
+                android:id="@+id/waveView"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@color/colorTransLine"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:visible="@{viewModel.recording}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:drawableStart="@mipmap/ic_recording"
+                android:padding="10dp"
+                android:text="@string/text_tap_to_cancel_recording"
+                android:textColor="@color/colorLightSkyBlue"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:onSingleClick="@{() -> activity.startOrStopRecord()}"
+                app:visible="@{viewModel.recording}" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.FitWindowsFrameLayout>
 </layout>

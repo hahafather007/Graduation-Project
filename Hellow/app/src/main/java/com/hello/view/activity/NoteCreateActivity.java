@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -14,8 +15,13 @@ import com.hello.databinding.ActivityNoteCreateBinding;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.DimensionUtil;
 import com.hello.utils.ToastUtil;
+import com.hello.utils.ValidUtilKt;
+import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.viewmodel.NoteCreateViewModel;
+import com.hello.widget.listener.SimpleTextWatcher;
+
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 
@@ -27,8 +33,7 @@ public class NoteCreateActivity extends AppActivity {
     private ActivityNoteCreateBinding binding;
     //录音是否正在播放的状态
     private boolean recordPlaying;
-    //是否正在进行录音状态
-    private boolean recording;
+    private boolean hasSave = true;
 
     @Inject
     NoteCreateViewModel viewModel;
@@ -46,6 +51,7 @@ public class NoteCreateActivity extends AppActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_create);
         binding.setViewModel(viewModel);
+        binding.setActivity(this);
         viewModel.initNote(getIntent().getLongExtra(EXTRA_ID, -1));
 
         addChangeListener();
@@ -86,6 +92,8 @@ public class NoteCreateActivity extends AppActivity {
                 recordPlaying = !recordPlaying;
                 break;
             case R.id.nav_voice:
+                item.setVisible(false);
+
                 startOrStopRecord();
                 break;
         }
@@ -98,6 +106,29 @@ public class NoteCreateActivity extends AppActivity {
         super.onDestroy();
 
         viewModel.onCleared();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewModel.getRecording().get()) {
+            DialogUtil.showDialog(this, R.string.text_diaolg_stop_recording,
+                    R.string.text_cancel, R.string.text_enter,
+                    null, (__, ___) -> {
+                        viewModel.stopRecord();
+                        hasSave = true;
+
+                        super.onBackPressed();
+                    });
+        } else {
+            //如果修改的内容保存了就直接退出，否则提醒
+            if (hasSave) {
+                super.onBackPressed();
+            } else {
+                DialogUtil.showDialog(this, R.string.text_give_up_save,
+                        R.string.text_cancel, R.string.text_enter,
+                        null, (__, ___) -> super.onBackPressed());
+            }
+        }
     }
 
     private void saveNote() {
@@ -141,31 +172,41 @@ public class NoteCreateActivity extends AppActivity {
                 .doOnNext(__ -> {
                     setTitle(viewModel.getNoteTitle());
                     ToastUtil.showToast(this, R.string.text_save_over);
+                    hasSave = true;
                 })
                 .subscribe();
 
-//        RxField.of(viewModel.getDecibel())
-//                .skip(0)
-//                .map(v -> v / 100f)
-//                .compose(RxLifeCycle.resumed(this))
-//                .subscribe(v -> binding.waveView.updateAmplitude(v));
+        //实时更新音频图的振幅
+        RxField.of(viewModel.getVolume())
+                .skip(0)
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> binding.waveView.updateAmplitude(v / 30f))
+                .subscribe();
+
+        binding.editText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(@Nullable Editable s) {
+                hasSave = false;
+            }
+        });
     }
 
     public void startOrStopRecord() {
-        if (!recording) {
+        if (!viewModel.getRecording().get()) {
             viewModel.startRecord();
         } else {
             DialogUtil.showDialog(this, R.string.text_stop_recording,
                     R.string.text_cancel, R.string.text_enter,
                     null, (__, ___) -> {
                         viewModel.stopRecord();
-                        binding.toolbar.getMenu().getItem(3).setVisible(false);
                         for (int i = 0; i < 3; i++) {
                             binding.toolbar.getMenu().getItem(i).setVisible(true);
                         }
+
+                        if (!isStrValid(viewModel.getNoteText().get())) {
+                            ToastUtil.showToast(this, R.string.text_say_nothing);
+                        }
                     });
         }
-
-        recording = !recording;
     }
 }

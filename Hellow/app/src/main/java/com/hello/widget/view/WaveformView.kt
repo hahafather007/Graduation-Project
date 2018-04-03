@@ -7,42 +7,39 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
+import com.hello.R
 
 
 class WaveformView : View {
     private val mPrimaryWidth = 1.0f
     private val mSecondaryWidth = 0.5f
     private var mAmplitude = MIN_AMPLITUDE
-    //    private int mWaveColor =getResources().getColor(R.color.t15a9bc);
-    private val mWaveColor = Color.parseColor("#15a9bc")
+    private val mWaveColor = resources.getColor(R.color.colorLightSkyBlue)
     private val mDensity = 2
     private val mWaveCount = 5
     private val mFrequency = 0.1875f
     private val mPhaseShift = -0.1875f
+    private val mPath = Path()
+    private val mPrimaryPaint = Paint()
+    private val mSecondaryPaint = Paint()
     private var mPhase = mPhaseShift
-
-    private lateinit var mPrimaryPaint: Paint
-    private lateinit var mSecondaryPaint: Paint
-    private lateinit var mPath: Path
 
     constructor(context: Context?) : this(context, null)
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs, 0)
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    init {
         initialize()
     }
 
     private fun initialize() {
-        mPath = Path()
-
-        mPrimaryPaint = Paint()
         mPrimaryPaint.strokeWidth = mPrimaryWidth
         mPrimaryPaint.isAntiAlias = true
         mPrimaryPaint.style = Paint.Style.STROKE
         mPrimaryPaint.color = mWaveColor
 
-        mSecondaryPaint = Paint()
         mSecondaryPaint.strokeWidth = mSecondaryWidth
         mSecondaryPaint.isAntiAlias = true
         mSecondaryPaint.style = Paint.Style.STROKE
@@ -93,10 +90,11 @@ class WaveformView : View {
         }
 
         mPhase += mPhaseShift
+
         invalidate()
     }
 
     companion object {
-        private const val MIN_AMPLITUDE = 0.0575f
+        private const val MIN_AMPLITUDE = 0.066f
     }
 }

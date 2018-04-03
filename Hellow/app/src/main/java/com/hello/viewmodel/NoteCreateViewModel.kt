@@ -1,6 +1,8 @@
 package com.hello.viewmodel
 
+import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import android.databinding.ObservableInt
 import com.annimon.stream.Optional
 import com.hello.common.RxController
 import com.hello.model.aiui.VoiceHolder
@@ -16,6 +18,8 @@ import javax.inject.Inject
 
 class NoteCreateViewModel @Inject constructor() : RxController() {
     val noteText = ObservableField<String>()
+    val volume = ObservableInt()
+    val recording = ObservableBoolean()
 
     val saveOver: Subject<Optional<*>> = PublishSubject.create()
 
@@ -42,6 +46,11 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
 
                     noteText.set(text.toString().replace(Regex("。，"), "，"))
                 }
+                .subscribe()
+
+        voiceHolder.volume
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { volume.set(it) }
                 .subscribe()
     }
 
@@ -88,15 +97,20 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
 
     fun startRecord() {
         voiceHolder.startRecording()
+
+        recording.set(true)
     }
 
     fun stopRecord() {
         voiceHolder.stopRecording()
+
+        recording.set(false)
     }
 
     override fun onCleared() {
         super.onCleared()
 
         voiceHolder.onCleared()
+        recording.set(false)
     }
 }
