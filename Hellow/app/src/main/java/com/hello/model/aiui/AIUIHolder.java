@@ -569,6 +569,8 @@ public class AIUIHolder extends RxController {
                 })
                 .doOnError(__ -> error.onNext(Optional.empty()))
                 .subscribe();
+
+        phoneNum = null;
     }
 
     private void sendLocationInfo() {
