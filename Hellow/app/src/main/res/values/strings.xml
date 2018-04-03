@@ -50,6 +50,8 @@
     <string name="text_uss_energy">消耗能量：</string>
     <string name="text_uss_energy_end">大卡</string>
     <string name="text_no_have">无</string>
+    <string name="text_calling">正在拨通电话</string>
+    <string name="text_call_cancel">已取消拨打</string>
     <string name="text_dialog_logout_msg">你真的要注销吗？登录状态可以享受更好的体验！</string>
     <string name="text_copyRight">CopyRight©️2017–2018</string>
     <string name="text_local_sport">近期运动情况：</string>

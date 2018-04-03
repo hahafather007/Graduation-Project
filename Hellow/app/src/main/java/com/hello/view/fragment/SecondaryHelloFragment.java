@@ -1,7 +1,9 @@
 package com.hello.view.fragment;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -100,6 +102,17 @@ public class SecondaryHelloFragment extends AppFragment {
                             stopMusic();
                         }
                     }, disposable);
+                })
+                .subscribe();
+
+        //拨打电话
+        RxField.ofNonNull(viewModel.phoneNum)
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(v -> {
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    Uri data = Uri.parse("tel:" + v);
+                    intent.setData(data);
+                    startActivity(intent);
                 })
                 .subscribe();
     }

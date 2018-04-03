@@ -70,12 +70,12 @@
                 android:id="@+id/btnPlay"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:onClick="@{() -> fragment.playOrPauseMusic()}"
                 android:src="@{viewModel.musicPlaying ? @drawable/ic_menu_pause : @drawable/ic_menu_play}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:onSingleClick="@{() -> fragment.playOrPauseMusic()}" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/btnStop"

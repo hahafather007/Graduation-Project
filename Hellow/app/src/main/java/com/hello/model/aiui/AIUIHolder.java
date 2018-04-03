@@ -4,16 +4,20 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.annimon.stream.Optional;
+import com.hello.R;
 import com.hello.common.Constants;
 import com.hello.common.RxController;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.KugoMusicData;
 import com.hello.model.data.KugoSearchData;
+import com.hello.model.data.LocationData;
 import com.hello.model.data.MusicData;
+import com.hello.model.data.PhoneData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
+import com.hello.model.location.LocationHolder;
 import com.hello.model.pref.HelloPref;
 import com.hello.model.service.KugoMusicService;
 import com.hello.model.service.KugoSearchService;
@@ -21,6 +25,7 @@ import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
+import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
 import com.iflytek.aiui.AIUIAgent;
@@ -42,6 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -73,6 +80,8 @@ public class AIUIHolder extends RxController {
     private int status;
     //用户说的话
     private String userMsg;
+    //记录用户拨打的电话号码
+    private String phoneNum;
 
     //返回的结果
     public Subject<Object> aiuiResult = PublishSubject.create();
@@ -91,6 +100,8 @@ public class AIUIHolder extends RxController {
     KugoSearchService searchService;
     @Inject
     KugoMusicService musicService;
+    @Inject
+    LocationHolder locationHolder;
 
     @Inject
     AIUIHolder() {
@@ -116,6 +127,8 @@ public class AIUIHolder extends RxController {
                 }
             }
         };
+
+        sendLocationInfo();
     }
 
     //外部调用该方法控制录音开始和结束
@@ -260,7 +273,14 @@ public class AIUIHolder extends RxController {
         int rc = resultJson.getInt("rc");
         if (rc == 0 || rc == 3) {//0表示语义理解成功，3表示业务失败但有信息返回
             try {
-                String mTalkText = resultJson.getJSONObject("answer").getString("text");
+                String mTalkText;
+
+                try {
+                    mTalkText = resultJson.getJSONObject("answer").getString("text");
+                } catch (JSONException e) {
+                    mTalkText = resultJson.getString("text");
+                }
+
                 //按照类别选择不同方式
                 switch (resultJson.getString("service")) {
                     case "joke": {
@@ -473,6 +493,39 @@ public class AIUIHolder extends RxController {
 
                         break;
                     }
+                    case "telephone": {
+                        //表示用户肯定拨打
+                        if (isStrValid(phoneNum) && (mTalkText.contains("好") || mTalkText.toLowerCase().contains("ok")
+                                || mTalkText.contains("是") || mTalkText.contains("嗯")
+                                || mTalkText.toLowerCase().contains("yes") || mTalkText.contains("行"))) {
+                            aiuiResult.onNext(new HelloTalkData(context.getString(R.string.text_calling)));
+                            aiuiResult.onNext(new PhoneData(phoneNum));
+                            speech.startSpeaking(context.getString(R.string.text_calling), speechListener);
+
+                            phoneNum = null;
+                        } else {
+                            if (isStrValid(phoneNum)) {//此时表示用户取消了拨打
+                                aiuiResult.onNext(new HelloTalkData(context.getString(R.string.text_call_cancel)));
+                                speech.startSpeaking(context.getString(R.string.text_call_cancel), speechListener);
+
+                                phoneNum = null;
+                            } else {
+                                //正则表达式用来匹配有效电话号码
+                                Pattern pattern = Pattern.compile("1[35789]\\d{9}");
+                                Matcher matcher = pattern.matcher(mTalkText);
+
+                                phoneNum = null;
+
+                                while (matcher.find()) {
+                                    phoneNum = matcher.group();
+                                }
+
+                                aiuiResult.onNext(new HelloTalkData(mTalkText));
+                                speech.startSpeaking(mTalkText, speechListener);
+                            }
+                        }
+                        break;
+                    }
                     default: {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
@@ -485,9 +538,12 @@ public class AIUIHolder extends RxController {
 
                 useTuLing();
             }
-        } else {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
+        } else
+
+        {//如果AIUI没有结果返回或者返回错误结果，则调用图灵机器人
             useTuLing();
         }
+
     }
 
     private void useTuLing() {
@@ -503,10 +559,26 @@ public class AIUIHolder extends RxController {
                 .compose(Singles.async())
                 .compose(Singles.disposable(compositeDisposable))
                 .doOnSuccess(v -> {
-                    aiuiResult.onNext(v);
-                    speech.startSpeaking(v.getText(), speechListener);
+                    //与地理位置相关的问题，先进行定位{
+                    if (v.getText().contains("告诉") && v.getText().contains("哪个地方")) {
+                        locationHolder.startLocation();
+                    } else {
+                        aiuiResult.onNext(v);
+                        speech.startSpeaking(v.getText(), speechListener);
+                    }
                 })
                 .doOnError(__ -> error.onNext(Optional.empty()))
+                .subscribe();
+    }
+
+    private void sendLocationInfo() {
+        locationHolder.getLoaction()
+                .map(LocationData::getAddress)
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(v -> {
+                    userMsg = v;
+                    useTuLing();
+                })
                 .subscribe();
     }
 

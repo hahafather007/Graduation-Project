@@ -23,3 +23,5 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file NAME.
 #-renamesourcefileattribute SourceFile
+-keep class com.amap.api.navi.**{*;}
+-keep class com.autonavi.**{*;}

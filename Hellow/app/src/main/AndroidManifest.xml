@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!--获取当前wifi状态 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--允许改变WIFI状态-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!--允许程序改变网络连接状态 -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <!-- 拨号权限 -->
@@ -42,6 +44,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+
         <activity
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -51,38 +54,47 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".view.activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name=".view.activity.SettingActivity"
             android:label="@string/title_activity_setting"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name=".view.activity.BookActivity"
             android:label="@string/title_activity_interest"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name=".view.activity.RemindActivity"
             android:label="@string/title_activity_tip"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name=".view.activity.WebViewActivity"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name=".view.activity.NoteCreateActivity"
             android:label="@string/title_activity_note"
             android:theme="@style/AppStyle"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".view.activity.SportActivity"
             android:label="@string/title_activity_sport"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name=".view.activity.AboutActivity"
             android:label="@string/menu_aboutUs"
             android:theme="@style/AppStyle" />
+
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"
@@ -96,11 +108,19 @@
                 <data android:scheme="tencent1106738863" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="behind"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+
+        <service android:name="com.amap.api.location.APSService" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="5d3764b815a05b7ad9a16b94664279a9" />
     </application>
 
 </manifest>
