@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Environment
 import com.hello.common.RxController
-import com.hello.utils.Log
-import com.hello.utils.SpeechJsonParser
-import com.hello.utils.isStrValid
+import com.hello.utils.*
 import com.hello.utils.rx.Observables
 import com.iflytek.cloud.*
 import io.reactivex.Observable
@@ -14,6 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -22,11 +21,14 @@ class VoiceHolder @Inject constructor() : RxController() {
     private var speakTime = 0
     //标记当前是否真正说话
     private var speaking = false
+    //调用startRecording的次数
+    private var times = 0
 
     //每句话识别的结果
     val resultText: Subject<String> = PublishSubject.create()
     //音量大小
     val volume: Subject<Int> = PublishSubject.create()
+    val loading: Subject<Boolean> = PublishSubject.create()
 
     private lateinit var mAsr: SpeechRecognizer
     //识别监听器
@@ -41,12 +43,14 @@ class VoiceHolder @Inject constructor() : RxController() {
         mAsr.setParameter(SpeechConstant.DOMAIN, "iat")
         mAsr.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
         mAsr.setParameter(SpeechConstant.ACCENT, "mandarin")
+        mAsr.setParameter(SpeechConstant.AUDIO_FORMAT, "wav")
 
         listener = object : RecognizerListener {
             //data表示音频数据
             //音量值0~30
             override fun onVolumeChanged(vol: Int, data: ByteArray?) {
                 volume.onNext(vol)
+
                 Log.i("音量：$vol")
             }
 
@@ -92,6 +96,11 @@ class VoiceHolder @Inject constructor() : RxController() {
     }
 
     fun startRecording() {
+        speaking = true
+
+        mAsr.setParameter(SpeechConstant.ASR_AUDIO_PATH,
+                Environment.getExternalStorageDirectory().toString() + "/哈喽助手/录音/缓存/${times++}.wav")
+
         mAsr.startListening(listener)
 
         Observable.interval(40, TimeUnit.SECONDS)
@@ -101,7 +110,6 @@ class VoiceHolder @Inject constructor() : RxController() {
                 .doOnNext { speakTime++ }
                 .subscribe()
 
-        speaking = true
     }
 
     //停止识别，有返回结果
@@ -109,10 +117,41 @@ class VoiceHolder @Inject constructor() : RxController() {
         mAsr.stopListening()
 
         speaking = false
+
+        loading.onNext(true)
+
+        Observable.timer(1, TimeUnit.SECONDS)
+                .flatMap { Observable.just(decodeFile()) }
+                .compose(Observables.async())
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext {
+                    Log.i("编码成功！！！")
+                    times = 0
+                }
+                .doOnError { Log.e(it) }
+                .doFinally { loading.onNext(false) }
+                .subscribe()
+    }
+
+    //将录音数据编码
+    private fun decodeFile() {
+        val files = (0 until times)
+                .map {
+                    File("${Environment.getExternalStorageDirectory()}" +
+                            "/哈喽助手/录音/缓存/$it.wav")
+                }
+
+        //合并文件的名字为设备号+系统当前时间
+        WavMergeUtil.mergeWav(files, File("${Environment.getExternalStorageDirectory()}" +
+                "/哈喽助手/录音/${DeviceIdUtil.getId(context)}${System.currentTimeMillis()}.wav"))
+
+        //删除缓存文件
+        FileDeleteUtil.deleteDirectory("${Environment.getExternalStorageDirectory()}" +
+                "/哈喽助手/录音/缓存/")
     }
 
     //取消识别，无返回结果
-    fun cancelRecording() {
+    private fun cancelRecording() {
         mAsr.cancel()
 
         speaking = false

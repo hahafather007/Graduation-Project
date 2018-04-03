@@ -20,6 +20,7 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
     val noteText = ObservableField<String>()
     val volume = ObservableInt()
     val recording = ObservableBoolean()
+    val loading = ObservableBoolean()
 
     val saveOver: Subject<Optional<*>> = PublishSubject.create()
 
@@ -51,6 +52,11 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
         voiceHolder.volume
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext { volume.set(it) }
+                .subscribe()
+
+        voiceHolder.loading
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { loading.set(it) }
                 .subscribe()
     }
 
