@@ -113,6 +113,21 @@ class StepHolder @Inject constructor() : RxController() {
             HelloPref.stepCount = stepCount
             stepInfoChange.onNext(Optional.empty<Any>())
 
+            Observable.just(Select().from(StepInfo::class.java).queryList())
+                    .flatMap {
+                        for (info in it) {
+                            if (info.time == LocalDate.now().toString(DATA_FORMAT)) {
+                                info.stepCount = stepCount
+                                return@flatMap Observable.just(info.save())
+                            }
+                        }
+                        return@flatMap Observable.just(
+                                StepInfo(LocalDate.now().toString(DATA_FORMAT), stepCount).save())
+                    }
+                    .compose(Observables.async())
+                    .compose(Observables.disposable(compositeDisposable))
+                    .subscribe()
+
             firstSaveStep = true
         }
         step.onNext(stepCount)

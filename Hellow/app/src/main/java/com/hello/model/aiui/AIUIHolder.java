@@ -8,12 +8,15 @@ import com.hello.common.Constants;
 import com.hello.common.RxController;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.KugoMusicData;
+import com.hello.model.data.KugoSearchData;
 import com.hello.model.data.MusicData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.model.pref.HelloPref;
-import com.hello.model.service.MusicService;
+import com.hello.model.service.KugoMusicService;
+import com.hello.model.service.KugoSearchService;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
@@ -43,11 +46,13 @@ import java.util.Random;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_YAN;
 import static com.hello.utils.MusicUtil.stopMusic;
+import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
 
 @Singleton
@@ -77,15 +82,15 @@ public class AIUIHolder extends RxController {
     public Subject<Integer> volume = PublishSubject.create();
     //音乐数据
     public Subject<MusicData> music = PublishSubject.create();
-    //用于语音笔记数据
-    public Subject<String> noteText = PublishSubject.create();
 
     @Inject
     Context context;
     @Inject
     TuLingService tuLingService;
     @Inject
-    MusicService musicService;
+    KugoSearchService searchService;
+    @Inject
+    KugoMusicService musicService;
 
     @Inject
     AIUIHolder() {
@@ -330,6 +335,7 @@ public class AIUIHolder extends RxController {
                                     aiuiResult.onNext(v);
                                     speech.startSpeaking(v.getText(), speechListener);
                                 })
+                                .doOnError(__ -> error.onNext(Optional.empty()))
                                 .subscribe();
 
                         break;
@@ -422,21 +428,47 @@ public class AIUIHolder extends RxController {
                         break;
                     }
                     case "musicX": {
-                        String name = mTalkText.substring(mTalkText.indexOf("的") + 1,
-                                mTalkText.indexOf("吧"));
+                        String name;
+
+                        try {
+                            JSONArray array = resultJson.getJSONArray("semantic")
+                                    .getJSONObject(0).getJSONArray("slots");
+
+                            name = array.getJSONObject(0).getString("value") + "-";
+                            name += array.getJSONObject(1).getString("value");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+
+                            name = mTalkText.replaceFirst("听下", "")
+                                    .replaceFirst("的", "-");
+                            name = name.substring(0, name.length() - 1);
+                        }
 
                         Log.i(name);
 
                         final String taklText = mTalkText;
 
-                        musicService.getMusicList(1, name)
+                        searchService.getMusicList(1, name)
+                                .map(KugoSearchData::getData)
+                                .flatMap(v -> {
+                                    if (isListValid(v.getLists())) {
+                                        //noinspection ConstantConditions
+                                        return musicService.getMusic(v.getLists().get(0).getHash());
+                                    } else {
+                                        return Single.error(new Exception("没有找到歌曲"));
+                                    }
+                                })
                                 .compose(Singles.async())
                                 .compose(Singles.disposable(compositeDisposable))
+                                .map(KugoMusicData::getData)
                                 .doOnSuccess(v -> {
                                     aiuiResult.onNext(new HelloTalkData(taklText));
 
                                     speech.startSpeaking(taklText, speechListener);
+
+                                    music.onNext(new MusicData(v.getUrl(), v.getImg(), v.getName()));
                                 })
+                                .doOnError(__ -> error.onNext(Optional.empty()))
                                 .subscribe();
 
                         break;
@@ -474,6 +506,7 @@ public class AIUIHolder extends RxController {
                     aiuiResult.onNext(v);
                     speech.startSpeaking(v.getText(), speechListener);
                 })
+                .doOnError(__ -> error.onNext(Optional.empty()))
                 .subscribe();
     }
 

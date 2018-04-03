@@ -1,7 +1,7 @@
 package com.hello.model.service
 
-import com.hello.model.data.QQMusicData
-import com.hello.model.service.api.MusicApi
+import com.hello.model.data.KugoSearchData
+import com.hello.model.service.api.KugoSearchApi
 import com.hello.model.service.interceptor.AppHttpLoggingInterceptor
 import io.reactivex.Single
 import okhttp3.OkHttpClient
@@ -10,9 +10,9 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
-class MusicService @Inject constructor() {
-    private val url = "http://s.music.qq.com/"
-    private val api: MusicApi
+class KugoSearchService @Inject constructor() {
+    private val url = "http://songsearch.kugou.com/"
+    private val api: KugoSearchApi
 
     init {
         val client = OkHttpClient.Builder()
@@ -25,10 +25,10 @@ class MusicService @Inject constructor() {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(MusicApi::class.java)
+                .create(KugoSearchApi::class.java)
     }
 
-    fun getMusicList(num: Int, name: String): Single<QQMusicData> {
-        return api.getMusicList(name)
+    fun getMusicList(num: Int, name: String): Single<KugoSearchData> {
+        return api.getMusicList(name = name, pageSize = num)
     }
 }
