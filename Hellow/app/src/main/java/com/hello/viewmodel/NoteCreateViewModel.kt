@@ -41,12 +41,17 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
                     val text = StringBuilder()
 
                     if (isStrValid(noteText.get())) {
-                        text.append(noteText.get()).append(it).append("。")
+//                        if (it[0] == '。' || it[0] == '，' || it[0] == '、' || it[0] == '？'
+//                                || it[0] == '！' || it[0] == '“' || it[0] == '”' || it[0] == '‘'
+//                                || it[0] == '’' || it[0] == '…' || it[0].toInt() in 32..47) {
+//                            text.append(noteText.get()).append(it)
+//                        } else {
+                            text.append(noteText.get()).append(it)
+//                        }
                     } else {
-                        text.append(it).append("。")
+                        text.append(it)
                     }
-
-                    noteText.set(text.toString().replace(Regex("。，"), "，"))
+                    noteText.set(text.toString())
                 }
                 .subscribe()
 

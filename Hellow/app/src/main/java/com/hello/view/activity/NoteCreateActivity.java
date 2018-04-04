@@ -94,6 +94,10 @@ public class NoteCreateActivity extends AppActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (viewModel.getLoading().get()) {
+            return super.onOptionsItemSelected(item);
+        }
+
         switch (item.getItemId()) {
             case R.id.nav_share:
                 showShareView();

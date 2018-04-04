@@ -98,7 +98,8 @@
             android:label="@string/menu_aboutUs"
             android:theme="@style/AppStyle" />
 
-        <service android:name=".view.service.WakeUpService" />
+        <service android:name=".view.service.WakeUpService"
+            android:process=":wakeup"/>
 
         <activity
             android:name="com.tencent.tauth.AuthActivity"

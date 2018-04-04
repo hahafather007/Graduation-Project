@@ -6,7 +6,6 @@ import android.os.Environment
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback
 import cafe.adriel.androidaudioconverter.model.AudioFormat
-import com.hello.common.Constants.DATA_TIME_FORMAT
 import com.hello.common.RxController
 import com.hello.model.pref.HelloPref
 import com.hello.utils.*
@@ -17,7 +16,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import org.joda.time.LocalDateTime
 import java.io.File
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
@@ -71,20 +69,24 @@ class VoiceHolder @Inject constructor() : RxController() {
                 }
 
                 if (speaking && speakTime >= 40) {
-                    compositeDisposable.clear()
-                    speakTime = 0
-
                     mAsr.stopListening()
 
-                    //1秒是给系统储存录音缓存的时间
-                    Observable.timer(1, TimeUnit.SECONDS)
+                    val cacheFile = File("${Environment.getExternalStorageDirectory()}" +
+                            "/哈喽助手/录音/缓存/${times - 1}.wav")
+
+                    Observable.interval(16, TimeUnit.MILLISECONDS)
+                            .filter { cacheFile.exists() }
                             .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .compose(Observables.disposable(compositeDisposable))
                             .doOnNext {
+                                speakTime = 0
+
                                 if (speaking) {
                                     startRecording()
                                 }
+
+                                compositeDisposable.clear()
                             }
                             .subscribe()
                 }
@@ -103,17 +105,24 @@ class VoiceHolder @Inject constructor() : RxController() {
                 Log.i("识别时间到")
 
                 if (speaking) {
-                    compositeDisposable.clear()
-                    speakTime = 0
+                    mAsr.stopListening()
 
-                    Observable.timer(1, TimeUnit.SECONDS)
+                    val cacheFile = File("${Environment.getExternalStorageDirectory()}" +
+                            "/哈喽助手/录音/缓存/${times - 1}.wav")
+
+                    Observable.interval(16, TimeUnit.MILLISECONDS)
+                            .filter { cacheFile.exists() }
                             .subscribeOn(Schedulers.computation())
                             .observeOn(AndroidSchedulers.mainThread())
                             .compose(Observables.disposable(compositeDisposable))
                             .doOnNext {
+                                speakTime = 0
+
                                 if (speaking) {
                                     startRecording()
                                 }
+
+                                compositeDisposable.clear()
                             }
                             .subscribe()
                 }
@@ -177,7 +186,7 @@ class VoiceHolder @Inject constructor() : RxController() {
                 }
 
         fileName = "${Environment.getExternalStorageDirectory()}" +
-                "/哈喽助手/录音/${HelloPref.name}${LocalDateTime.now().toString(DATA_TIME_FORMAT)}.wav"
+                "/哈喽助手/录音/${HelloPref.name}${System.currentTimeMillis()}.wav"
 
         //合并文件的名字为设备号+系统当前时间
         WavMergeUtil.mergeWav(files, File(fileName))
