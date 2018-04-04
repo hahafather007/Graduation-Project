@@ -68,6 +68,8 @@ public class NoteCreateActivity extends AppActivity {
         binding.setActivity(this);
         viewModel.initNote(getIntent().getLongExtra(EXTRA_ID, -1));
 
+        binding.toolbar.setNavigationOnClickListener(__ -> onBackPressed());
+
         addChangeListener();
     }
 
@@ -190,10 +192,13 @@ public class NoteCreateActivity extends AppActivity {
         DialogUtil.showViewDialog(this, R.string.title_dialog, shareBinding.getRoot(),
                 R.string.text_cancel, R.string.text_enter, null,
                 (__, ___) -> {
+                    //分享文字
                     if (shareBinding.radioText.isChecked()) {
                         intent.putExtra(Intent.EXTRA_TEXT, viewModel.getNoteText().get());
                         intent.setType("text/plain");
-                    } else if (shareBinding.radioFile.isChecked()) {
+                    }
+                    //分享录音文件
+                    else if (shareBinding.radioFile.isChecked()) {
                         if (!isStrValid(viewModel.getFileName().get())) return;
 
                         //noinspection ConstantConditions
@@ -237,9 +242,15 @@ public class NoteCreateActivity extends AppActivity {
                 .subscribe();
 
         binding.editText.addTextChangedListener(new SimpleTextWatcher() {
+            boolean firstChange = isStrValid(getIntent().getStringExtra(EXTRA_TITLE));
+
             @Override
             public void afterTextChanged(@Nullable Editable s) {
-                hasSave = false;
+                if (!firstChange) {
+                    hasSave = false;
+                }
+
+                firstChange = false;
             }
         });
     }
@@ -278,6 +289,9 @@ public class NoteCreateActivity extends AppActivity {
     public void startOrStopRecord() {
         if (!viewModel.getRecording().get()) {
             viewModel.startRecord();
+
+            DialogUtil.showDialog(this, R.string.text_keep_screen_on, null,
+                    R.string.text_enter, null, null);
         } else {
             DialogUtil.showDialog(this, R.string.text_stop_recording,
                     R.string.text_cancel, R.string.text_enter,

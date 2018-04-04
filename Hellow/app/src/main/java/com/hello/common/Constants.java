@@ -36,4 +36,5 @@ public class Constants {
     public final static String EXTRA_ITEM = "extra_item";
 
     public final static String DATA_FORMAT = "yyyy-MM-dd";
+    public final static String DATA_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

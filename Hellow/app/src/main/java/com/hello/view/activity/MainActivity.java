@@ -379,6 +379,11 @@ public class MainActivity extends AppCompatActivity
         Stream.of(createListeners).forEach(OnListenedNewsCreateListener::onOpenCreate);
     }
 
+    @Override
+    public void onOpenLogin() {
+        tencent.login(this, "all", iUiListener);
+    }
+
     public interface OnPageScrollListener {
         void onScroll();
     }

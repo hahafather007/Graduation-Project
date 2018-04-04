@@ -13,6 +13,7 @@ import com.hello.R;
 import com.hello.databinding.FragmentNoteBinding;
 import com.hello.databinding.ItemVoiceNoteBinding;
 import com.hello.model.db.table.Note;
+import com.hello.model.pref.HelloPref;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxLifeCycle;
@@ -83,12 +84,27 @@ public class NoteFragment extends AppFragment {
     }
 
     public void newsNote() {
-        listener.onOpenCreate();
+        //如果登录状态，直接打开界面，否则弹出登录界面
+        if (HelloPref.INSTANCE.isLogin()) {
+            if (listener != null) {
+                listener.onOpenCreate();
+            }
 
-        setupActivity(getContext(), NoteCreateActivity.class);
+            setupActivity(getContext(), NoteCreateActivity.class);
+        } else {
+            DialogUtil.showDialog(getContext(), R.string.text_should_login,
+                    R.string.text_cancel, R.string.text_enter, null,
+                    (__, ___) -> {
+                        if (listener != null) {
+                            listener.onOpenLogin();
+                        }
+                    });
+        }
     }
 
     public interface OnNewsCreateListener {
         void onOpenCreate();
+
+        void onOpenLogin();
     }
 }

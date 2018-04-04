@@ -6,7 +6,9 @@ import android.os.Environment
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback
 import cafe.adriel.androidaudioconverter.model.AudioFormat
+import com.hello.common.Constants.DATA_TIME_FORMAT
 import com.hello.common.RxController
+import com.hello.model.pref.HelloPref
 import com.hello.utils.*
 import com.hello.utils.rx.Observables
 import com.iflytek.cloud.*
@@ -15,6 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import org.joda.time.LocalDateTime
 import java.io.File
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
@@ -174,7 +177,7 @@ class VoiceHolder @Inject constructor() : RxController() {
                 }
 
         fileName = "${Environment.getExternalStorageDirectory()}" +
-                "/哈喽助手/录音/${DeviceIdUtil.getId(context)}${System.currentTimeMillis()}.wav"
+                "/哈喽助手/录音/${HelloPref.name}${LocalDateTime.now().toString(DATA_TIME_FORMAT)}.wav"
 
         //合并文件的名字为设备号+系统当前时间
         WavMergeUtil.mergeWav(files, File(fileName))
