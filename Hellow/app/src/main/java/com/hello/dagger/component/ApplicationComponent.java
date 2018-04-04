@@ -3,9 +3,9 @@ package com.hello.dagger.component;
 import com.hello.application.HelloApplication;
 import com.hello.dagger.module.ApplicationModule;
 import com.hello.dagger.module.BookActivityModule;
+import com.hello.dagger.module.MainActivityModule;
 import com.hello.dagger.module.NoteCreateActivityModule;
 import com.hello.dagger.module.NoteFragmentMoudle;
-import com.hello.dagger.module.MainActivityModule;
 import com.hello.dagger.module.RemindActivityModule;
 import com.hello.dagger.module.SecondaryHelloFragmentModule;
 import com.hello.dagger.module.SecondaryNewsFragmentModule;
@@ -13,7 +13,7 @@ import com.hello.dagger.module.SettingActivityModule;
 import com.hello.dagger.module.SportActivityModule;
 import com.hello.dagger.module.SystemServiceModule;
 import com.hello.dagger.module.TodayTodoFragmentMoudle;
-import com.hello.view.activity.SportActivity;
+import com.hello.dagger.module.WakeUpServiceModule;
 
 import javax.inject.Singleton;
 
@@ -33,7 +33,8 @@ import dagger.Component;
         SecondaryHelloFragmentModule.class,
         SecondaryNewsFragmentModule.class,
         NoteCreateActivityModule.class,
-        SportActivityModule.class
+        SportActivityModule.class,
+        WakeUpServiceModule.class
 })
 public interface ApplicationComponent {
     @Component.Builder

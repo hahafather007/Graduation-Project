@@ -1,6 +1,7 @@
 package com.hello.application;
 
 import android.app.Activity;
+import android.app.Service;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 
@@ -18,6 +19,7 @@ import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import dagger.android.HasServiceInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -26,12 +28,14 @@ import static com.hello.common.Constants.AIUI_APPID;
 
 
 public class HelloApplication extends MultiDexApplication
-        implements HasActivityInjector, HasSupportFragmentInjector {
+        implements HasActivityInjector, HasSupportFragmentInjector, HasServiceInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentInjector;
+    @Inject
+    DispatchingAndroidInjector<Service> dispatchingServiceInjector;
 
     @Override
     public void onCreate() {
@@ -70,5 +74,10 @@ public class HelloApplication extends MultiDexApplication
     @Override
     public AndroidInjector<Activity> activityInjector() {
         return activityInjector;
+    }
+
+    @Override
+    public AndroidInjector<Service> serviceInjector() {
+        return dispatchingServiceInjector;
     }
 }

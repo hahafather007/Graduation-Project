@@ -98,6 +98,8 @@
             android:label="@string/menu_aboutUs"
             android:theme="@style/AppStyle" />
 
+        <service android:name=".view.service.WakeUpService" />
+
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"

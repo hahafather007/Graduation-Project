@@ -1,10 +1,14 @@
 package com.hello.view.activity;
 
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -32,6 +36,7 @@ import com.hello.utils.Log;
 import com.hello.utils.ToastUtil;
 import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
+import com.hello.view.service.WakeUpService;
 import com.hello.viewmodel.MainActivityViewModel;
 import com.hello.widget.view.HeartFlyView;
 import com.tencent.connect.UserInfo;
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     //QQ登录的监听器
     private IUiListener iUiListener;
     private boolean isExit = false;
+    private ServiceConnection connection;
 
     @Inject
     MainActivityViewModel viewModel;
@@ -130,6 +136,22 @@ public class MainActivity extends AppCompatActivity
         initViewPager();
         initFlyView();
         initUserGround();
+
+        connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.i("绑定成功：" + name.getClassName());
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.i("解除绑定：" + name.getClassName());
+            }
+        };
+
+//        bindService(new Intent(this, WakeUpService.class), connection, Service.BIND_AUTO_CREATE);
+
+        startService(new Intent(this, WakeUpService.class));
     }
 
     @Override
@@ -172,7 +194,7 @@ public class MainActivity extends AppCompatActivity
     public void onDestroy() {
         super.onDestroy();
 
-        viewModel.onCleared();
+//        viewModel.onCleared();
         listeners.clear();
         createListeners.clear();
     }

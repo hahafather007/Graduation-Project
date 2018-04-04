@@ -62,7 +62,6 @@ import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
 
-@Singleton
 public class AIUIHolder extends RxController {
     //语音合成器
     private SpeechSynthesizer speech;
