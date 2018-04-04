@@ -3,8 +3,12 @@ package com.hello.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -12,8 +16,10 @@ import android.widget.EditText;
 
 import com.hello.R;
 import com.hello.databinding.ActivityNoteCreateBinding;
+import com.hello.databinding.DialogChooseShareBinding;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.DimensionUtil;
+import com.hello.utils.MimeUtil;
 import com.hello.utils.MusicUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.ValidUtilKt;
@@ -23,6 +29,8 @@ import com.hello.viewmodel.NoteCreateViewModel;
 import com.hello.widget.listener.SimpleTextWatcher;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -172,9 +180,37 @@ public class NoteCreateActivity extends AppActivity {
 
     private void showShareView() {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, viewModel.getNoteText().get());
-        intent.setType("text/plain");
-        startActivity(intent);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        @SuppressWarnings("ConstantConditions")
+        DialogChooseShareBinding shareBinding = DataBindingUtil.inflate(inflater,
+                R.layout.dialog_choose_share, null, false);
+
+        DialogUtil.showViewDialog(this, R.string.title_dialog, shareBinding.getRoot(),
+                R.string.text_cancel, R.string.text_enter, null,
+                (__, ___) -> {
+                    if (shareBinding.radioText.isChecked()) {
+                        intent.putExtra(Intent.EXTRA_TEXT, viewModel.getNoteText().get());
+                        intent.setType("text/plain");
+                    } else if (shareBinding.radioFile.isChecked()) {
+                        if (!isStrValid(viewModel.getFileName().get())) return;
+
+                        //noinspection ConstantConditions
+                        intent.putExtra(Intent.EXTRA_STREAM,
+                                Uri.fromFile(new File(viewModel.getFileName().get())));
+                        intent.setType(MimeUtil.getMimeType(viewModel.getFileName().get()));
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        //android7.0以上
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                            StrictMode.setVmPolicy(builder.build());
+                        }
+                    }
+
+                    startActivity(intent);
+                });
     }
 
     private void addChangeListener() {
