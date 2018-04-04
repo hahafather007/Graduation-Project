@@ -30,6 +30,7 @@ import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.Binding;
+import com.hello.view.activity.MainActivity;
 import com.hello.viewmodel.SecondaryHelloViewModel;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class SecondaryHelloFragment extends AppFragment {
+public class SecondaryHelloFragment extends AppFragment implements MainActivity.OnListenedNewsCreateListener {
     public List<Binding.Linker> linkers;
 
     private FragmentSecondaryHelloBinding binding;
@@ -65,6 +66,10 @@ public class SecondaryHelloFragment extends AppFragment {
         binding.setFragment(this);
         binding.setViewModel(viewModel);
 
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).addCreateListener(this);
+        }
+
         initView();
         addChangeListener();
     }
@@ -73,8 +78,16 @@ public class SecondaryHelloFragment extends AppFragment {
     public void onDestroy() {
         super.onDestroy();
 
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).removeCreateListener(this);
+        }
         MusicUtil.stopMusic();
         viewModel.onCleared();
+    }
+
+    @Override
+    public void onOpenCreate() {
+        stopMusic();
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -55,11 +55,12 @@ import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, NoteFragment.OnNewsCreateListener {
     private DrawerLayout drawer;
     private ActivityMainBinding binding;
     private InputMethodManager inputMethodManager;
     private List<OnPageScrollListener> listeners;
+    private List<OnListenedNewsCreateListener> createListeners;
     private Tencent tencent;
     //QQ登录的监听器
     private IUiListener iUiListener;
@@ -76,7 +77,10 @@ public class MainActivity extends AppCompatActivity
         binding.setActivity(this);
 
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
         listeners = new ArrayList<>();
+        createListeners = new ArrayList<>();
+
         tencent = Tencent.createInstance(Constants.QQ_APPID, this);
         iUiListener = new IUiListener() {
             @Override
@@ -170,6 +174,7 @@ public class MainActivity extends AppCompatActivity
 
         viewModel.onCleared();
         listeners.clear();
+        createListeners.clear();
     }
 
     @Override
@@ -183,6 +188,14 @@ public class MainActivity extends AppCompatActivity
 
     public void removeScrollListener(OnPageScrollListener listener) {
         listeners.remove(listener);
+    }
+
+    public void addCreateListener(OnListenedNewsCreateListener listener) {
+        createListeners.add(listener);
+    }
+
+    public void removeCreateListener(OnListenedNewsCreateListener listener) {
+        createListeners.remove(listener);
     }
 
     private void logout() {
@@ -361,7 +374,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onOpenCreate() {
+        Stream.of(createListeners).forEach(OnListenedNewsCreateListener::onOpenCreate);
+    }
+
     public interface OnPageScrollListener {
         void onScroll();
+    }
+
+    public interface OnListenedNewsCreateListener {
+        void onOpenCreate();
     }
 }

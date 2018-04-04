@@ -26,6 +26,7 @@ import static com.hello.utils.ToastUtil.showToast;
 
 public class NoteFragment extends AppFragment {
     private FragmentNoteBinding binding;
+    private OnNewsCreateListener listener;
 
     @Inject
     NoteViewModel viewModel;
@@ -43,6 +44,10 @@ public class NoteFragment extends AppFragment {
         binding = DataBindingUtil.bind(view);
         binding.setFragment(this);
         binding.setViewModel(viewModel);
+
+        if (getActivity() instanceof OnNewsCreateListener) {
+            listener = ((OnNewsCreateListener) getActivity());
+        }
 
         addChangeListener();
     }
@@ -78,6 +83,12 @@ public class NoteFragment extends AppFragment {
     }
 
     public void newsNote() {
+        listener.onOpenCreate();
+
         setupActivity(getContext(), NoteCreateActivity.class);
+    }
+
+    public interface OnNewsCreateListener {
+        void onOpenCreate();
     }
 }
