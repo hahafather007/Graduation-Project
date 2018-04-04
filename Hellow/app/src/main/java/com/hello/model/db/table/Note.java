@@ -19,13 +19,16 @@ public class Note extends BaseModel {
     public String content;
     @Column
     public String time;
+    @Column
+    public String recordFile;
 
     public Note() {
     }
 
-    public Note(String title, String content, String time) {
+    public Note(String title, String content, String time, String recordFile) {
         this.title = title;
         this.content = content;
         this.time = time;
+        this.recordFile = recordFile;
     }
 }

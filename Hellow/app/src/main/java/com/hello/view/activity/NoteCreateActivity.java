@@ -14,6 +14,7 @@ import com.hello.R;
 import com.hello.databinding.ActivityNoteCreateBinding;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.DimensionUtil;
+import com.hello.utils.MusicUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.RxField;
@@ -25,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 import static com.hello.common.Constants.EXTRA_ID;
 import static com.hello.common.Constants.EXTRA_TITLE;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -33,7 +36,10 @@ public class NoteCreateActivity extends AppActivity {
     private ActivityNoteCreateBinding binding;
     //录音是否正在播放的状态
     private boolean recordPlaying;
+    //录音是否播放过了
+    private boolean hasPlayed;
     private boolean hasSave = true;
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     @Inject
     NoteCreateViewModel viewModel;
@@ -71,6 +77,8 @@ public class NoteCreateActivity extends AppActivity {
             }
         }
 
+        menu.getItem(0).setVisible(false);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -84,6 +92,7 @@ public class NoteCreateActivity extends AppActivity {
                 saveNote();
                 break;
             case R.id.nav_play:
+                playOrPauseMusic();
                 if (!recordPlaying) {
                     item.setIcon(R.mipmap.ic_menu_pause);
                 } else {
@@ -106,6 +115,8 @@ public class NoteCreateActivity extends AppActivity {
         super.onDestroy();
 
         viewModel.onCleared();
+
+        MusicUtil.stopMusic();
     }
 
     @Override
@@ -183,12 +194,49 @@ public class NoteCreateActivity extends AppActivity {
                 .doOnNext(v -> binding.waveView.updateAmplitude(v / 30f))
                 .subscribe();
 
+        RxField.ofNonNull(viewModel.getFileName())
+                .filter(ValidUtilKt::isStrValid)
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(__ -> binding.toolbar.getMenu().findItem(R.id.nav_play).setVisible(true))
+                .subscribe();
+
         binding.editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(@Nullable Editable s) {
                 hasSave = false;
             }
         });
+    }
+
+    public void playOrPauseMusic() {
+        if (!recordPlaying) {
+            if (hasPlayed) {
+                MusicUtil.continueMusic();
+            } else {
+                MusicUtil.playMusic(viewModel.getFileName().get(), new MusicUtil.MediaListener() {
+                    @Override
+                    public void error() {
+                        ToastUtil.showToast(NoteCreateActivity.this, R.string.test_network_error);
+
+                        hasPlayed = false;
+                    }
+
+                    @Override
+                    public void complete() {
+                        MusicUtil.stopMusic();
+
+                        binding.toolbar.getMenu().findItem(R.id.nav_play).setIcon(R.mipmap.ic_menu_play);
+                        recordPlaying = false;
+
+                        hasPlayed = false;
+                    }
+                }, disposable);
+
+                hasPlayed = true;
+            }
+        } else {
+            MusicUtil.pauseMusic();
+        }
     }
 
     public void startOrStopRecord() {

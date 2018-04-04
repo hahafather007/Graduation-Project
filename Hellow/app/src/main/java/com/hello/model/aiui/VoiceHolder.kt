@@ -3,6 +3,9 @@ package com.hello.model.aiui
 import android.content.Context
 import android.os.Bundle
 import android.os.Environment
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter
+import cafe.adriel.androidaudioconverter.callback.IConvertCallback
+import cafe.adriel.androidaudioconverter.model.AudioFormat
 import com.hello.common.RxController
 import com.hello.utils.*
 import com.hello.utils.rx.Observables
@@ -13,6 +16,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import java.io.File
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -23,6 +27,8 @@ class VoiceHolder @Inject constructor() : RxController() {
     private var speaking = false
     //调用startRecording的次数
     private var times = 0
+    //转换后的文件名
+    private var fileName = ""
 
     //每句话识别的结果
     val resultText: Subject<String> = PublishSubject.create()
@@ -65,7 +71,19 @@ class VoiceHolder @Inject constructor() : RxController() {
                     compositeDisposable.clear()
                     speakTime = 0
 
-                    startRecording()
+                    mAsr.stopListening()
+
+                    //1秒是给系统储存录音缓存的时间
+                    Observable.timer(1, TimeUnit.SECONDS)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .compose(Observables.disposable(compositeDisposable))
+                            .doOnNext {
+                                if (speaking) {
+                                    startRecording()
+                                }
+                            }
+                            .subscribe()
                 }
             }
 
@@ -85,7 +103,16 @@ class VoiceHolder @Inject constructor() : RxController() {
                     compositeDisposable.clear()
                     speakTime = 0
 
-                    startRecording()
+                    Observable.timer(1, TimeUnit.SECONDS)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .compose(Observables.disposable(compositeDisposable))
+                            .doOnNext {
+                                if (speaking) {
+                                    startRecording()
+                                }
+                            }
+                            .subscribe()
                 }
             }
 
@@ -96,10 +123,10 @@ class VoiceHolder @Inject constructor() : RxController() {
     }
 
     fun startRecording() {
-        speaking = true
-
         mAsr.setParameter(SpeechConstant.ASR_AUDIO_PATH,
                 Environment.getExternalStorageDirectory().toString() + "/哈喽助手/录音/缓存/${times++}.wav")
+
+        speaking = true
 
         mAsr.startListening(listener)
 
@@ -114,9 +141,9 @@ class VoiceHolder @Inject constructor() : RxController() {
 
     //停止识别，有返回结果
     fun stopRecording() {
-        mAsr.stopListening()
-
         speaking = false
+
+        mAsr.stopListening()
 
         loading.onNext(true)
 
@@ -125,15 +152,20 @@ class VoiceHolder @Inject constructor() : RxController() {
                 .compose(Observables.async())
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext {
-                    Log.i("编码成功！！！")
                     times = 0
+
+                    wavToMp3()
                 }
-                .doOnError { Log.e(it) }
-                .doFinally { loading.onNext(false) }
+                .doOnError {
+                    Log.e(it)
+                    fileName = ""
+                }
                 .subscribe()
     }
 
-    //将录音数据编码
+    fun getFileName() = fileName
+
+    //将录音数据合并
     private fun decodeFile() {
         val files = (0 until times)
                 .map {
@@ -141,13 +173,40 @@ class VoiceHolder @Inject constructor() : RxController() {
                             "/哈喽助手/录音/缓存/$it.wav")
                 }
 
+        fileName = "${Environment.getExternalStorageDirectory()}" +
+                "/哈喽助手/录音/${DeviceIdUtil.getId(context)}${System.currentTimeMillis()}.wav"
+
         //合并文件的名字为设备号+系统当前时间
-        WavMergeUtil.mergeWav(files, File("${Environment.getExternalStorageDirectory()}" +
-                "/哈喽助手/录音/${DeviceIdUtil.getId(context)}${System.currentTimeMillis()}.wav"))
+        WavMergeUtil.mergeWav(files, File(fileName))
 
         //删除缓存文件
         FileDeleteUtil.deleteDirectory("${Environment.getExternalStorageDirectory()}" +
                 "/哈喽助手/录音/缓存/")
+    }
+
+    private fun wavToMp3() {
+        val callback = object : IConvertCallback {
+            override fun onSuccess(convertedFile: File?) {
+                //删除缓存文件
+                FileDeleteUtil.deleteFile(fileName)
+                fileName = convertedFile?.absolutePath ?: ""
+
+                Log.i("转换成功：$fileName")
+
+                loading.onNext(false)
+            }
+
+            override fun onFailure(e: Exception?) {
+                e?.printStackTrace()
+
+                loading.onNext(false)
+            }
+        }
+        AndroidAudioConverter.with(context)
+                .setFile(File(fileName))
+                .setFormat(AudioFormat.MP3)
+                .setCallback(callback)
+                .convert()
     }
 
     //取消识别，无返回结果

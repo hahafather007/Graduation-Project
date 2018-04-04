@@ -10,13 +10,13 @@ object MusicUtil {
     private val player = MediaPlayer()
 
     @JvmStatic
-    fun playMusic(url: String, disposable: CompositeDisposable) {
+    fun playMusic(url: String?, disposable: CompositeDisposable) {
         playMusic(url, null, disposable)
     }
 
     @Suppress("DEPRECATION")
     @JvmStatic
-    fun playMusic(url: String, listener: MediaListener?, disposable: CompositeDisposable) {
+    fun playMusic(url: String?, listener: MediaListener?, disposable: CompositeDisposable) {
         if (player.isPlaying) {
             player.stop()
         }
@@ -24,9 +24,9 @@ object MusicUtil {
 
         //异步进行音乐播放，以免阻塞线程
         Observable.just(url)
-                .map { v ->
+                .map {
                     player.reset()
-                    player.setDataSource(v)
+                    player.setDataSource(it)
                     player.setOnCompletionListener { listener?.complete() }
                     player.setOnErrorListener { _, _, _ ->
                         listener?.error()

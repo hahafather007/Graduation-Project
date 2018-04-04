@@ -70,7 +70,6 @@ public class NoteFragment extends AppFragment {
         startActivity(NoteCreateActivity.intentOfNote(getContext(), id, title));
     }
 
-    //长按item弹出删除选项
     @SuppressWarnings("ConstantConditions")
     public void readyDelete(Note note) {
         DialogUtil.showDialog(getContext(), R.string.text_ask_delete,

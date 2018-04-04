@@ -7,9 +7,12 @@ import com.annimon.stream.Optional;
 import com.hello.common.RxController;
 import com.hello.model.db.NotesHolder;
 import com.hello.model.db.table.Note;
+import com.hello.utils.FileDeleteUtil;
 import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.Singles;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -46,7 +49,13 @@ public class NoteViewModel extends RxController {
         notesHolder.deleteNote(note)
                 .compose(Completables.async())
                 .compose(Completables.disposable(compositeDisposable))
-                .doOnComplete(() -> deleteOver.onNext(Optional.empty()))
+                .doOnComplete(() -> {
+                    if (new File(note.recordFile).exists()) {
+                        FileDeleteUtil.deleteFile(note.recordFile);
+                    }
+
+                    deleteOver.onNext(Optional.empty());
+                })
                 .subscribe();
     }
 

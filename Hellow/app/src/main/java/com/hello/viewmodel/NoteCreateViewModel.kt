@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 class NoteCreateViewModel @Inject constructor() : RxController() {
     val noteText = ObservableField<String>()
+    val fileName = ObservableField<String>()
     val volume = ObservableInt()
     val recording = ObservableBoolean()
     val loading = ObservableBoolean()
@@ -56,7 +57,13 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
 
         voiceHolder.loading
                 .compose(Observables.disposable(compositeDisposable))
-                .doOnNext { loading.set(it) }
+                .doOnNext {
+                    loading.set(it)
+
+                    if (isStrValid(voiceHolder.getFileName())) {
+                        fileName.set(voiceHolder.getFileName())
+                    }
+                }
                 .subscribe()
     }
 
@@ -91,7 +98,7 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
     }
 
     fun addNote(title: String, content: String) {
-        notesHolder.addNote(title, content)
+        notesHolder.addNote(title, content, voiceHolder.getFileName())
                 .compose(Completables.async())
                 .compose(Completables.disposable(compositeDisposable))
                 .doOnComplete {

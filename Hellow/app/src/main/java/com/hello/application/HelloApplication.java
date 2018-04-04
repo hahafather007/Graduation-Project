@@ -6,12 +6,15 @@ import android.support.v4.app.Fragment;
 
 import com.chibatching.kotpref.Kotpref;
 import com.hello.dagger.component.DaggerApplicationComponent;
+import com.hello.utils.Log;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import javax.inject.Inject;
 
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
@@ -45,6 +48,18 @@ public class HelloApplication extends MultiDexApplication
                 .application(this)
                 .build()
                 .inject(this);
+
+        AndroidAudioConverter.load(this, new ILoadCallback() {
+            @Override
+            public void onSuccess() {
+                Log.i("load成功！！！");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

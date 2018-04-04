@@ -21,10 +21,10 @@ class NotesHolder @Inject constructor() {
     //增删改后通知相关联界面进行数据刷新
     val statusChange: Subject<List<Note>> = PublishSubject.create()
 
-    fun addNote(title: String, content: String): Completable {
+    fun addNote(title: String, content: String, file: String): Completable {
         return Completable.fromAction {
             val time = LocalDateTime.now().toString()
-            val note = Note(title, content, time)
+            val note = Note(title, content, time, file)
             note.save()
         }
                 .doOnComplete {
