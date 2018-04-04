@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp">
 
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/icon"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -29,13 +29,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:riv_corner_radius="4dp"
             tools:src="@drawable/img_emoji" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{data.name}"
+            android:layout_marginTop="6dp"
+            android:text="@{@string/text_cook_info(data.name, data.info)}"
             android:textColor="@color/colorText"
             app:layout_constraintTop_toBottomOf="@id/icon"
             tools:text="猪腿肉、泡椒、姜、蒜、葱、水发木耳、胡萝卜、白糖、香醋(保宁醋/镇江香醋)、老抽、生抽、盐、清汤、淀粉" />
