@@ -66,7 +66,6 @@ public class NoteCreateActivity extends AppActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_create);
         binding.setViewModel(viewModel);
         binding.setActivity(this);
-        viewModel.initNote(getIntent().getLongExtra(EXTRA_ID, -1));
 
         binding.toolbar.setNavigationOnClickListener(__ -> onBackPressed());
 
@@ -88,6 +87,8 @@ public class NoteCreateActivity extends AppActivity {
         }
 
         menu.getItem(0).setVisible(false);
+
+        viewModel.initNote(getIntent().getLongExtra(EXTRA_ID, -1));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -241,6 +242,7 @@ public class NoteCreateActivity extends AppActivity {
 
         RxField.ofNonNull(viewModel.getFileName())
                 .filter(ValidUtilKt::isStrValid)
+                .filter(v -> new File(v).exists())
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(__ -> binding.toolbar.getMenu().findItem(R.id.nav_play).setVisible(true))
                 .subscribe();

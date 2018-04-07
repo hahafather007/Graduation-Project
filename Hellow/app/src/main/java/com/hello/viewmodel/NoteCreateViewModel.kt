@@ -46,7 +46,7 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
 //                                || it[0] == '’' || it[0] == '…' || it[0].toInt() in 32..47) {
 //                            text.append(noteText.get()).append(it)
 //                        } else {
-                            text.append(noteText.get()).append(it)
+                        text.append(noteText.get()).append(it)
 //                        }
                     } else {
                         text.append(it)
@@ -81,7 +81,8 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
                 .compose(Singles.disposable(compositeDisposable))
                 .doOnSuccess {
                     note = it
-                    noteText.set(note?.content)
+                    noteText.set(it.content)
+                    fileName.set(it.recordFile)
                 }
                 .subscribe()
     }

@@ -115,6 +115,8 @@ class StepHolder @Inject constructor() : RxController() {
 
             Observable.just(Select().from(StepInfo::class.java).queryList())
                     .flatMap {
+                        cacheStepInfo = it
+
                         for (info in it) {
                             if (info.time == LocalDate.now().toString(DATA_FORMAT)) {
                                 info.stepCount = stepCount

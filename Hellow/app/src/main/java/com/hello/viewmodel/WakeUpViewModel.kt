@@ -5,8 +5,8 @@ import com.hello.utils.Log
 import javax.inject.Inject
 
 class WakeUpViewModel @Inject constructor() {
-    @Inject
-    lateinit var aiuiHolder: AIUIHolder
+  //  @Inject
+   // lateinit var aiuiHolder: AIUIHolder
 
     @Inject
     fun init() {

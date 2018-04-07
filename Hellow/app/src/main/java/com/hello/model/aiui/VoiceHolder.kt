@@ -142,13 +142,12 @@ class VoiceHolder @Inject constructor() : RxController() {
 
         mAsr.startListening(listener)
 
-        Observable.interval(40, TimeUnit.SECONDS)
+        Observable.interval(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext { speakTime++ }
                 .subscribe()
-
     }
 
     //停止识别，有返回结果
@@ -159,9 +158,14 @@ class VoiceHolder @Inject constructor() : RxController() {
 
         loading.onNext(true)
 
-        Observable.timer(1, TimeUnit.SECONDS)
+        val cacheFile = File("${Environment.getExternalStorageDirectory()}" +
+                "/哈喽助手/录音/缓存/${times - 1}.wav")
+
+        Observable.interval(16, TimeUnit.MILLISECONDS)
+                .filter { cacheFile.exists() }
                 .flatMap { Observable.just(decodeFile()) }
-                .compose(Observables.async())
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext {
                     times = 0
@@ -172,6 +176,7 @@ class VoiceHolder @Inject constructor() : RxController() {
                     Log.e(it)
                     fileName = ""
                 }
+                .doFinally { compositeDisposable.clear() }
                 .subscribe()
     }
 
