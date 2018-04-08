@@ -45,8 +45,10 @@ class WakeUpHolder @Inject constructor() : RxController() {
             override fun onResult(result: RecognizerResult?, isLast: Boolean) {
                 val text = SpeechJsonParser.parseGrammarResult(result?.resultString)
 
+                if (speaking) return
+
                 //表示用户说了唤醒词
-                if (text == "小哈同学" || text == "小哈助手" || text == "哈喽助手") {
+                if (text.contains("同学")) {
                     speaking = true
 
                     aiuiHolder.speakText(if (Math.random() < 0.5) "嗯！" else "怎么啦？")
