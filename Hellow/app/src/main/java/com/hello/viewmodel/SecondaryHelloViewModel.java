@@ -22,6 +22,7 @@ public class SecondaryHelloViewModel extends RxController {
     public ObservableList<Object> items = new ObservableArrayList<>();
     public ObservableField<MusicData> music = new ObservableField<>();
     public ObservableField<String> phoneNum = new ObservableField<>();
+    public ObservableField<String> location = new ObservableField<>();
     public ObservableBoolean musicPlaying = new ObservableBoolean(true);
 
     public Subject<TuLingData> tuLing = PublishSubject.create();
@@ -54,6 +55,14 @@ public class SecondaryHelloViewModel extends RxController {
         aiuiHolder.music
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext(v -> music.set(v))
+                .subscribe();
+
+        aiuiHolder.location
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(v -> {
+                    location.set(null);
+                    location.set(v);
+                })
                 .subscribe();
     }
 }

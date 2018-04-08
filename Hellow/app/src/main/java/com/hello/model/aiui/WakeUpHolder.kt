@@ -22,6 +22,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
     private var autoListening = false
 
     var error: Subject<Optional<*>> = PublishSubject.create()
+    var location: Subject<String> = PublishSubject.create()
 
     @Inject
     lateinit var aiuiHolder: AIUIHolder
@@ -114,6 +115,11 @@ class WakeUpHolder @Inject constructor() : RxController() {
         aiuiHolder.error
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext { error.onNext(Optional.empty<Any>()) }
+                .subscribe()
+
+        aiuiHolder.location
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { location.onNext(it) }
                 .subscribe()
     }
 }

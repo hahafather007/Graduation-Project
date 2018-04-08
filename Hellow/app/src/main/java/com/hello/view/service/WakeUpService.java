@@ -15,6 +15,7 @@ import com.hello.utils.Log;
 import com.hello.utils.NotificationUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
+import com.hello.utils.rx.RxField;
 import com.hello.viewmodel.WakeUpViewModel;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
+import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
 
 public class WakeUpService extends Service {
@@ -115,6 +117,11 @@ public class WakeUpService extends Service {
         viewModel.getError()
                 .compose(Observables.disposable(disposable))
                 .doOnNext(__ -> ToastUtil.showToast(this, R.string.test_network_error))
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.getLocation())
+                .compose(Observables.disposable(disposable))
+                .doOnNext(v -> openMap(this, v))
                 .subscribe();
     }
 

@@ -95,6 +95,8 @@ public class AIUIHolder extends RxController {
     public Subject<MusicData> music = PublishSubject.create();
     //合成语音说完
     public Subject<Optional> speakOver = PublishSubject.create();
+    //导航的终点坐标
+    public Subject<String> location = PublishSubject.create();
 
     @Inject
     Context context;
@@ -537,6 +539,30 @@ public class AIUIHolder extends RxController {
                                 speech.startSpeaking(mTalkText, speechListener);
                             }
                         }
+                        break;
+                    }
+                    //自定义导航技能
+                    case "HELLOASSIS.navigation": {
+                        JSONObject object = resultJson.getJSONArray("semantic")
+                                .getJSONObject(0).getJSONArray("slots").getJSONObject(0);
+
+                        String loc = object.getString("value");
+
+                        location.onNext(loc);
+
+                        aiuiResult.onNext(new HelloTalkData("正在为您导航"));
+                        speech.startSpeaking("正在为您导航", speechListener);
+
+                        break;
+                    }
+                    //自定义的短信发送技能
+                    case "HELLOASSIS.message_send": {
+                        JSONArray array = resultJson.getJSONArray("semantic")
+                                .getJSONObject(0).getJSONArray("slots");
+
+                        String people = array.getJSONObject(0).getString("value");
+                        String msg = array.getJSONObject(1).getString("value");
+
                         break;
                     }
                     default: {

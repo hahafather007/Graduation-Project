@@ -42,6 +42,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hello.utils.NavigationUtil.openMap;
 
 public class SecondaryHelloFragment extends AppFragment implements MainActivity.OnListenedNewsCreateListener {
     public List<Binding.Linker> linkers;
@@ -127,6 +128,11 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
                     intent.setData(data);
                     startActivity(intent);
                 })
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.location)
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(v -> openMap(getContext(), v))
                 .subscribe();
     }
 
