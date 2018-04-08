@@ -17,6 +17,7 @@ import com.hello.model.data.PhoneData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
+import com.hello.model.db.SpeakDataHolder;
 import com.hello.model.location.LocationHolder;
 import com.hello.model.pref.HelloPref;
 import com.hello.model.service.KugoMusicService;
@@ -25,6 +26,7 @@ import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
+import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.Singles;
 import com.hello.widget.listener.SimpleSynthesizerListener;
@@ -104,6 +106,8 @@ public class AIUIHolder extends RxController {
     KugoMusicService musicService;
     @Inject
     LocationHolder locationHolder;
+    @Inject
+    SpeakDataHolder speakDataHolder;
 
     @Inject
     AIUIHolder() {
@@ -542,6 +546,8 @@ public class AIUIHolder extends RxController {
                         break;
                     }
                 }
+
+                saveTalkData(userMsg, mTalkText);
             } catch (JSONException e) {
                 e.printStackTrace();
 
@@ -575,6 +581,8 @@ public class AIUIHolder extends RxController {
                         aiuiResult.onNext(v);
                         speech.startSpeaking(v.getText(), speechListener);
                     }
+
+                    saveTalkData(userMsg, v.getText());
                 })
                 .doOnError(__ -> error.onNext(Optional.empty()))
                 .subscribe();
@@ -602,5 +610,13 @@ public class AIUIHolder extends RxController {
     private String getTulingKey() {
         return HelloPref.INSTANCE.getTalkPeople().equals(XIAO_YAN) ?
                 Constants.TULING_KEY : Constants.TULING_KEY_BOY;
+    }
+
+    private void saveTalkData(String userTalk, String helloTalk) {
+        speakDataHolder.addSpeakData(userTalk, helloTalk)
+                .compose(Completables.async())
+                .compose(Completables.disposable(compositeDisposable))
+                .doOnError(Throwable::printStackTrace)
+                .subscribe();
     }
 }
