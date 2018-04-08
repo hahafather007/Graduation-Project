@@ -13,6 +13,7 @@ import com.hello.dagger.module.SettingActivityModule;
 import com.hello.dagger.module.SportActivityModule;
 import com.hello.dagger.module.SystemServiceModule;
 import com.hello.dagger.module.TodayTodoFragmentMoudle;
+import com.hello.dagger.module.VoiceServiceModule;
 import com.hello.dagger.module.WakeUpServiceModule;
 
 import javax.inject.Singleton;
@@ -34,7 +35,8 @@ import dagger.Component;
         SecondaryNewsFragmentModule.class,
         NoteCreateActivityModule.class,
         SportActivityModule.class,
-        WakeUpServiceModule.class
+        WakeUpServiceModule.class,
+        VoiceServiceModule.class
 })
 public interface ApplicationComponent {
     @Component.Builder

@@ -1,6 +1,7 @@
 package com.hello.view.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,12 +12,15 @@ import com.hello.databinding.ActivitySettingBinding;
 import com.hello.databinding.DialogChooseSexBinding;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.DialogUtil;
+import com.hello.utils.ServiceUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.RxLifeCycle;
+import com.hello.view.service.WakeUpService;
 import com.hello.viewmodel.SettingViewModel;
 
 import javax.inject.Inject;
 
+import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.viewmodel.SettingViewModel.HelloSex.BOY;
 import static com.hello.viewmodel.SettingViewModel.HelloSex.GIRL;
 
@@ -44,8 +48,20 @@ public class SettingActivity extends AppActivity {
     private void addChangeListener() {
         viewModel.getSuccess()
                 .compose(RxLifeCycle.resumed(this))
-                .doOnNext(b -> ToastUtil.showToast(this, b ?
-                        R.string.text_save_over : R.string.text_save_error))
+                .doOnNext(b -> {
+                            ToastUtil.showToast(this, b ?
+                                    R.string.text_save_over : R.string.text_save_error);
+
+                            if (HelloPref.INSTANCE.isCanWakeup()
+                                    && !ServiceUtil.isSerivceRunning(this, WakeUpService.class.getName())) {
+                                Intent intent = new Intent(this, WakeUpService.class);
+                                intent.setAction(ACTION_APP_CREATE);
+                                startService(intent);
+                            } else {
+                                stopService(new Intent(this, WakeUpService.class));
+                            }
+                        }
+                )
                 .subscribe();
     }
 

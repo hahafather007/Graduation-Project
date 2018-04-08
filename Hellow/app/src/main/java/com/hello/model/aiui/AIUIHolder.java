@@ -91,6 +91,8 @@ public class AIUIHolder extends RxController {
     public Subject<Integer> volume = PublishSubject.create();
     //音乐数据
     public Subject<MusicData> music = PublishSubject.create();
+    //合成语音说完
+    public Subject<Optional> speakOver = PublishSubject.create();
 
     @Inject
     Context context;
@@ -125,6 +127,8 @@ public class AIUIHolder extends RxController {
                 if (errorMsg != null && isStrValid(errorMsg.getMessage())) {
                     error.onNext(Optional.empty());
                 }
+
+                speakOver.onNext(Optional.empty());
             }
         };
 
@@ -148,6 +152,11 @@ public class AIUIHolder extends RxController {
         message = new AIUIMessage(AIUIConstant.CMD_STOP_RECORD, 0, 0,
                 "sample_rate=16000,data_type=audio", null);
         agent.sendMessage(message);
+    }
+
+    //外部调用该方法说出指定话语
+    public void speakText(String text) {
+        speech.startSpeaking(text, speechListener);
     }
 
     //外部调用该方法发送本文消息

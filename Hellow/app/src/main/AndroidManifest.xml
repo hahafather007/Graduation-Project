@@ -35,6 +35,7 @@
     <!--手机定位信息，用来为语义等功能提供定位，提供更精准的服务-->
     <!--定位信息是敏感信息，可通过Setting.setLocationEnable(false)关闭定位请求 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".application.HelloApplication"
@@ -98,8 +99,18 @@
             android:label="@string/menu_aboutUs"
             android:theme="@style/AppStyle" />
 
-        <service android:name=".view.service.WakeUpService"
-            android:process=":wakeup"/>
+        <service android:name=".view.service.WakeUpService" />
+
+        <service android:name=".view.service.VoiceService" />
+
+        <receiver android:name=".receiver.WakeUpReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                    tools:ignore="BatteryLife" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name="com.tencent.tauth.AuthActivity"

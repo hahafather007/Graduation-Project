@@ -1,14 +1,10 @@
 package com.hello.view.activity;
 
-import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -33,6 +29,7 @@ import com.hello.databinding.ActivityMainBinding;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.Log;
+import com.hello.utils.ServiceUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
@@ -56,6 +53,8 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import static com.hello.common.Constants.ACTION_APP_CREATE;
+import static com.hello.common.Constants.ACTION_APP_DESTROY;
 import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
 
@@ -70,7 +69,6 @@ public class MainActivity extends AppCompatActivity
     //QQ登录的监听器
     private IUiListener iUiListener;
     private boolean isExit = false;
-    private ServiceConnection connection;
 
     @Inject
     MainActivityViewModel viewModel;
@@ -137,21 +135,16 @@ public class MainActivity extends AppCompatActivity
         initFlyView();
         initUserGround();
 
-        connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.i("绑定成功：" + name.getClassName());
+        if (HelloPref.INSTANCE.isCanWakeup()) {
+            //如果service存在就发送广播，否则启动
+            if (ServiceUtil.isSerivceRunning(this, WakeUpService.class.getName())) {
+                sendCreateBroadcast();
+            } else {
+                Intent intent = new Intent(this, WakeUpService.class);
+                intent.setAction(ACTION_APP_CREATE);
+                startService(intent);
             }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                Log.i("解除绑定：" + name.getClassName());
-            }
-        };
-
-//        bindService(new Intent(this, WakeUpService.class), connection, Service.BIND_AUTO_CREATE);
-
-        startService(new Intent(this, WakeUpService.class));
+        }
     }
 
     @Override
@@ -197,6 +190,8 @@ public class MainActivity extends AppCompatActivity
 //        viewModel.onCleared();
         listeners.clear();
         createListeners.clear();
+
+        sendDestroyBroadcast();
     }
 
     @Override
@@ -218,6 +213,20 @@ public class MainActivity extends AppCompatActivity
 
     public void removeCreateListener(OnListenedNewsCreateListener listener) {
         createListeners.remove(listener);
+    }
+
+    private void sendCreateBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_APP_CREATE);
+
+        sendBroadcast(intent);
+    }
+
+    private void sendDestroyBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_APP_DESTROY);
+
+        sendBroadcast(intent);
     }
 
     private void logout() {

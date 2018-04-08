@@ -64,8 +64,8 @@ public class NoteCreateActivity extends AppActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note_create);
-        binding.setViewModel(viewModel);
         binding.setActivity(this);
+        binding.setViewModel(viewModel);
 
         binding.toolbar.setNavigationOnClickListener(__ -> onBackPressed());
 

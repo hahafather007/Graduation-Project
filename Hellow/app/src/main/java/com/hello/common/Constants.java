@@ -37,4 +37,7 @@ public class Constants {
 
     public final static String DATA_FORMAT = "yyyy-MM-dd";
     public final static String DATA_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public final static String ACTION_APP_CREATE = "action_app_create";
+    public final static String ACTION_APP_DESTROY = "action_app_destroy";
 }

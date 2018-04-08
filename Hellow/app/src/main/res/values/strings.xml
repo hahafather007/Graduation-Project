@@ -19,6 +19,8 @@
     <string name="text_dialog_sex_msg">性别改变后会对小哈的性格产生一定的影响！设置保存成功后重启APP生效，重启APP生效，重启APP生效。</string>
     <string name="text_start_record">点击开始录音</string>
     <string name="text_stop_record">结束录音</string>
+    <string name="text_voice_note">正在进行语音笔记</string>
+    <string name="text_hello_stand_by">随时待命中。。。请勿强行杀掉后台</string>
     <string name="text_load_more">点击加载更多</string>
     <string name="text_dialog_choose_share">选择希望的分享方式</string>
     <string name="text_save_over">已保存！！！</string>
