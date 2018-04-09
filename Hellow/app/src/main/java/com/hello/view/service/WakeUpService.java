@@ -1,16 +1,25 @@
 package com.hello.view.service;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 
 import com.hello.R;
+import com.hello.model.data.AppOpenData;
+import com.hello.model.data.LightSwitchData;
+import com.hello.model.data.PhoneData;
+import com.hello.model.data.PhoneMsgData;
 import com.hello.model.pref.HelloPref;
+import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
 import com.hello.utils.NotificationUtil;
 import com.hello.utils.ToastUtil;
@@ -28,6 +37,7 @@ import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
+import static com.hello.utils.PackageUtil.runAppByName;
 
 public class WakeUpService extends Service {
     private WakeUpBinder binder;
@@ -115,14 +125,52 @@ public class WakeUpService extends Service {
 
     private void addChangeListener() {
         viewModel.getError()
+                .filter(__ -> !isActivityRunning)
                 .compose(Observables.disposable(disposable))
                 .doOnNext(__ -> ToastUtil.showToast(this, R.string.test_network_error))
                 .subscribe();
 
         RxField.ofNonNull(viewModel.getLocation())
+                .filter(__ -> !isActivityRunning)
                 .compose(Observables.disposable(disposable))
                 .doOnNext(v -> openMap(this, v))
                 .subscribe();
+
+        RxField.ofNonNull(viewModel.getResult())
+                .filter(__ -> !isActivityRunning)
+                .compose(Observables.disposable(disposable))
+                .doOnNext(this::checkHowTodo)
+                .subscribe();
+    }
+
+    private void checkHowTodo(Object obj) {
+        if (obj instanceof PhoneData) {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            Uri data = Uri.parse("tel:" + ((PhoneData) obj).getNumber());
+            intent.setData(data);
+            //检测是否有电话拨打权限
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ToastUtil.showToast(this, R.string.text_no_phone_permission);
+
+                return;
+            }
+            startActivity(intent);
+        } else if (obj instanceof LightSwitchData) {
+            if (((LightSwitchData) obj).getState() == LightSwitchData.State.ON) {
+                LightUtil.lightSwitch(this, true);
+            } else {
+                LightUtil.lightSwitch(this, false);
+            }
+        } else if (obj instanceof PhoneMsgData) {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            Uri data = Uri.parse("smsto:" + ((PhoneMsgData) obj).getNumber());
+            intent.setData(data);
+            intent.putExtra("sms_body", ((PhoneMsgData) obj).getMsg());
+            startActivity(intent);
+        } else if (obj instanceof AppOpenData) {
+            runAppByName(this, ((AppOpenData) obj).getAppName());
+        }
     }
 
     //返回Binder，可以供activity调用

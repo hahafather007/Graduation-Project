@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 class WakeUpViewModel @Inject constructor() : RxController() {
     var location = ObservableField<String>()
+    var result = ObservableField<Any>()
 
     var error: Subject<Optional<*>> = PublishSubject.create()
 
@@ -30,6 +31,14 @@ class WakeUpViewModel @Inject constructor() : RxController() {
                     location.set(null)
                     location.set(v)
                 })
+                .subscribe()
+
+        wakeUpHolder.result
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext {
+                    result.set(null)
+                    result.set(it)
+                }
                 .subscribe()
     }
 

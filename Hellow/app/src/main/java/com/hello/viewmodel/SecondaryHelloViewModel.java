@@ -7,8 +7,11 @@ import android.databinding.ObservableList;
 
 import com.hello.common.RxController;
 import com.hello.model.aiui.AIUIHolder;
+import com.hello.model.data.AppOpenData;
+import com.hello.model.data.LightSwitchData;
 import com.hello.model.data.MusicData;
 import com.hello.model.data.PhoneData;
+import com.hello.model.data.PhoneMsgData;
 import com.hello.model.data.TuLingData;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Observables;
@@ -21,8 +24,11 @@ import io.reactivex.subjects.Subject;
 public class SecondaryHelloViewModel extends RxController {
     public ObservableList<Object> items = new ObservableArrayList<>();
     public ObservableField<MusicData> music = new ObservableField<>();
+    public ObservableField<PhoneMsgData> msgData = new ObservableField<>();
+    public ObservableField<LightSwitchData> lightData = new ObservableField<>();
     public ObservableField<String> phoneNum = new ObservableField<>();
     public ObservableField<String> location = new ObservableField<>();
+    public ObservableField<String> appName = new ObservableField<>();
     public ObservableBoolean musicPlaying = new ObservableBoolean(true);
 
     public Subject<TuLingData> tuLing = PublishSubject.create();
@@ -43,6 +49,15 @@ public class SecondaryHelloViewModel extends RxController {
                     if (v instanceof PhoneData) {
                         phoneNum.set(null);
                         phoneNum.set(((PhoneData) v).getNumber());
+                    } else if (v instanceof PhoneMsgData) {
+                        msgData.set(null);
+                        msgData.set(((PhoneMsgData) v));
+                    } else if (v instanceof LightSwitchData) {
+                        lightData.set(null);
+                        lightData.set(((LightSwitchData) v));
+                    } else if (v instanceof AppOpenData) {
+                        appName.set(null);
+                        appName.set(((AppOpenData) v).getAppName());
                     } else {
                         items.add(v);
                         if (v instanceof TuLingData) {

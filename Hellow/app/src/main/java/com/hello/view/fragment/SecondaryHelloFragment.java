@@ -20,10 +20,12 @@ import com.hello.model.data.CookData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.LightSwitchData;
 import com.hello.model.data.TuLingData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
 import com.hello.utils.BrowserUtil;
+import com.hello.utils.LightUtil;
 import com.hello.utils.MusicUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.ValidUtilKt;
@@ -43,6 +45,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hello.utils.NavigationUtil.openMap;
+import static com.hello.utils.PackageUtil.runAppByName;
 
 public class SecondaryHelloFragment extends AppFragment implements MainActivity.OnListenedNewsCreateListener {
     public List<Binding.Linker> linkers;
@@ -133,6 +136,33 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
         RxField.ofNonNull(viewModel.location)
                 .compose(RxLifeCycle.with(this))
                 .doOnNext(v -> openMap(getContext(), v))
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.appName)
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(v -> runAppByName(getContext(), v))
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.msgData)
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(v -> {
+                    Intent intent = new Intent(Intent.ACTION_SENDTO);
+                    Uri data = Uri.parse("smsto:" + v.getNumber());
+                    intent.setData(data);
+                    intent.putExtra("sms_body", v.getMsg());
+                    startActivity(intent);
+                })
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.lightData)
+                .compose(RxLifeCycle.with(this))
+                .doOnNext(v -> {
+                    if (v.getState() == LightSwitchData.State.ON) {
+                        LightUtil.lightSwitch(getContext(), true);
+                    } else {
+                        LightUtil.lightSwitch(getContext(), false);
+                    }
+                })
                 .subscribe();
     }
 

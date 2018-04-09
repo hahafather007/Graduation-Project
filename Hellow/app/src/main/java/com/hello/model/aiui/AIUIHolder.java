@@ -7,13 +7,16 @@ import com.annimon.stream.Optional;
 import com.hello.R;
 import com.hello.common.Constants;
 import com.hello.common.RxController;
+import com.hello.model.data.AppOpenData;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.KugoMusicData;
 import com.hello.model.data.KugoSearchData;
+import com.hello.model.data.LightSwitchData;
 import com.hello.model.data.LocationData;
 import com.hello.model.data.MusicData;
 import com.hello.model.data.PhoneData;
+import com.hello.model.data.PhoneMsgData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -26,7 +29,6 @@ import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
-import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.Singles;
@@ -83,8 +85,10 @@ public class AIUIHolder extends RxController {
     private int status;
     //用户说的话
     private String userMsg;
-    //记录用户拨打的电话号码
-    private String phoneNum;
+    //接收短信的联系人
+    private String msgPeople;
+    //发送短信内容
+    private String msgDetail;
 
     //返回的结果
     public Subject<Object> aiuiResult = PublishSubject.create();
@@ -231,7 +235,9 @@ public class AIUIHolder extends RxController {
                                 JSONObject resultJson = new JSONObject(resultStr);
                                 userMsg = resultJson.getString("text");
 
-                                aiuiResult.onNext(new UserTalkData(userMsg));
+                                if (msgDetail == null && msgPeople == null) {
+                                    aiuiResult.onNext(new UserTalkData(userMsg));
+                                }
 
                                 analyzeResult(resultJson);
                             }
@@ -510,36 +516,32 @@ public class AIUIHolder extends RxController {
                         break;
                     }
                     case "telephone": {
-                        //表示用户肯定拨打
-                        if (isStrValid(phoneNum) && (mTalkText.contains("好") || mTalkText.toLowerCase().contains("ok")
-                                || mTalkText.contains("是") || mTalkText.contains("嗯")
-                                || mTalkText.toLowerCase().contains("yes") || mTalkText.contains("行"))) {
+                        //正则表达式用来匹配有效电话号码
+                        Pattern pattern = Pattern.compile("1[35789]\\d{9}");
+                        Matcher matcher = pattern.matcher(mTalkText);
+
+                        String phoneNum = null;
+
+                        while (matcher.find()) {
+                            phoneNum = matcher.group();
+                        }
+
+                        if (phoneNum == null) {
+                            aiuiResult.onNext(new HelloTalkData("未找到该联系人，请确认联系人"));
+                            speech.startSpeaking("未找到该联系人，请确认联系人", speechListener);
+                        } else if (msgPeople != null && msgDetail != null) {//这两个参数不为空表示是发短信功能间接调用
+                            aiuiResult.onNext(new HelloTalkData("请确认短信内容"));
+                            aiuiResult.onNext(new PhoneMsgData(phoneNum, msgDetail));
+                            speech.startSpeaking(context.getString(R.string.text_calling), speechListener);
+
+                            msgPeople = null;
+                            msgDetail = null;
+                        } else {
                             aiuiResult.onNext(new HelloTalkData(context.getString(R.string.text_calling)));
                             aiuiResult.onNext(new PhoneData(phoneNum));
                             speech.startSpeaking(context.getString(R.string.text_calling), speechListener);
-
-                            phoneNum = null;
-                        } else {
-                            if (isStrValid(phoneNum)) {//此时表示用户取消了拨打
-                                aiuiResult.onNext(new HelloTalkData(context.getString(R.string.text_call_cancel)));
-                                speech.startSpeaking(context.getString(R.string.text_call_cancel), speechListener);
-
-                                phoneNum = null;
-                            } else {
-                                //正则表达式用来匹配有效电话号码
-                                Pattern pattern = Pattern.compile("1[35789]\\d{9}");
-                                Matcher matcher = pattern.matcher(mTalkText);
-
-                                phoneNum = null;
-
-                                while (matcher.find()) {
-                                    phoneNum = matcher.group();
-                                }
-
-                                aiuiResult.onNext(new HelloTalkData(mTalkText));
-                                speech.startSpeaking(mTalkText, speechListener);
-                            }
                         }
+
                         break;
                     }
                     //自定义导航技能
@@ -561,8 +563,39 @@ public class AIUIHolder extends RxController {
                         JSONArray array = resultJson.getJSONArray("semantic")
                                 .getJSONObject(0).getJSONArray("slots");
 
-                        String people = array.getJSONObject(0).getString("value");
-                        String msg = array.getJSONObject(1).getString("value");
+                        msgPeople = array.getJSONObject(0).getString("value");
+                        msgDetail = array.getJSONObject(1).getString("value");
+
+                        sendMessage("给" + msgPeople + "打电话");
+
+                        break;
+                    }
+                    //自定义手电筒技能
+                    case "HELLOASSIS.CameraLight": {
+                        JSONObject object = resultJson.getJSONArray("semantic")
+                                .getJSONObject(0).getJSONArray("slots").getJSONObject(0);
+
+                        if ("on".equals(object.getString("normValue"))) {
+                            aiuiResult.onNext(new HelloTalkData("已开启"));
+                            aiuiResult.onNext(new LightSwitchData(LightSwitchData.State.ON));
+                            speech.startSpeaking("已开启", speechListener);
+                        } else {
+                            aiuiResult.onNext(new HelloTalkData("已关闭"));
+                            aiuiResult.onNext(new LightSwitchData(LightSwitchData.State.OFF));
+                            speech.startSpeaking("已关闭", speechListener);
+                        }
+
+                        break;
+                    }
+                    //自定义打开应用技能
+                    case "HELLOASSIS.open_app": {
+                        String appName = resultJson.getJSONArray("semantic")
+                                .getJSONObject(0).getJSONArray("slots")
+                                .getJSONObject(0).getString("normValue");
+
+                        aiuiResult.onNext(new HelloTalkData("已为你打开" + appName));
+                        aiuiResult.onNext(new AppOpenData(appName));
+                        speech.startSpeaking("已为你打开" + appName, speechListener);
 
                         break;
                     }
@@ -613,8 +646,6 @@ public class AIUIHolder extends RxController {
                 })
                 .doOnError(__ -> error.onNext(Optional.empty()))
                 .subscribe();
-
-        phoneNum = null;
     }
 
     private void sendLocationInfo() {

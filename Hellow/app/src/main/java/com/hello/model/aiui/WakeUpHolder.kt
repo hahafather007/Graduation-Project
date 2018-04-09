@@ -23,6 +23,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
 
     var error: Subject<Optional<*>> = PublishSubject.create()
     var location: Subject<String> = PublishSubject.create()
+    var result: Subject<Any> = PublishSubject.create()
 
     @Inject
     lateinit var aiuiHolder: AIUIHolder
@@ -48,10 +49,10 @@ class WakeUpHolder @Inject constructor() : RxController() {
                 if (speaking) return
 
                 //表示用户说了唤醒词
-                if (text.contains("同学")) {
+                if (text.contains("小") && text.contains("同学")) {
                     speaking = true
 
-                    aiuiHolder.speakText(if (Math.random() < 0.5) "嗯！" else "怎么啦？")
+                    aiuiHolder.speakText(if (Math.random() < 0.5) "嗯" else "怎么啦？")
 
                     readyToDo = true
 
@@ -121,7 +122,12 @@ class WakeUpHolder @Inject constructor() : RxController() {
 
         aiuiHolder.location
                 .compose(Observables.disposable(compositeDisposable))
-                .doOnNext { location.onNext(it) }
+                .doOnNext(location::onNext)
+                .subscribe()
+
+        aiuiHolder.aiuiResult
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(result::onNext)
                 .subscribe()
     }
 }
