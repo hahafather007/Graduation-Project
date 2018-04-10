@@ -147,6 +147,22 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="5d3764b815a05b7ad9a16b94664279a9" />
+
+        <meta-data
+            android:name="com.baidu.speech.APP_ID"
+            android:value="10887926" />
+
+        <meta-data
+            android:name="com.baidu.speech.API_KEY"
+            android:value="XB3ZiPS5CR272vvkmwN47Igy" />
+
+        <meta-data
+            android:name="com.baidu.speech.SECRET_KEY"
+            android:value="e2b28ad62e87eb8774763d7bf8fe3292" />
+
+        <service
+            android:name="com.baidu.speech.VoiceRecognitionService"
+            android:exported="false" />
     </application>
 
 </manifest>

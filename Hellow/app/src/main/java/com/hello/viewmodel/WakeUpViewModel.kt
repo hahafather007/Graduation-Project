@@ -3,7 +3,7 @@ package com.hello.viewmodel
 import android.databinding.ObservableField
 import com.annimon.stream.Optional
 import com.hello.common.RxController
-import com.hello.model.aiui.WakeUpHolder
+import com.hello.model.baidu.WakeUpHolder
 import com.hello.utils.rx.Observables
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
