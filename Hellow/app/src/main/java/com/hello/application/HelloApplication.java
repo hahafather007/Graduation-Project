@@ -2,15 +2,20 @@ package com.hello.application;
 
 import android.app.Activity;
 import android.app.Service;
+import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 
+import com.annimon.stream.Stream;
 import com.chibatching.kotpref.Kotpref;
 import com.hello.dagger.component.DaggerApplicationComponent;
 import com.hello.utils.Log;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 import com.raizlabs.android.dbflow.config.FlowManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,8 +32,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 import static com.hello.common.Constants.AIUI_APPID;
 
 
-public class HelloApplication extends MultiDexApplication
-        implements HasActivityInjector, HasSupportFragmentInjector, HasServiceInjector {
+public class HelloApplication extends MultiDexApplication implements HasActivityInjector,
+        HasSupportFragmentInjector, HasServiceInjector, SimpleActivityLifecycleCallbacks {
+    private List<Activity> activities;
 
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;
@@ -64,6 +70,18 @@ public class HelloApplication extends MultiDexApplication
                 e.printStackTrace();
             }
         });
+
+        activities = new ArrayList<>();
+    }
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        activities.add(activity);
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+        activities.remove(activity);
     }
 
     @Override
@@ -79,5 +97,17 @@ public class HelloApplication extends MultiDexApplication
     @Override
     public AndroidInjector<Service> serviceInjector() {
         return dispatchingServiceInjector;
+    }
+
+    //外部调用该方法，通过类名结束activity
+    public void finishActivity(Class activityClass) {
+        Activity activity = Stream.of(activities)
+                .filter(v -> v.getClass() == activityClass)
+                .findFirst()
+                .get();
+
+        if (activity != null) {
+            activity.finish();
+        }
     }
 }

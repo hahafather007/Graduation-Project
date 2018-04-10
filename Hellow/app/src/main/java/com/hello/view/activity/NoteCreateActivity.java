@@ -127,11 +127,11 @@ public class NoteCreateActivity extends AppActivity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         viewModel.onCleared();
 
         MusicUtil.stopMusic();
+
+        super.onDestroy();
     }
 
     @Override

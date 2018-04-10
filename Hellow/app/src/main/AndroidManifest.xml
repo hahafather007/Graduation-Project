@@ -99,6 +99,15 @@
             android:label="@string/menu_aboutUs"
             android:theme="@style/AppStyle" />
 
+        <activity
+            android:name=".view.activity.KeepLifeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|navigation|keyboard"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
+            android:launchMode="singleInstance"
+            android:theme="@style/KeepLifeActivityStyle" />
+
         <service android:name=".view.service.WakeUpService" />
 
         <service android:name=".view.service.VoiceService" />

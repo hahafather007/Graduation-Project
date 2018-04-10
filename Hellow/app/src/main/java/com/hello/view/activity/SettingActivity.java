@@ -45,6 +45,13 @@ public class SettingActivity extends AppActivity {
         addChangeListener();
     }
 
+    @Override
+    protected void onDestroy() {
+        viewModel.onCleared();
+
+        super.onDestroy();
+    }
+
     private void addChangeListener() {
         viewModel.getSuccess()
                 .compose(RxLifeCycle.resumed(this))
@@ -52,11 +59,12 @@ public class SettingActivity extends AppActivity {
                             ToastUtil.showToast(this, b ?
                                     R.string.text_save_over : R.string.text_save_error);
 
-                            if (HelloPref.INSTANCE.isCanWakeup()
-                                    && !ServiceUtil.isSerivceRunning(this, WakeUpService.class.getName())) {
-                                Intent intent = new Intent(this, WakeUpService.class);
-                                intent.setAction(ACTION_APP_CREATE);
-                                startService(intent);
+                            if (HelloPref.INSTANCE.isCanWakeup()) {
+                                if (!ServiceUtil.isSerivceRunning(this, WakeUpService.class.getName())) {
+                                    Intent intent = new Intent(this, WakeUpService.class);
+                                    intent.setAction(ACTION_APP_CREATE);
+                                    startService(intent);
+                                }
                             } else {
                                 stopService(new Intent(this, WakeUpService.class));
                             }

@@ -47,8 +47,8 @@ public class ViewModelHolder<T extends RxController> extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         viewModel.onCleared();
+
+        super.onDestroy();
     }
 }

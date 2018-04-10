@@ -79,6 +79,8 @@ public class WakeUpService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && ACTION_APP_CREATE.equals(intent.getAction())) {
             isActivityRunning = true;
+        } else {
+            isActivityRunning = false;
         }
 
         receiver = new ActivityStateReceiver();
@@ -99,19 +101,19 @@ public class WakeUpService extends Service {
         if (HelloPref.INSTANCE.isCanWakeup()) {
             return START_STICKY;
         } else {
-            return super.onStartCommand(intent, flags, startId);
+            return START_NOT_STICKY;
         }
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         Log.i("onDestroy：WakeUpService");
 
         stopForeground(true);
         unregisterReceiver(receiver);
         viewModel.onCleared();
+
+        super.onDestroy();
     }
 
     private IntentFilter getFilter() {

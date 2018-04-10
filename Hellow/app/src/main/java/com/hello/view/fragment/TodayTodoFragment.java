@@ -69,12 +69,12 @@ public class TodayTodoFragment extends AppFragment implements OnPageScrollListen
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).removeScrollListener(this);
         }
         viewModel.onCleared();
+
+        super.onDestroy();
     }
 
     //防止按住说话时滑动pager冲突

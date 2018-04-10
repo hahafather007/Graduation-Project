@@ -53,6 +53,8 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
+
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
 import static com.hello.utils.IntentUtil.setupActivity;
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AndroidInjection.inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
@@ -185,13 +189,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
-//        viewModel.onCleared();
+        sendDestroyBroadcast();
+        viewModel.onCleared();
         listeners.clear();
         createListeners.clear();
 
-        sendDestroyBroadcast();
+        super.onDestroy();
     }
 
     @Override

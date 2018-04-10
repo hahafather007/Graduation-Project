@@ -54,9 +54,9 @@ public class SecondaryNewsFragment extends AppFragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         viewModel.onCleared();
+
+        super.onDestroy();
     }
 
     private void addChangeListener() {

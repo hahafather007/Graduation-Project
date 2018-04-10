@@ -80,13 +80,13 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).removeCreateListener(this);
         }
         MusicUtil.stopMusic();
         viewModel.onCleared();
+
+        super.onDestroy();
     }
 
     @Override

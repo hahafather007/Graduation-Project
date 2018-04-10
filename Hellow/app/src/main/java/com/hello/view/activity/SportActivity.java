@@ -41,9 +41,9 @@ public class SportActivity extends AppActivity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         viewModel.onCleared();
+
+        super.onDestroy();
     }
 
     private void addChangeListener() {
