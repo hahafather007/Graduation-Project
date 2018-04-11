@@ -17,6 +17,7 @@ import com.hello.model.data.LocationData;
 import com.hello.model.data.MusicData;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
+import com.hello.model.data.TuLingData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -28,6 +29,7 @@ import com.hello.model.service.KugoSearchService;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
+import com.hello.utils.CityListUtil;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Observables;
@@ -63,6 +65,8 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_YAN;
+import static com.hello.model.aiui.AIUIHolder.LocUse.NEARBY;
+import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -89,6 +93,8 @@ public class AIUIHolder extends RxController {
     private String msgPeople;
     //发送短信内容
     private String msgDetail;
+    //获取地址之后的用途
+    private LocUse locUse;
 
     //返回的结果
     public Subject<Object> aiuiResult = PublishSubject.create();
@@ -599,6 +605,19 @@ public class AIUIHolder extends RxController {
 
                         break;
                     }
+                    //自定义周围的东西技能
+                    case "HELLOASSIS.nearby_thing": {
+                        JSONArray array = resultJson.getJSONArray("semantic")
+                                .getJSONObject(0).getJSONArray("slots");
+
+                        String thing = array.getJSONObject(0).getString("value");
+
+                        locationHolder.startLocation();
+                        locUse = NEARBY;
+                        userMsg = thing;
+
+                        break;
+                    }
                     default: {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
@@ -637,6 +656,7 @@ public class AIUIHolder extends RxController {
                     //与地理位置相关的问题，先进行定位{
                     if (v.getText().contains("告诉") && v.getText().contains("哪个地方")) {
                         locationHolder.startLocation();
+                        locUse = TULING;
                     } else {
                         aiuiResult.onNext(v);
                         speech.startSpeaking(v.getText(), speechListener);
@@ -650,11 +670,20 @@ public class AIUIHolder extends RxController {
 
     private void sendLocationInfo() {
         locationHolder.getLoaction()
-                .map(LocationData::getAddress)
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext(v -> {
-                    userMsg = v;
-                    useTuLing();
+                    switch (locUse) {
+                        case TULING:
+                            userMsg = v.getAddress();
+                            useTuLing();
+                            break;
+                        case NEARBY:
+                            aiuiResult.onNext(new TuLingData(-1, "已为你找到附近的" + userMsg,
+                                    Constants.MEI_TUAN.replace("city",
+                                            CityListUtil.getCityEnglish(v.getCity())).replace("thing", userMsg)));
+                            speech.startSpeaking("已为你找到附近的" + userMsg, speechListener);
+                            break;
+                    }
                 })
                 .subscribe();
     }
@@ -676,5 +705,10 @@ public class AIUIHolder extends RxController {
                 .compose(Completables.disposable(compositeDisposable))
                 .doOnError(Throwable::printStackTrace)
                 .subscribe();
+    }
+
+    public enum LocUse {
+        TULING,
+        NEARBY
     }
 }

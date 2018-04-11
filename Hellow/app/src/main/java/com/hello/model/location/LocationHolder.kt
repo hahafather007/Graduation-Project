@@ -30,9 +30,11 @@ class LocationHolder @Inject constructor() {
                     val data = LocationData(it.address, it.country, it.city, it.street,
                             it.longitude, it.latitude)
 
+
+
                     loaction.onNext(data)
 
-                    Log.i("定位信息：$data")
+                    Log.i("定位信息：$it")
                 } else {
                     Log.e("定位出错：${it.adCode}-->\n${it.errorInfo}")
                 }

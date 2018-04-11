@@ -12,6 +12,8 @@ public class Constants {
     public final static String QQ_KEY = "tFEWBKzD9alOR9yY";
     //这个聊天机器人会骂人
     public final static String BAD_TAKL_ROBUT = "http://api.qingyunke.com/";
+    //美团搜索的地址
+    public final static String MEI_TUAN = "https://i.meituan.com/s/city-thing";
     //图灵机器人key
     public final static String TULING_KEY = "b59d4513ab5d4e48adc362996732b9ac";
     public final static String TULING_KEY_BOY = "13d9c0231e064460809cc96876915dbd";
