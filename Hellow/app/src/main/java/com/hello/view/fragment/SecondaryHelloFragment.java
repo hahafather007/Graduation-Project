@@ -21,6 +21,7 @@ import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.LightSwitchData;
+import com.hello.model.data.MusicState;
 import com.hello.model.data.TuLingData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -44,6 +45,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hello.utils.MusicUtil.*;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.PackageUtil.runAppByName;
 
@@ -105,20 +107,24 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
 
         RxField.ofNonNull(viewModel.music)
                 .compose(RxLifeCycle.with(this))
-                .doOnNext(__ -> {
-                    binding.musicHolder.setVisibility(VISIBLE);
+                .doOnNext(v -> {
+                    if (v.getState() == MusicState.ON) {
+                        binding.musicHolder.setVisibility(VISIBLE);
 
-                    MusicUtil.playMusic(viewModel.music.get().getUrl(), new MusicUtil.MediaListener() {
-                        @Override
-                        public void error() {
-                            ToastUtil.showToast(getContext(), R.string.test_network_error);
-                        }
+                        playMusic(viewModel.music.get().getUrl(), new MediaListener() {
+                            @Override
+                            public void error() {
+                                ToastUtil.showToast(getContext(), R.string.test_network_error);
+                            }
 
-                        @Override
-                        public void complete() {
-                            stopMusic();
-                        }
-                    }, disposable);
+                            @Override
+                            public void complete() {
+                                stopMusic();
+                            }
+                        }, disposable);
+                    } else {
+                        stopMusic();
+                    }
                 })
                 .subscribe();
 
@@ -212,9 +218,9 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
 
     public void playOrPauseMusic() {
         if (viewModel.musicPlaying.get()) {
-            MusicUtil.pauseMusic();
+            pauseMusic();
         } else {
-            MusicUtil.continueMusic();
+            continueMusic();
         }
 
         viewModel.musicPlaying.set(!viewModel.musicPlaying.get());

@@ -13,8 +13,8 @@ import com.hello.model.data.HelloTalkData;
 import com.hello.model.data.KugoMusicData;
 import com.hello.model.data.KugoSearchData;
 import com.hello.model.data.LightSwitchData;
-import com.hello.model.data.LocationData;
 import com.hello.model.data.MusicData;
+import com.hello.model.data.MusicState;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
 import com.hello.model.data.TuLingData;
@@ -332,7 +332,7 @@ public class AIUIHolder extends RxController {
 
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("url"),
-                                object.getString("imgUrl"), object.getString("title")));
+                                object.getString("imgUrl"), object.getString("title"), MusicState.ON));
 
                         break;
                     }
@@ -394,7 +394,7 @@ public class AIUIHolder extends RxController {
 
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("url"),
-                                object.getString("img"), object.getString("name")));
+                                object.getString("img"), object.getString("name"), MusicState.ON));
 
                         break;
                     }
@@ -449,7 +449,7 @@ public class AIUIHolder extends RxController {
 
                         aiuiResult.onNext(data);
                         music.onNext(new MusicData(object.getString("url"),
-                                null, object.getString("name")));
+                                null, object.getString("name"), MusicState.ON));
 
                         break;
                     }
@@ -471,53 +471,66 @@ public class AIUIHolder extends RxController {
 
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("playUrl"),
-                                null, object.getString("name")));
+                                null, object.getString("name"), MusicState.ON));
 
                         break;
                     }
                     case "musicX": {
-                        String name;
+                        String state = resultJson.getJSONObject("used_state")
+                                .getString("state");
+                        //判断是播放音乐还是停止音乐
+                        if (!"paused".equals(state)) {
+                            String name;
 
-                        try {
-                            JSONArray array = resultJson.getJSONArray("semantic")
-                                    .getJSONObject(0).getJSONArray("slots");
+                            try {
+                                JSONArray array = resultJson.getJSONArray("semantic")
+                                        .getJSONObject(0).getJSONArray("slots");
 
-                            name = array.getJSONObject(0).getString("value") + "-";
-                            name += array.getJSONObject(1).getString("value");
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                name = array.getJSONObject(0).getString("value") + "-";
+                                name += array.getJSONObject(1).getString("value");
+                            } catch (Exception e) {
+                                e.printStackTrace();
 
-                            name = mTalkText.replaceFirst("听下", "")
-                                    .replaceFirst("的", "-");
-                            name = name.substring(0, name.length() - 1);
+                                name = mTalkText.replaceFirst("听下", "")
+                                        .replaceFirst("请欣赏", "")
+                                        .replaceFirst("演唱", "")
+                                        .replaceFirst("的", "-");
+                                name = name.substring(0, name.length() - 1);
+                            }
+
+                            Log.i(name);
+
+                            final String taklText = mTalkText;
+
+                            searchService.getMusicList(1, name)
+                                    .map(KugoSearchData::getData)
+                                    .flatMap(v -> {
+                                        if (isListValid(v.getLists())) {
+                                            //noinspection ConstantConditions
+                                            return musicService.getMusic(v.getLists().get(0).getHash());
+                                        } else {
+                                            return Single.error(new Exception("没有找到歌曲"));
+                                        }
+                                    })
+                                    .compose(Singles.async())
+                                    .compose(Singles.disposable(compositeDisposable))
+                                    .map(KugoMusicData::getData)
+                                    .doOnSuccess(v -> {
+                                        aiuiResult.onNext(new HelloTalkData(taklText));
+
+                                        speech.startSpeaking(taklText, speechListener);
+
+                                        music.onNext(new MusicData(v.getUrl(), v.getImg(), v.getName(), MusicState.ON));
+                                    })
+                                    .doOnError(__ -> error.onNext(Optional.empty()))
+                                    .subscribe();
+                        } else {
+                            aiuiResult.onNext(new HelloTalkData("好的"));
+
+                            speech.startSpeaking("好的", speechListener);
+
+                            music.onNext(new MusicData(null, null, null, MusicState.OFF));
                         }
-
-                        Log.i(name);
-
-                        final String taklText = mTalkText;
-
-                        searchService.getMusicList(1, name)
-                                .map(KugoSearchData::getData)
-                                .flatMap(v -> {
-                                    if (isListValid(v.getLists())) {
-                                        //noinspection ConstantConditions
-                                        return musicService.getMusic(v.getLists().get(0).getHash());
-                                    } else {
-                                        return Single.error(new Exception("没有找到歌曲"));
-                                    }
-                                })
-                                .compose(Singles.async())
-                                .compose(Singles.disposable(compositeDisposable))
-                                .map(KugoMusicData::getData)
-                                .doOnSuccess(v -> {
-                                    aiuiResult.onNext(new HelloTalkData(taklText));
-
-                                    speech.startSpeaking(taklText, speechListener);
-
-                                    music.onNext(new MusicData(v.getUrl(), v.getImg(), v.getName()));
-                                })
-                                .doOnError(__ -> error.onNext(Optional.empty()))
-                                .subscribe();
 
                         break;
                     }

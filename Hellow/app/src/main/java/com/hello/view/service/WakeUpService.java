@@ -16,11 +16,14 @@ import android.support.v4.app.ActivityCompat;
 import com.hello.R;
 import com.hello.model.data.AppOpenData;
 import com.hello.model.data.LightSwitchData;
+import com.hello.model.data.MusicData;
+import com.hello.model.data.MusicState;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
+import com.hello.utils.MusicUtil;
 import com.hello.utils.NotificationUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
@@ -35,6 +38,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
+import static com.hello.utils.MusicUtil.*;
+import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
 import static com.hello.utils.PackageUtil.runAppByName;
@@ -172,6 +177,22 @@ public class WakeUpService extends Service {
             startActivity(intent);
         } else if (obj instanceof AppOpenData) {
             runAppByName(this, ((AppOpenData) obj).getAppName());
+        } else if (obj instanceof MusicData) {
+            if (((MusicData) obj).getState() == MusicState.ON) {
+                playMusic(((MusicData) obj).getUrl(), new MediaListener() {
+                    @Override
+                    public void error() {
+                        ToastUtil.showToast(WakeUpService.this, R.string.test_network_error);
+                    }
+
+                    @Override
+                    public void complete() {
+                        stopMusic();
+                    }
+                }, disposable);
+            } else {
+                stopMusic();
+            }
         }
     }
 
