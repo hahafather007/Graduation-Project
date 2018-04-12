@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -57,6 +58,7 @@ import dagger.android.AndroidInjection;
 
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
+import static com.hello.utils.AppRunningUtil.isThisAppTop;
 import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
 
@@ -138,17 +140,6 @@ public class MainActivity extends AppCompatActivity
         initViewPager();
         initFlyView();
         initUserGround();
-
-        if (HelloPref.INSTANCE.isCanWakeup()) {
-            //如果service存在就发送广播，否则启动
-            if (ServiceUtil.isSerivceRunning(this, WakeUpService.class.getName())) {
-                sendCreateBroadcast();
-            } else {
-                Intent intent = new Intent(this, WakeUpService.class);
-                intent.setAction(ACTION_APP_CREATE);
-                startService(intent);
-            }
-        }
     }
 
     @Override
@@ -185,6 +176,33 @@ public class MainActivity extends AppCompatActivity
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (HelloPref.INSTANCE.isCanWakeup()) {
+            //如果service存在就发送广播，否则启动
+            if (ServiceUtil.isSerivceRunning(this, WakeUpService.class.getName())) {
+                sendCreateBroadcast();
+            } else {
+                Intent intent = new Intent(this, WakeUpService.class);
+                intent.setAction(ACTION_APP_CREATE);
+                startService(intent);
+            }
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (!isThisAppTop(this) ||
+                !((PowerManager) getSystemService(Context.POWER_SERVICE)).isScreenOn()) {
+            sendDestroyBroadcast();
+        }
     }
 
     @Override

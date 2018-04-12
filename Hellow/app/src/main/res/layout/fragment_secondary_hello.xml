@@ -89,7 +89,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <View
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorLine"
                 app:layout_constraintBottom_toBottomOf="parent" />

@@ -48,11 +48,21 @@ class WakeUpHolder @Inject constructor() : RxController() {
 
                 if (speaking) return
 
-                //表示用户说了唤醒词
-                if (text.contains("小") && text.contains("同学")) {
+                //表示用户说了唤醒词，设置6个是为了防止用户说了音调相近的词语影响识别
+                if (text.contains("小哈同学") || text.contains("小花同学")
+                        || text.contains("小华同学") || text.contains("晓哈同学")
+                        || text.contains("晓华同学") || text.contains("晓花同学")) {
                     speaking = true
 
-                    aiuiHolder.speakText(if (Math.random() < 0.5) "嗯" else "怎么啦？")
+                    val random = Math.random()
+
+                    when (random) {
+                        in 0.0..0.2 -> aiuiHolder.speakText("嗯？")
+                        in 0.2..0.4 -> aiuiHolder.speakText("怎么啦？")
+                        in 0.4..0.6 -> aiuiHolder.speakText("什么？")
+                        in 0.6..0.8 -> aiuiHolder.speakText("嗯嗯！")
+                        in 0.8..1.0 -> aiuiHolder.speakText("干嘛？")
+                    }
 
                     readyToDo = true
 
@@ -84,7 +94,9 @@ class WakeUpHolder @Inject constructor() : RxController() {
             override fun onError(speechError: SpeechError?) {
                 Log.e("识别出错：${speechError?.errorCode}--->${speechError?.errorDescription}")
 
-                error.onNext(Optional.empty<Any>())
+                if (autoListening && !speaking) {
+                    startListening()
+                }
             }
         }
 

@@ -29,7 +29,6 @@ import com.hello.model.service.KugoSearchService;
 import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
-import com.hello.utils.CityListUtil;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Observables;
@@ -67,6 +66,7 @@ import io.reactivex.subjects.Subject;
 import static com.hello.common.SpeechPeople.XIAO_YAN;
 import static com.hello.model.aiui.AIUIHolder.LocUse.NEARBY;
 import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
+import static com.hello.utils.CityListUtil.getCityEnglish;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -551,7 +551,7 @@ public class AIUIHolder extends RxController {
                         } else if (msgPeople != null && msgDetail != null) {//这两个参数不为空表示是发短信功能间接调用
                             aiuiResult.onNext(new HelloTalkData("请确认短信内容"));
                             aiuiResult.onNext(new PhoneMsgData(phoneNum, msgDetail));
-                            speech.startSpeaking(context.getString(R.string.text_calling), speechListener);
+                            speech.startSpeaking("请确认短信内容", speechListener);
 
                             msgPeople = null;
                             msgDetail = null;
@@ -625,9 +625,10 @@ public class AIUIHolder extends RxController {
 
                         String thing = array.getJSONObject(0).getString("value");
 
-                        locationHolder.startLocation();
-                        locUse = NEARBY;
-                        userMsg = thing;
+                        aiuiResult.onNext(new TuLingData(-1, "已为你找到附近的" + userMsg,
+                                Constants.MEI_TUAN.replace("city", "")
+                                        .replace("thing", userMsg)));
+                        speech.startSpeaking("已为你找到附近的" + userMsg, speechListener);
 
                         break;
                     }
@@ -685,16 +686,12 @@ public class AIUIHolder extends RxController {
         locationHolder.getLoaction()
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext(v -> {
+                    Log.i(v);
+
                     switch (locUse) {
                         case TULING:
                             userMsg = v.getAddress();
                             useTuLing();
-                            break;
-                        case NEARBY:
-                            aiuiResult.onNext(new TuLingData(-1, "已为你找到附近的" + userMsg,
-                                    Constants.MEI_TUAN.replace("city",
-                                            CityListUtil.getCityEnglish(v.getCity())).replace("thing", userMsg)));
-                            speech.startSpeaking("已为你找到附近的" + userMsg, speechListener);
                             break;
                     }
                 })

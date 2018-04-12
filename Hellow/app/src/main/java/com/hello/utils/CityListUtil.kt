@@ -276,29 +276,31 @@ object CityListUtil {
                     "“baiyiin”: “白银”,\n" +
                     "“Wuwei”: “武威”,\n" +
                     "“Zhangye”: “张掖”,\n" +
-                    "“Qingyang”: “庆阳”,\n" +
-                    "“Dingxi”: “定西”,\n" +
-                    "“Longnan”: “陇南”,\n" +
-                    "“Xining”: “西宁”,\n" +
-                    "“Nanchang”: “南昌”,\n" +
-                    "“Jiujiang”: “九江”,\n" +
-                    "“Ganzhou”: “赣州”,\n" +
-                    "“Jian”: “吉安”,\n" +
-                    "“Yingtan”: “鹰潭”,\n" +
-                    "“Shangrao”: “上饶”,\n" +
-                    "“Pingxiang”: “萍乡”,\n" +
-                    "“Jingdezhen”: “景德镇”,\n" +
-                    "“Xinyu”: “新余”,\n" +
-                    "“Yichun”: “宜春”,\n" +
-                    "“Fuzhou”: “抚州”\n" +
+                    "“庆阳”: “Qingyang”,\n" +
+                    "“定西”: “Dingxi”,\n" +
+                    "“陇南”: “Longnan”,\n" +
+                    "“西宁”: “Xining”,\n" +
+                    "“南昌”: “Nanchang”,\n" +
+                    "“九江”: “Jiujiang”,\n" +
+                    "“赣州”: “Ganzhou”,\n" +
+                    "“吉安”: “Jian”,\n" +
+                    "“鹰潭”: “Yingtan”,\n" +
+                    "“上饶”: “Shangrao”,\n" +
+                    "“萍乡”: “Pingxiang”,\n" +
+                    "“景德镇”: “Jingdezhen”,\n" +
+                    "“新余”: “Xinyu”,\n" +
+                    "“宜春”: “Yichun”,\n" +
+                    "“抚州”: “Fuzhou”\n" +
                     "}"
     )
 
     @JvmStatic
     fun getCityEnglish(city: String): String {
+        val mCity = city.replace("市", "")
+
         var value = ""
         try {
-            value = getCityList().getString(city)
+            value = getCityList().getString("Beijing")
         } catch (e: JSONException) {
             e.printStackTrace()
         }

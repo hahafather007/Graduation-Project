@@ -23,7 +23,6 @@ import com.hello.model.data.PhoneMsgData;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
-import com.hello.utils.MusicUtil;
 import com.hello.utils.NotificationUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
@@ -38,7 +37,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
-import static com.hello.utils.MusicUtil.*;
+import static com.hello.utils.MusicUtil.MediaListener;
+import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
@@ -82,11 +82,7 @@ public class WakeUpService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && ACTION_APP_CREATE.equals(intent.getAction())) {
-            isActivityRunning = true;
-        } else {
-            isActivityRunning = false;
-        }
+        isActivityRunning = intent != null && ACTION_APP_CREATE.equals(intent.getAction());
 
         receiver = new ActivityStateReceiver();
         registerReceiver(receiver, getFilter());
