@@ -20,8 +20,10 @@ import com.hello.model.data.CookData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.IdiomData;
 import com.hello.model.data.LightSwitchData;
 import com.hello.model.data.MusicState;
+import com.hello.model.data.PoetryData;
 import com.hello.model.data.TuLingData;
 import com.hello.model.data.UserTalkData;
 import com.hello.model.data.WeatherData;
@@ -187,6 +189,10 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
                 o instanceof TuLingData, R.layout.item_tuling_talk);
         Binding.Linker linkerTuLingCook = Binding.Linker.of(o ->
                 o instanceof CookData, R.layout.item_tuling_cook);
+        Binding.Linker linkerIdiomData = Binding.Linker.of(o ->
+                o instanceof IdiomData, R.layout.item_aiui_idiom);
+        Binding.Linker linkerPoetryData = Binding.Linker.of(o ->
+                o instanceof PoetryData, R.layout.item_aiui_poetry);
 
         linkers = new ArrayList<>();
         linkers.add(linkerUserTalk);
@@ -196,6 +202,8 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
         linkers.add(linkerDescription);
         linkers.add(linkerTuLing);
         linkers.add(linkerTuLingCook);
+        linkers.add(linkerIdiomData);
+        linkers.add(linkerPoetryData);
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {

@@ -2,7 +2,7 @@
     <string name="app_name">哈喽助手</string>
     <string name="title_activity_setting">设置</string>
     <string name="title_activity_interest">书籍管理</string>
-    <string name="title_activity_tip">新建日程</string>
+    <string name="title_activity_help">帮助</string>
     <string name="title_activity_sport">运动情况</string>
     <string name="title_activity_main">哈喽助手</string>
     <string name="title_activity_note">新建笔记</string>
@@ -50,6 +50,11 @@
     <string name="text_enter">确定</string>
     <string name="text_delete">删除</string>
     <string name="text_help">帮助</string>
+    <string name="text_meaning">含义：\n%s</string>
+    <string name="text_source">来源：\n%s</string>
+    <string name="text_poetry_title">%s-%s（%s）</string>
+    <string name="text_help_fun_item_question">问："%s"</string>
+    <string name="text_help_fun_item_answer">答："%s"</string>
     <string name="text_login_error">登录出错，请稍后再试</string>
     <string name="text_login_success">登陆成功！</string>
     <string name="text_logout_success">已注销！</string>

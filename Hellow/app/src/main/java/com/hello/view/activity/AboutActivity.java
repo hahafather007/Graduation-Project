@@ -8,6 +8,8 @@ import com.hello.databinding.ActivityAboutBinding;
 import com.hello.utils.VersionUtil;
 import com.hello.widget.view.ContractDialog;
 
+import static com.hello.utils.IntentUtil.setupActivity;
+
 public class AboutActivity extends AppActivity {
     private ActivityAboutBinding binding;
 
@@ -20,11 +22,11 @@ public class AboutActivity extends AppActivity {
         binding.setActivity(this);
     }
 
-    public void showHelpDialog() {
+    public void showContractDialog() {
         new ContractDialog(this).show();
     }
 
     public void setupHelp() {
-
+        setupActivity(this, HelpActivity.class);
     }
 }

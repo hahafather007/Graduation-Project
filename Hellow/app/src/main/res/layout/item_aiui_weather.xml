@@ -27,7 +27,7 @@
             app:cardUseCompatPadding="true">
 
             <android.support.constraint.ConstraintLayout
-                android:layout_width="wrap_content"
+                android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:background="@color/colorGhostWhite"
                 android:paddingBottom="8dp"
@@ -48,25 +48,26 @@
                     android:id="@+id/cityText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
                     android:layout_marginStart="16dp"
                     android:text="@{data.city}"
                     android:textColor="@color/colorText"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintEnd_toStartOf="@id/tempText"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="成都" />
 
                 <TextView
+                    android:id="@+id/tempText"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginStart="6dp"
                     android:gravity="center"
                     android:text="@{data.temp}"
                     android:textColor="@color/colorText"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@id/cityText"
-                    app:layout_constraintStart_toEndOf="@+id/cityText"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/cityText"
                     tools:text="-5℃ ~ 0℃" />
 

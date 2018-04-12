@@ -145,7 +145,8 @@
                     app:itemLayout="@{@layout/item_news_top}"
                     app:layoutManager="@string/linear_layout_manager"
                     app:nestedScrollingEnabled="@{false}"
-                    app:onBindItem="@{fragment::onBindItem}" />
+                    app:onBindItem="@{fragment::onBindItem}"
+                    tools:listitem="@layout/item_news_top" />
 
                 <TextView
                     android:layout_width="match_parent"

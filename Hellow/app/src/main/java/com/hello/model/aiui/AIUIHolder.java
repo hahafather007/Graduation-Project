@@ -10,6 +10,7 @@ import com.hello.common.RxController;
 import com.hello.model.data.AppOpenData;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
+import com.hello.model.data.IdiomData;
 import com.hello.model.data.KugoMusicData;
 import com.hello.model.data.KugoSearchData;
 import com.hello.model.data.LightSwitchData;
@@ -17,6 +18,7 @@ import com.hello.model.data.MusicData;
 import com.hello.model.data.MusicState;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
+import com.hello.model.data.PoetryData;
 import com.hello.model.data.TuLingData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
@@ -64,9 +66,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_YAN;
-import static com.hello.model.aiui.AIUIHolder.LocUse.NEARBY;
 import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
-import static com.hello.utils.CityListUtil.getCityEnglish;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -441,6 +441,8 @@ public class AIUIHolder extends RxController {
 
                         break;
                     }
+                    case "crossTalk":
+                    case "health":
                     case "drama": {
                         JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
                         JSONObject object = array.getJSONObject(new Random().nextInt(array.length()));
@@ -472,6 +474,26 @@ public class AIUIHolder extends RxController {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("playUrl"),
                                 null, object.getString("name"), MusicState.ON));
+
+                        break;
+                    }
+                    //成语含义和成语接龙
+                    case "idiom": {
+                        String intent = resultJson.getJSONArray("semantic")
+                                .getJSONObject(0).getString("intent");
+
+                        //SOLITAIRE表示的是成语接龙的情况
+                        if ("SOLITAIRE".equals(intent)) {
+                            aiuiResult.onNext(new HelloTalkData(mTalkText));
+                            speech.startSpeaking(mTalkText, speechListener);
+                        } else {//成语含义查询
+                            JSONObject object = resultJson.getJSONObject("data")
+                                    .getJSONArray("result").getJSONObject(0);
+
+                            aiuiResult.onNext(new IdiomData(object.getString("name"),
+                                    object.getString("interpretation"), object.getString("source")));
+                            speech.startSpeaking(object.getString("interpretation"), speechListener);
+                        }
 
                         break;
                     }
@@ -563,6 +585,20 @@ public class AIUIHolder extends RxController {
 
                         break;
                     }
+                    case "poetry": {
+                        JSONObject object = resultJson.getJSONObject("data")
+                                .getJSONArray("result").getJSONObject(0);
+
+                        String author = object.getString("author");
+                        String dynasty = object.getString("dynasty");
+                        String content = object.getString("showContent");
+                        String title = object.getString("title");
+
+                        aiuiResult.onNext(new PoetryData(author, dynasty, content, title));
+                        speech.startSpeaking(content, speechListener);
+
+                        break;
+                    }
                     //自定义导航技能
                     case "HELLOASSIS.navigation": {
                         JSONObject object = resultJson.getJSONArray("semantic")
@@ -625,9 +661,9 @@ public class AIUIHolder extends RxController {
 
                         String thing = array.getJSONObject(0).getString("value");
 
-                        aiuiResult.onNext(new TuLingData(-1, "已为你找到附近的" + userMsg,
+                        aiuiResult.onNext(new TuLingData(-1, "已为你找到附近的" + thing,
                                 Constants.MEI_TUAN.replace("city", "")
-                                        .replace("thing", userMsg)));
+                                        .replace("thing", thing)));
                         speech.startSpeaking("已为你找到附近的" + userMsg, speechListener);
 
                         break;

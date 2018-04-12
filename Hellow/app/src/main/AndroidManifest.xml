@@ -74,8 +74,8 @@
             android:theme="@style/AppStyle" />
 
         <activity
-            android:name=".view.activity.RemindActivity"
-            android:label="@string/title_activity_tip"
+            android:name=".view.activity.HelpActivity"
+            android:label="@string/title_activity_help"
             android:theme="@style/AppStyle" />
 
         <activity
