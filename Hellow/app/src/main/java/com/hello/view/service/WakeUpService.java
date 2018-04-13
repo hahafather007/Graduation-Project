@@ -83,8 +83,6 @@ public class WakeUpService extends Service {
 
     @Override
     public void onCreate() {
-        android.os.Debug.waitForDebugger();
-
         super.onCreate();
 
         //如果是意外情况启动，就直接结束
@@ -247,7 +245,7 @@ public class WakeUpService extends Service {
                     //解析短信内容
                     Object[] pdus = (Object[]) intent.getExtras().get("pdus");
 
-                    if (pdus == null) return;
+                    if (pdus == null) break;
 
                     Stream.of(pdus).forEach(v -> {
                         SmsMessage sms = SmsMessage.createFromPdu((byte[]) v);
