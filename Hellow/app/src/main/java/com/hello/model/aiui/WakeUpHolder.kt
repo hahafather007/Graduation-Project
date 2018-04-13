@@ -87,7 +87,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
             // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入（最大只能识别60秒）
             override fun onEndOfSpeech() {
                 if (autoListening && !speaking) {
-                    startListening()
+                    mAsr.startListening(listener)
                 }
             }
 
@@ -95,7 +95,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
                 Log.e("识别出错：${speechError?.errorCode}--->${speechError?.errorDescription}")
 
                 if (autoListening && !speaking) {
-                    startListening()
+                    mAsr.startListening(listener)
                 }
             }
         }
@@ -104,6 +104,9 @@ class WakeUpHolder @Inject constructor() : RxController() {
     }
 
     fun startListening() {
+        //防止重复启动
+        if (autoListening) return
+
         autoListening = true
 
         mAsr.startListening(listener)
@@ -122,7 +125,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
                     speaking = false
 
                     if (autoListening) {
-                        startListening()
+                        mAsr.startListening(listener)
                     }
                 }
                 .subscribe()

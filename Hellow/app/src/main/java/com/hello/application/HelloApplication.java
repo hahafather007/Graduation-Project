@@ -2,6 +2,7 @@ package com.hello.application;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
@@ -29,12 +30,16 @@ import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 
+import static com.hello.common.Constants.ACTION_APP_CREATE;
+import static com.hello.common.Constants.ACTION_APP_DESTROY;
 import static com.hello.common.Constants.AIUI_APPID;
 
 
 public class HelloApplication extends MultiDexApplication implements HasActivityInjector,
         HasSupportFragmentInjector, HasServiceInjector, SimpleActivityLifecycleCallbacks {
     private List<Activity> activities;
+    //当前有效activity数量
+    private int activityLiveCount;
 
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;
@@ -72,11 +77,39 @@ public class HelloApplication extends MultiDexApplication implements HasActivity
         });
 
         activities = new ArrayList<>();
+
+        registerActivityLifecycleCallbacks(this);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        unregisterActivityLifecycleCallbacks(this);
     }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         activities.add(activity);
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+        activityLiveCount++;
+        Log.i("activityLiveCount" + activityLiveCount);
+
+        sendCreateBroadcast();
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+        activityLiveCount--;
+
+        Log.i("activityLiveCount" + activityLiveCount);
+        //0表app进入了后台状态
+        if (activityLiveCount == 0) {
+            sendDestroyBroadcast();
+        }
     }
 
     @Override
@@ -109,5 +142,19 @@ public class HelloApplication extends MultiDexApplication implements HasActivity
         if (activity != null) {
             activity.finish();
         }
+    }
+
+    private void sendCreateBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_APP_CREATE);
+
+        sendBroadcast(intent);
+    }
+
+    private void sendDestroyBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_APP_DESTROY);
+
+        sendBroadcast(intent);
     }
 }

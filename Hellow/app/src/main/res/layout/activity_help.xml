@@ -14,8 +14,8 @@
             type="com.hello.view.activity.HelpActivity" />
 
         <variable
-            name="data"
-            type="List&lt;HelpFunData&gt;" />
+            name="viewModel"
+            type="com.hello.viewmodel.HelpViewModel" />
     </data>
 
     <android.support.v7.widget.FitWindowsFrameLayout
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:itemLayout="@{@layout/item_help_function}"
-                app:items="@{data}"
+                app:items="@{viewModel.functions}"
                 app:layoutManager="@string/linear_layout_manager"
                 app:onBindItem="@{activity::onBindItem}"
                 tools:listitem="@layout/item_help_function" />
