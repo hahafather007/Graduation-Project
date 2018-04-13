@@ -50,6 +50,8 @@
     <string name="text_enter">确定</string>
     <string name="text_delete">删除</string>
     <string name="text_help">帮助</string>
+    <string name="text_message_detail">%s说：%s</string>
+    <string name="text_message_no">还没有收到短信哦</string>
     <string name="text_meaning">含义：\n%s</string>
     <string name="text_source">来源：\n%s</string>
     <string name="text_poetry_title">%s-%s（%s）</string>

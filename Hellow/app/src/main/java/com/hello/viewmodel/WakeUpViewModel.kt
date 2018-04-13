@@ -42,6 +42,10 @@ class WakeUpViewModel @Inject constructor() : RxController() {
                 .subscribe()
     }
 
+    fun speakText(words: String) {
+        wakeUpHolder.speakText(words)
+    }
+
     fun startListening() {
         wakeUpHolder.startListening()
     }

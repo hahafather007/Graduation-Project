@@ -12,7 +12,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.SmsMessage;
 
+import com.annimon.stream.Stream;
 import com.hello.R;
 import com.hello.model.data.AppOpenData;
 import com.hello.model.data.LightSwitchData;
@@ -20,29 +22,37 @@ import com.hello.model.data.MusicData;
 import com.hello.model.data.MusicState;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
+import com.hello.model.data.SystemMsgData;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
 import com.hello.utils.NotificationUtil;
+import com.hello.utils.PhonePeopleUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxField;
 import com.hello.viewmodel.WakeUpViewModel;
 
+import org.joda.time.LocalDateTime;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
+import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
+import static com.hello.common.Constants.DATA_TIME_FORMAT;
 import static com.hello.utils.MusicUtil.MediaListener;
 import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
 import static com.hello.utils.PackageUtil.runAppByName;
+import static com.hello.utils.PhonePeopleUtil.*;
 
 public class WakeUpService extends Service {
     private WakeUpBinder binder;
@@ -50,6 +60,8 @@ public class WakeUpService extends Service {
     //标记activity是否在运行
     private boolean isActivityRunning;
     private CompositeDisposable disposable = new CompositeDisposable();
+    //最新接收的短信内容
+    private SystemMsgData msgData;
 
     @Inject
     WakeUpViewModel viewModel;
@@ -71,21 +83,28 @@ public class WakeUpService extends Service {
 
     @Override
     public void onCreate() {
+        android.os.Debug.waitForDebugger();
+
         super.onCreate();
+
+        //如果是意外情况启动，就直接结束
+        if (!HelloPref.INSTANCE.isCanWakeup()) {
+            onDestroy();
+        }
 
         Log.i("onCreate：WakeUpService");
 
         AndroidInjection.inject(this);
 
         binder = new WakeUpBinder();
+
+        receiver = new ActivityStateReceiver();
+        registerReceiver(receiver, getFilter());
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         isActivityRunning = intent != null && ACTION_APP_CREATE.equals(intent.getAction());
-
-        receiver = new ActivityStateReceiver();
-        registerReceiver(receiver, getFilter());
 
         if (!isActivityRunning && isOnline(this)) {
             startForeground(888, NotificationUtil.getNotification(this,
@@ -122,6 +141,7 @@ public class WakeUpService extends Service {
         filter.addAction(ACTION_APP_CREATE);
         filter.addAction(ACTION_APP_DESTROY);
         filter.addAction(CONNECTIVITY_ACTION);
+        filter.addAction(SMS_RECEIVED_ACTION);
 
         return filter;
     }
@@ -189,6 +209,14 @@ public class WakeUpService extends Service {
             } else {
                 stopMusic();
             }
+        } else if ((obj instanceof SystemMsgData)) {
+            if (msgData != null) {
+                String name = getDisplayNameByNumber(this, msgData.getNumber());
+                viewModel.speakText(String.format(
+                        getString(R.string.text_message_detail), name, msgData.getBody()));
+            } else {
+                viewModel.speakText(getString(R.string.text_message_no));
+            }
         }
     }
 
@@ -212,6 +240,25 @@ public class WakeUpService extends Service {
                     break;
                 case ACTION_APP_DESTROY:
                     isActivityRunning = false;
+                    break;
+                case SMS_RECEIVED_ACTION:
+                    if (intent.getExtras() == null) return;
+                    //pdus短信单位pdu
+                    //解析短信内容
+                    Object[] pdus = (Object[]) intent.getExtras().get("pdus");
+
+                    if (pdus == null) return;
+
+                    Stream.of(pdus).forEach(v -> {
+                        SmsMessage sms = SmsMessage.createFromPdu((byte[]) v);
+
+                        String number = sms.getOriginatingAddress();
+                        String body = sms.getMessageBody();
+
+                        msgData = new SystemMsgData(number, body,
+                                LocalDateTime.now().toString(DATA_TIME_FORMAT));
+                    });
+
                     break;
             }
 

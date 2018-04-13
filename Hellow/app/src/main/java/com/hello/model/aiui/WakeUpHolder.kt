@@ -103,6 +103,15 @@ class WakeUpHolder @Inject constructor() : RxController() {
         addChangeListener()
     }
 
+    //调用aiui合成语句
+    fun speakText(words: String) {
+        speaking = true
+
+        aiuiHolder.speakText(words)
+
+        mAsr.stopListening()
+    }
+
     fun startListening() {
         //防止重复启动
         if (autoListening) return

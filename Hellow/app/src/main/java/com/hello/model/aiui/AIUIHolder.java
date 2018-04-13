@@ -19,6 +19,7 @@ import com.hello.model.data.MusicState;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
 import com.hello.model.data.PoetryData;
+import com.hello.model.data.SystemMsgData;
 import com.hello.model.data.TuLingData;
 import com.hello.model.data.TuLingSendData;
 import com.hello.model.data.UserTalkData;
@@ -665,6 +666,12 @@ public class AIUIHolder extends RxController {
                                 Constants.MEI_TUAN.replace("city", "")
                                         .replace("thing", thing)));
                         speech.startSpeaking("已为你找到附近的" + userMsg, speechListener);
+
+                        break;
+                    }
+                    //自定义朗读短信内容
+                    case "HELLOASSIS.speak_message": {
+                        aiuiResult.onNext(new SystemMsgData("", "", ""));
 
                         break;
                     }

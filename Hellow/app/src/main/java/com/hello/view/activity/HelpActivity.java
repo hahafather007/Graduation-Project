@@ -25,6 +25,13 @@ public class HelpActivity extends AppActivity {
         binding.setViewModel(viewModel);
     }
 
+    @Override
+    protected void onDestroy() {
+        viewModel.onCleared();
+
+        super.onDestroy();
+    }
+
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
     }
 }
