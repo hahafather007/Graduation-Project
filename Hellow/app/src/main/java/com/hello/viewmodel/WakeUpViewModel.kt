@@ -4,6 +4,7 @@ import android.databinding.ObservableField
 import com.annimon.stream.Optional
 import com.hello.common.RxController
 import com.hello.model.aiui.WakeUpHolder
+import com.hello.model.data.MusicData
 import com.hello.utils.rx.Observables
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
@@ -12,6 +13,7 @@ import javax.inject.Inject
 class WakeUpViewModel @Inject constructor() : RxController() {
     var location = ObservableField<String>()
     var result = ObservableField<Any>()
+    var music = ObservableField<MusicData>()
 
     var error: Subject<Optional<*>> = PublishSubject.create()
 
@@ -38,6 +40,14 @@ class WakeUpViewModel @Inject constructor() : RxController() {
                 .doOnNext {
                     result.set(null)
                     result.set(it)
+                }
+                .subscribe()
+
+        wakeUpHolder.music
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext {
+                    music.set(null)
+                    music.set(it)
                 }
                 .subscribe()
     }

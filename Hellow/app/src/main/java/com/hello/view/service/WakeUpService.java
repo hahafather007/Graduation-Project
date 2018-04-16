@@ -3,6 +3,7 @@ package com.hello.view.service;
 import android.Manifest;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,20 +19,22 @@ import com.annimon.stream.Stream;
 import com.hello.R;
 import com.hello.model.data.AppOpenData;
 import com.hello.model.data.LightSwitchData;
-import com.hello.model.data.MusicData;
 import com.hello.model.data.MusicState;
 import com.hello.model.data.PhoneData;
 import com.hello.model.data.PhoneMsgData;
 import com.hello.model.data.SystemMsgData;
 import com.hello.model.pref.HelloPref;
+import com.hello.receiver.PhoneReceiver;
 import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
 import com.hello.utils.NotificationUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxField;
+import com.hello.view.activity.MainActivity;
 import com.hello.viewmodel.WakeUpViewModel;
 
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 
 import javax.inject.Inject;
@@ -54,7 +57,8 @@ import static com.hello.utils.PhonePeopleUtil.getDisplayNameByNumber;
 
 public class WakeUpService extends Service {
     private WakeUpBinder binder;
-    private ActivityStateReceiver receiver;
+    private ActivityStateReceiver stateReceiver;
+    private PhoneReceiver phoneReceiver;
     //标记activity是否在运行
     private boolean isActivityRunning;
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -94,8 +98,35 @@ public class WakeUpService extends Service {
 
         binder = new WakeUpBinder();
 
-        receiver = new ActivityStateReceiver();
-        registerReceiver(receiver, getFilter());
+        stateReceiver = new ActivityStateReceiver();
+        registerReceiver(stateReceiver, getFilter());
+
+        //监听通话状态，防止占用录音机
+        phoneReceiver = new PhoneReceiver() {
+            @Override
+            public void calling(@NotNull String num) {
+                super.calling(num);
+
+                viewModel.stopListening();
+            }
+
+            @Override
+            public void callingOff() {
+                super.callingOff();
+
+                if (!isActivityRunning) {
+                    viewModel.startListening();
+                }
+            }
+
+            @Override
+            public void callingOn() {
+                super.callingOn();
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.intent.action.PHONE_STATE");
+        registerReceiver(phoneReceiver, filter);
     }
 
     @Override
@@ -103,10 +134,7 @@ public class WakeUpService extends Service {
         isActivityRunning = intent != null && ACTION_APP_CREATE.equals(intent.getAction());
 
         if (!isActivityRunning && isOnline(this)) {
-            startForeground(888, NotificationUtil.getNotification(this,
-                    false, false, R.string.app_name, R.string.text_hello_stand_by));
-
-            viewModel.startListening();
+            startNotify();
         } else {
             viewModel.stopListening();
         }
@@ -126,7 +154,8 @@ public class WakeUpService extends Service {
         Log.i("onDestroy：WakeUpService");
 
         stopForeground(true);
-        unregisterReceiver(receiver);
+        unregisterReceiver(stateReceiver);
+        unregisterReceiver(phoneReceiver);
         viewModel.onCleared();
 
         super.onDestroy();
@@ -153,6 +182,27 @@ public class WakeUpService extends Service {
                 .filter(__ -> !isActivityRunning)
                 .compose(Observables.disposable(disposable))
                 .doOnNext(v -> openMap(this, v))
+                .subscribe();
+
+        RxField.ofNonNull(viewModel.getMusic())
+                .compose(Observables.disposable(disposable))
+                .doOnNext(v -> {
+                    if (v.getState() == MusicState.ON) {
+                        playMusic(v.getUrl(), new MediaListener() {
+                            @Override
+                            public void error() {
+                                ToastUtil.showToast(WakeUpService.this, R.string.test_network_error);
+                            }
+
+                            @Override
+                            public void complete() {
+                                stopMusic();
+                            }
+                        }, disposable);
+                    } else {
+                        stopMusic();
+                    }
+                })
                 .subscribe();
 
         RxField.ofNonNull(viewModel.getResult())
@@ -189,22 +239,6 @@ public class WakeUpService extends Service {
             startActivity(intent);
         } else if (obj instanceof AppOpenData) {
             runAppByName(this, ((AppOpenData) obj).getAppName());
-        } else if (obj instanceof MusicData) {
-            if (((MusicData) obj).getState() == MusicState.ON) {
-                playMusic(((MusicData) obj).getUrl(), new MediaListener() {
-                    @Override
-                    public void error() {
-                        ToastUtil.showToast(WakeUpService.this, R.string.test_network_error);
-                    }
-
-                    @Override
-                    public void complete() {
-                        stopMusic();
-                    }
-                }, disposable);
-            } else {
-                stopMusic();
-            }
         } else if ((obj instanceof SystemMsgData)) {
             if (msgData != null) {
                 String name = getDisplayNameByNumber(this, msgData.getNumber());
@@ -214,6 +248,18 @@ public class WakeUpService extends Service {
                 viewModel.speakText(getString(R.string.text_message_no));
             }
         }
+    }
+
+    //显示通知栏
+    private void startNotify() {
+        startForeground(888, NotificationUtil.getNotification(WakeUpService.this,
+                false, false, R.string.app_name, R.string.text_hello_stand_by,
+                new Intent(WakeUpService.this, MainActivity.class)
+                        .addCategory(Intent.CATEGORY_LAUNCHER)
+                        .setComponent(new ComponentName(WakeUpService.this, MainActivity.class))
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)));
+
+        viewModel.startListening();
     }
 
     //返回Binder，可以供activity调用
@@ -233,9 +279,11 @@ public class WakeUpService extends Service {
                     isActivityRunning = true;
 
                     stopForeground(true);
+
                     break;
                 case ACTION_APP_DESTROY:
                     isActivityRunning = false;
+
                     break;
                 case SMS_RECEIVED_ACTION:
                     if (intent.getExtras() == null) return;
@@ -260,10 +308,7 @@ public class WakeUpService extends Service {
 
             //网络变化后检测网络是否可用，减少后台耗电
             if (isOnline(WakeUpService.this) && !isActivityRunning) {
-                startForeground(888, NotificationUtil.getNotification(WakeUpService.this,
-                        false, false, R.string.app_name, R.string.text_hello_stand_by));
-
-                viewModel.startListening();
+                startNotify();
             } else {
                 viewModel.stopListening();
             }

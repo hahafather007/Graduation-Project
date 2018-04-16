@@ -27,7 +27,7 @@ public class VoiceService extends Service {
         Log.i("onBind：VoiceService");
 
         startForeground(666, NotificationUtil.getNotification(this,
-                false, false, R.string.app_name, R.string.text_voice_note));
+                false, false, R.string.app_name, R.string.text_voice_note,null));
 
         return binder;
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import com.annimon.stream.Optional
 import com.hello.common.RxController
+import com.hello.model.data.MusicData
 import com.hello.utils.Log
 import com.hello.utils.SpeechJsonParser
 import com.hello.utils.rx.Observables
@@ -24,6 +25,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
     var error: Subject<Optional<*>> = PublishSubject.create()
     var location: Subject<String> = PublishSubject.create()
     var result: Subject<Any> = PublishSubject.create()
+    var music: Subject<MusicData> = PublishSubject.create()
 
     @Inject
     lateinit var aiuiHolder: AIUIHolder
@@ -48,10 +50,9 @@ class WakeUpHolder @Inject constructor() : RxController() {
 
                 if (speaking) return
 
-                //表示用户说了唤醒词，设置6个是为了防止用户说了音调相近的词语影响识别
-                if (text.contains("小哈同学") || text.contains("小花同学")
-                        || text.contains("小华同学") || text.contains("晓哈同学")
-                        || text.contains("晓华同学") || text.contains("晓花同学")) {
+                //表示用户说了唤醒词
+                if (text.contains("小哈同学") || text.contains("小哈助手")
+                        || text.contains("哈喽助手")) {
                     speaking = true
 
                     val random = Math.random()
@@ -152,6 +153,11 @@ class WakeUpHolder @Inject constructor() : RxController() {
         aiuiHolder.aiuiResult
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext(result::onNext)
+                .subscribe()
+
+        aiuiHolder.music
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(music::onNext)
                 .subscribe()
     }
 }

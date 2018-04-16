@@ -9,11 +9,8 @@ import com.hello.utils.IntentUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.CALL_PHONE;
-import static android.Manifest.permission.READ_CALENDAR;
 import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.READ_PHONE_STATE;
-import static android.Manifest.permission.READ_SMS;
 import static android.Manifest.permission.RECEIVE_SMS;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_CALENDAR;
@@ -28,10 +25,7 @@ public class SplashActivity extends AppCompatActivity {
 
         new RxPermissions(this)
                 .request(RECEIVE_SMS,
-                        READ_SMS,
                         READ_CONTACTS,
-                        CALL_PHONE,
-                        READ_CALENDAR,
                         WRITE_CALENDAR,
                         RECORD_AUDIO,
                         READ_PHONE_STATE,
