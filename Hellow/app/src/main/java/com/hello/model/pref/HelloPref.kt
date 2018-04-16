@@ -26,4 +26,6 @@ object HelloPref : KotprefModel() {
     var image: String? by nullableStringPref(default = null)
     //标记是否登录
     var isLogin: Boolean by booleanPref(default = false)
+    //当前的版本信息
+    var versionInt: Int by intPref(default = 1)
 }

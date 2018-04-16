@@ -2,7 +2,6 @@ package com.hello.model.service.interceptor;
 
 import android.support.annotation.NonNull;
 
-
 import com.hello.BuildConfig;
 
 import java.io.IOException;

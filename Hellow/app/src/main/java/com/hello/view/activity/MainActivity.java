@@ -27,10 +27,13 @@ import com.hello.R;
 import com.hello.common.Constants;
 import com.hello.databinding.ActivityMainBinding;
 import com.hello.model.pref.HelloPref;
+import com.hello.utils.BrowserUtil;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.Log;
 import com.hello.utils.ServiceUtil;
 import com.hello.utils.ToastUtil;
+import com.hello.utils.rx.RxField;
+import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
 import com.hello.view.service.WakeUpService;
@@ -56,6 +59,8 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 
 import static com.hello.common.Constants.ACTION_APP_CREATE;
+import static com.hello.common.Constants.DATA_FORMAT;
+import static com.hello.common.Constants.UPDATE_URL;
 import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
 
@@ -137,6 +142,7 @@ public class MainActivity extends AppCompatActivity
         initViewPager();
         initFlyView();
         initUserGround();
+        viewModel.checkUpdate();
 
         //如果设置了后台唤醒且service没有运行就启动
         if (HelloPref.INSTANCE.isCanWakeup()
@@ -145,6 +151,8 @@ public class MainActivity extends AppCompatActivity
             intent.setAction(ACTION_APP_CREATE);
             startService(intent);
         }
+
+        addChangeListener();
     }
 
     @Override
@@ -163,11 +171,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_setting:
                 setupActivity(this, SettingActivity.class);
                 break;
-            case R.id.nav_book:
-                setupActivity(this, BookActivity.class);
-                break;
             case R.id.nav_checkUpdate:
-                showToast(this, R.string.toast_checkUpdate);
+                viewModel.checkUpdate();
                 break;
             case R.id.nav_about:
                 setupActivity(this, AboutActivity.class);
@@ -211,6 +216,22 @@ public class MainActivity extends AppCompatActivity
 
     public void removeCreateListener(OnListenedNewsCreateListener listener) {
         createListeners.remove(listener);
+    }
+
+    private void addChangeListener() {
+        RxField.ofNonNull(viewModel.updateInfo)
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> {
+                    if (v.getCode() > HelloPref.INSTANCE.getVersionInt()) {
+                        DialogUtil.showDialog(this, getString(R.string.title_want_to_update),
+                                String.format(getString(R.string.text_update_info), v.getInfo(),
+                                        v.getTime().toString(DATA_FORMAT)), R.string.text_cancel, R.string.text_enter, null,
+                                (__, ___) -> BrowserUtil.openUrl(this, UPDATE_URL));
+                    } else {
+                        ToastUtil.showToast(this, R.string.toast_checkUpdate);
+                    }
+                })
+                .subscribe();
     }
 
     private void logout() {

@@ -23,6 +23,18 @@ object DialogUtil {
         show(builder, cancelText, enterText, cancelListener, enterListener)
     }
 
+    //带title需要重新定义的dialog
+    @JvmStatic
+    fun showDialog(context: Context, title: String, msg: String, cancelText: Int?, enterText: Int?,
+                   cancelListener: OnClickListener?, enterListener: OnClickListener?) {
+        dialog?.dismiss()
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(title)
+                .setMessage(msg)
+
+        show(builder, cancelText, enterText, cancelListener, enterListener)
+    }
+
     //带有自定义View的dialog
     @JvmStatic
     fun showViewDialog(context: Context, title: Int, view: View, cancelText: Int?, enterText: Int?,
