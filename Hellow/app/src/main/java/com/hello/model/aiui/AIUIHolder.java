@@ -334,6 +334,7 @@ public class AIUIHolder extends RxController {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("url"),
                                 object.getString("imgUrl"), object.getString("title"), MusicState.ON));
+                        speech.startSpeaking("请听新闻", speechListener);
 
                         break;
                     }
@@ -396,6 +397,7 @@ public class AIUIHolder extends RxController {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("url"),
                                 object.getString("img"), object.getString("name"), MusicState.ON));
+                        speech.startSpeaking("好的，正在播放", speechListener);
 
                         break;
                     }
@@ -453,6 +455,7 @@ public class AIUIHolder extends RxController {
                         aiuiResult.onNext(data);
                         music.onNext(new MusicData(object.getString("url"),
                                 null, object.getString("name"), MusicState.ON));
+                        speech.startSpeaking("好的，正在播放", speechListener);
 
                         break;
                     }
@@ -475,6 +478,7 @@ public class AIUIHolder extends RxController {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         music.onNext(new MusicData(object.getString("playUrl"),
                                 null, object.getString("name"), MusicState.ON));
+                        speech.startSpeaking(mTalkText, speechListener);
 
                         break;
                     }

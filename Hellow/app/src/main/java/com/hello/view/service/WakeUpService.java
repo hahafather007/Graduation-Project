@@ -27,7 +27,6 @@ import com.hello.model.pref.HelloPref;
 import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
 import com.hello.utils.NotificationUtil;
-import com.hello.utils.PhonePeopleUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxField;
@@ -38,7 +37,6 @@ import org.joda.time.LocalDateTime;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
@@ -52,7 +50,7 @@ import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
 import static com.hello.utils.PackageUtil.runAppByName;
-import static com.hello.utils.PhonePeopleUtil.*;
+import static com.hello.utils.PhonePeopleUtil.getDisplayNameByNumber;
 
 public class WakeUpService extends Service {
     private WakeUpBinder binder;
