@@ -20,7 +20,6 @@ import com.hello.databinding.DialogChooseShareBinding;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.DimensionUtil;
 import com.hello.utils.MimeUtil;
-import com.hello.utils.MusicUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.RxField;
@@ -38,6 +37,8 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static com.hello.common.Constants.EXTRA_ID;
 import static com.hello.common.Constants.EXTRA_TITLE;
+import static com.hello.utils.DialogUtil.showLoadingDialog;
+import static com.hello.utils.MusicUtil.*;
 import static com.hello.utils.ValidUtilKt.isStrValid;
 
 public class NoteCreateActivity extends AppActivity {
@@ -95,10 +96,6 @@ public class NoteCreateActivity extends AppActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (viewModel.getLoading().get()) {
-            return super.onOptionsItemSelected(item);
-        }
-
         switch (item.getItemId()) {
             case R.id.nav_share:
                 showShareView();
@@ -129,7 +126,7 @@ public class NoteCreateActivity extends AppActivity {
     public void onDestroy() {
         viewModel.onCleared();
 
-        MusicUtil.stopMusic();
+        stopMusic();
 
         super.onDestroy();
     }
@@ -247,6 +244,11 @@ public class NoteCreateActivity extends AppActivity {
                 .doOnNext(__ -> binding.toolbar.getMenu().findItem(R.id.nav_play).setVisible(true))
                 .subscribe();
 
+        RxField.of(viewModel.getLoading())
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> showLoadingDialog(this, v))
+                .subscribe();
+
         binding.editText.addTextChangedListener(new SimpleTextWatcher() {
             boolean firstChange = isStrValid(getIntent().getStringExtra(EXTRA_TITLE));
 
@@ -264,9 +266,9 @@ public class NoteCreateActivity extends AppActivity {
     public void playOrPauseMusic() {
         if (!recordPlaying) {
             if (hasPlayed) {
-                MusicUtil.continueMusic();
+                continueMusic();
             } else {
-                MusicUtil.playMusic(viewModel.getFileName().get(), new MusicUtil.MediaListener() {
+                playMusic(viewModel.getFileName().get(), new MediaListener() {
                     @Override
                     public void error() {
                         ToastUtil.showToast(NoteCreateActivity.this, R.string.test_network_error);
@@ -276,7 +278,7 @@ public class NoteCreateActivity extends AppActivity {
 
                     @Override
                     public void complete() {
-                        MusicUtil.stopMusic();
+                        stopMusic();
 
                         binding.toolbar.getMenu().findItem(R.id.nav_play).setIcon(R.mipmap.ic_menu_play);
                         recordPlaying = false;
@@ -288,7 +290,7 @@ public class NoteCreateActivity extends AppActivity {
                 hasPlayed = true;
             }
         } else {
-            MusicUtil.pauseMusic();
+            pauseMusic();
         }
     }
 

@@ -1,13 +1,16 @@
 package com.hello.utils
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.support.v7.app.AlertDialog
 import android.view.View
 import com.hello.R
 
+@Suppress("DEPRECATION")
 object DialogUtil {
     private var dialog: AlertDialog? = null
+    private var loadingDialog: ProgressDialog? = null
 
     //显示两个按钮都有的dialog
     //cancelText表示"取消"按键的文字，可为空
@@ -59,5 +62,19 @@ object DialogUtil {
         dialog = builder.create()
 
         dialog?.show()
+    }
+
+    //加载处理画面的dialog
+    @JvmStatic
+    fun showLoadingDialog(context: Context, loading: Boolean) {
+        loadingDialog?.dismiss()
+
+        if (loading) {
+            loadingDialog = ProgressDialog(context)
+            loadingDialog?.setCancelable(false)
+            loadingDialog?.setMessage(context.getString(R.string.text_loading))
+
+            loadingDialog?.show()
+        }
     }
 }
