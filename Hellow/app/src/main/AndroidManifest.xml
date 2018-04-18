@@ -116,6 +116,8 @@
 
         <service android:name=".view.service.VoiceService" />
 
+        <service android:name=".view.service.BackupService" />
+
         <receiver android:name=".receiver.WakeUpReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
