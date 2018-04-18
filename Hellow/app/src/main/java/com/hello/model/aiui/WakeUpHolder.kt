@@ -4,7 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import com.annimon.stream.Optional
 import com.hello.common.RxController
+import com.hello.common.WakeUpMode.Companion.CALL
 import com.hello.model.data.MusicData
+import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
 import com.hello.utils.SpeechJsonParser
 import com.hello.utils.rx.Observables
@@ -55,17 +57,35 @@ class WakeUpHolder @Inject constructor() : RxController() {
                         || text.contains("哈喽助手")) {
                     speaking = true
 
-                    val random = Math.random()
+                    //应答式唤醒模式
+                    if (HelloPref.wakeUpMode == CALL) {
+                        val random = Math.random()
 
-                    when (random) {
-                        in 0.0..0.2 -> aiuiHolder.speakText("嗯？")
-                        in 0.2..0.4 -> aiuiHolder.speakText("怎么啦？")
-                        in 0.4..0.6 -> aiuiHolder.speakText("什么？")
-                        in 0.6..0.8 -> aiuiHolder.speakText("嗯嗯！")
-                        in 0.8..1.0 -> aiuiHolder.speakText("干嘛？")
+                        when (random) {
+                            in 0.0..0.2 -> aiuiHolder.speakText("嗯？")
+                            in 0.2..0.4 -> aiuiHolder.speakText("怎么啦？")
+                            in 0.4..0.6 -> aiuiHolder.speakText("什么？")
+                            in 0.6..0.8 -> aiuiHolder.speakText("嗯嗯！")
+                            in 0.8..1.0 -> aiuiHolder.speakText("干嘛？")
+                        }
+
+                        readyToDo = true
+                        //命令式唤醒模式
+                    } else {
+                        val orderWords = StringBuilder(text)
+                        orderWords.replace(Regex("，"), "")
+
+                        when {
+                            orderWords.indexOf("小哈同学") != -1 ->
+                                orderWords.substring(orderWords.indexOf("小哈同学") + 4)
+                            orderWords.indexOf("小哈助手") != -1 ->
+                                orderWords.substring(orderWords.indexOf("小哈助手") + 4)
+                            else ->
+                                orderWords.substring(orderWords.indexOf("哈喽助手") + 4)
+                        }
+
+                        aiuiHolder.sendMessage(orderWords.toString())
                     }
-
-                    readyToDo = true
 
                     mAsr.stopListening()
                 } else if (readyToDo) {

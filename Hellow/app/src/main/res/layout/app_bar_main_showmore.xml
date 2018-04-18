@@ -29,10 +29,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:onClick="@{v -> fragment.showMoreClick(v)}"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreBack)}">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -42,7 +43,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="返回"
+                        android:text="@string/text_more_back"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -53,9 +54,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreJoke)}">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -65,30 +68,32 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="笑话"
+                        android:text="@string/text_more_joke"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/more_movie"
+                    android:id="@+id/more_story"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreStory)}">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/img_movie" />
+                        android:src="@drawable/img_story" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="电影"
+                        android:text="@string/text_more_story"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -99,9 +104,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreMusic)}">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -111,7 +118,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="音乐"
+                        android:text="@string/text_more_music"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -122,13 +129,16 @@
                 android:layout_height="100dp">
 
                 <LinearLayout
+                    android:id="@+id/more_news"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreNews)}">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -138,19 +148,22 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="新闻"
+                        android:text="@string/text_more_news"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/more_weather"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreWeather)}">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -160,52 +173,58 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="天气"
+                        android:text="@string/text_more_weather"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/more_food"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreFood)}">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/img_weather" />
+                        android:src="@drawable/img_food" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="天气"
+                        android:text="@string/text_more_food"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/more_time"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreTime)}">
 
                     <ImageView
                         android:id="@+id/imageView"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/img_weather" />
+                        android:src="@drawable/img_time" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="天气"
+                        android:text="@string/text_more_time"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -213,26 +232,30 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="100dp"
+                android:weightSum="4">
 
                 <LinearLayout
+                    android:id="@+id/more_radio"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:onSingleClick="@{() -> fragment.showMoreClick(moreRadio)}">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/img_weather" />
+                        android:src="@drawable/img_radio" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="天气"
+                        android:text="@string/text_more_radio"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
                 </LinearLayout>

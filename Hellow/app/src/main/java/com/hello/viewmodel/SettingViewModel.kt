@@ -5,6 +5,7 @@ import android.databinding.ObservableField
 import com.hello.common.RxController
 import com.hello.common.SpeechPeople.XIAO_YAN
 import com.hello.common.SpeechPeople.XIAO_YU
+import com.hello.common.WakeUpMode.Companion.CALL
 import com.hello.model.pref.HelloPref
 import com.hello.utils.rx.Singles
 import com.hello.viewmodel.SettingViewModel.HelloSex.BOY
@@ -17,9 +18,10 @@ import javax.inject.Inject
 
 class SettingViewModel @Inject constructor() : RxController() {
     val loading = ObservableBoolean()
-    val helloSex = ObservableField<HelloSex>()
     val autoBackup = ObservableBoolean()
     val canWakeup = ObservableBoolean()
+    val helloSex = ObservableField<HelloSex>()
+    val wakeUpMode = ObservableField<String>()
 
     val success: Subject<Boolean> = PublishSubject.create()
 
@@ -34,6 +36,7 @@ class SettingViewModel @Inject constructor() : RxController() {
 
         autoBackup.set(HelloPref.isAutoBackup)
         canWakeup.set(HelloPref.isCanWakeup)
+        wakeUpMode.set(HelloPref.wakeUpMode)
     }
 
     //保存更改的信息
@@ -46,6 +49,7 @@ class SettingViewModel @Inject constructor() : RxController() {
                     HelloPref.talkPeople = if (helloSex.get() == GIRL) XIAO_YAN else XIAO_YU
                     HelloPref.isAutoBackup = autoBackup.get()
                     HelloPref.isCanWakeup = canWakeup.get()
+                    HelloPref.wakeUpMode = wakeUpMode.get() ?: CALL
 
                     success.onNext(true)
                 }

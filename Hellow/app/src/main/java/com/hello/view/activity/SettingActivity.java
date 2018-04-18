@@ -14,6 +14,7 @@ import com.hello.model.pref.HelloPref;
 import com.hello.utils.DialogUtil;
 import com.hello.utils.ServiceUtil;
 import com.hello.utils.ToastUtil;
+import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.service.WakeUpService;
 import com.hello.viewmodel.SettingViewModel;
@@ -21,6 +22,9 @@ import com.hello.viewmodel.SettingViewModel;
 import javax.inject.Inject;
 
 import static com.hello.common.Constants.ACTION_APP_CREATE;
+import static com.hello.common.WakeUpMode.CALL;
+import static com.hello.common.WakeUpMode.ORDER;
+import static com.hello.utils.DialogUtil.showLoadingDialog;
 import static com.hello.viewmodel.SettingViewModel.HelloSex.BOY;
 import static com.hello.viewmodel.SettingViewModel.HelloSex.GIRL;
 
@@ -71,6 +75,19 @@ public class SettingActivity extends AppActivity {
                         }
                 )
                 .subscribe();
+
+        RxField.of(viewModel.getLoading())
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> showLoadingDialog(this, v))
+                .subscribe();
+
+        binding.radioGroup.setOnCheckedChangeListener((__, checkedId) -> {
+            if (checkedId == R.id.radioCall) {
+                viewModel.getWakeUpMode().set(CALL);
+            } else {
+                viewModel.getWakeUpMode().set(ORDER);
+            }
+        });
     }
 
     public void showSexDialog() {

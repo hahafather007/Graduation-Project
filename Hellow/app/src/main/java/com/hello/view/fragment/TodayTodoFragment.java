@@ -201,7 +201,34 @@ public class TodayTodoFragment extends AppFragment implements OnPageScrollListen
         switch (view.getId()) {
             case R.id.more_back:
                 setupNews();
+                break;
+            case R.id.more_joke:
+                viewModel.sendMessage("讲个笑话");
+                break;
+            case R.id.more_story:
+                viewModel.sendMessage("讲个故事");
+                break;
+            case R.id.more_music:
+                viewModel.sendMessage("来一首音乐");
+                break;
+            case R.id.more_news:
+                viewModel.sendMessage("最近有什么新闻");
+                break;
+            case R.id.more_weather:
+                viewModel.sendMessage("外面天气怎么样");
+                break;
+            case R.id.more_food:
+                viewModel.sendMessage("回锅肉怎么做");
+                break;
+            case R.id.more_time:
+                viewModel.sendMessage("几点了");
+                break;
+            case R.id.more_radio:
+                viewModel.sendMessage("我想听收音机");
+                break;
         }
+
+        binding.holderView.setVisibility(VISIBLE);
     }
 
     public void voiceMethod() {
