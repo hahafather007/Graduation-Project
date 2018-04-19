@@ -9,6 +9,7 @@ import com.hello.model.data.MusicData
 import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
 import com.hello.utils.SpeechJsonParser
+import com.hello.utils.isStrValid
 import com.hello.utils.rx.Observables
 import com.iflytek.cloud.*
 import io.reactivex.subjects.PublishSubject
@@ -48,7 +49,8 @@ class WakeUpHolder @Inject constructor() : RxController() {
             }
 
             override fun onResult(result: RecognizerResult?, isLast: Boolean) {
-                val text = SpeechJsonParser.parseGrammarResult(result?.resultString)
+                var text = SpeechJsonParser.parseGrammarResult(result?.resultString)
+                        .replace("，", "")
 
                 if (speaking) return
 
@@ -72,19 +74,18 @@ class WakeUpHolder @Inject constructor() : RxController() {
                         readyToDo = true
                         //命令式唤醒模式
                     } else {
-                        val orderWords = StringBuilder(text)
-                        orderWords.replace(Regex("，"), "")
-
-                        when {
-                            orderWords.indexOf("小哈同学") != -1 ->
-                                orderWords.substring(orderWords.indexOf("小哈同学") + 4)
-                            orderWords.indexOf("小哈助手") != -1 ->
-                                orderWords.substring(orderWords.indexOf("小哈助手") + 4)
+                        text = when {
+                            text.indexOf("小哈同学") != -1 ->
+                                text.substring(text.indexOf("小哈同学") + 4)
+                            text.indexOf("小哈助手") != -1 ->
+                                text.substring(text.indexOf("小哈助手") + 4)
                             else ->
-                                orderWords.substring(orderWords.indexOf("哈喽助手") + 4)
+                                text.substring(text.indexOf("哈喽助手") + 4)
                         }
 
-                        aiuiHolder.sendMessage(orderWords.toString())
+                        if (isStrValid(text)) {
+                            aiuiHolder.sendMessage(text)
+                        }
                     }
 
                     mAsr.stopListening()
