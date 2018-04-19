@@ -185,10 +185,7 @@ public class NoteCreateActivity extends AppActivity {
     private void showShareView() {
         Intent intent = new Intent(Intent.ACTION_SEND);
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        @SuppressWarnings("ConstantConditions")
-        DialogChooseShareBinding shareBinding = DataBindingUtil.inflate(inflater,
+        DialogChooseShareBinding shareBinding = DataBindingUtil.inflate(LayoutInflater.from(this),
                 R.layout.dialog_choose_share, null, false);
 
         DialogUtil.showViewDialog(this, R.string.title_dialog, shareBinding.getRoot(),

@@ -1,6 +1,5 @@
 package com.hello.view.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -91,9 +90,7 @@ public class SettingActivity extends AppActivity {
     }
 
     public void showSexDialog() {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        DialogChooseSexBinding sexBinding = DataBindingUtil.inflate(inflater,
+        DialogChooseSexBinding sexBinding = DataBindingUtil.inflate(LayoutInflater.from(this),
                 R.layout.dialog_choose_sex, null, false);
 
         sexBinding.setHelloSex(viewModel.getHelloSex().get());
