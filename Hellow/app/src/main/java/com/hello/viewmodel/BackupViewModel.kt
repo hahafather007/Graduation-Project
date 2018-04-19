@@ -1,5 +1,6 @@
 package com.hello.viewmodel
 
+import android.databinding.ObservableBoolean
 import com.google.gson.Gson
 import com.hello.common.RxController
 import com.hello.model.data.NotesBackupAnnalData
@@ -15,6 +16,8 @@ import java.io.File
 import javax.inject.Inject
 
 class BackupViewModel @Inject constructor() : RxController() {
+    val loading = ObservableBoolean()
+
     @Inject
     lateinit var backupService: BackupService
     @Inject
@@ -54,6 +57,7 @@ class BackupViewModel @Inject constructor() : RxController() {
                             .map { note.id }
                 }
                 .compose(Observables.async())
+                .compose(Observables.status(loading))
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext {
                     val noteIds = Gson().fromJson(HelloPref.noteBackupIds,

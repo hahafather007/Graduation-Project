@@ -1,20 +1,30 @@
 package com.hello.view.service;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.hello.R;
 import com.hello.utils.Log;
+import com.hello.utils.rx.Observables;
+import com.hello.utils.rx.RxField;
 import com.hello.viewmodel.BackupViewModel;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import io.reactivex.disposables.CompositeDisposable;
+
+import static com.hello.utils.NotificationUtil.getNotification;
 
 public class BackupService extends Service {
+    private CompositeDisposable disposable = new CompositeDisposable();
     private BackupBinder binder;
+    private NotificationManager notifyManager;
 
     @Inject
     BackupViewModel viewModel;
@@ -45,6 +55,9 @@ public class BackupService extends Service {
         AndroidInjection.inject(this);
 
         binder = new BackupBinder();
+        notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        addChangeListener();
     }
 
     @Override
@@ -57,6 +70,7 @@ public class BackupService extends Service {
         Log.i("onDestroy：BackupService");
 
         viewModel.onCleared();
+        disposable.clear();
 
         super.onDestroy();
     }
@@ -66,5 +80,19 @@ public class BackupService extends Service {
         public BackupService getService() {
             return BackupService.this;
         }
+    }
+
+    private void addChangeListener() {
+        RxField.of(viewModel.getLoading())
+                .skip(1)
+                .filter(b -> !b)
+                .compose(Observables.disposable(disposable))
+                .doOnNext(__ -> {
+                    notifyManager.notify(233, getNotification(this, false, false,
+                            R.string.app_name, R.string.text_backup_over, null));
+
+                    stopSelf();
+                })
+                .subscribe();
     }
 }

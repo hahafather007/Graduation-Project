@@ -1,5 +1,7 @@
 package com.hello.utils.rx;
 
+import android.databinding.ObservableBoolean;
+
 import com.annimon.stream.Optional;
 
 import java.util.Collection;
@@ -35,6 +37,11 @@ public class Observables {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(v -> !v.isEmpty());
+    }
+
+    public static <T> ObservableTransformer<T, T> status(ObservableBoolean b) {
+        return v -> v.doOnSubscribe(__ -> b.set(true))
+                .doFinally(() -> b.set(false));
     }
 
     public static <T> ObservableTransformer<T, T> disposable(CompositeDisposable compositeDisposable) {

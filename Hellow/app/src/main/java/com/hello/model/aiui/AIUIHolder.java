@@ -67,6 +67,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_YAN;
+import static com.hello.model.aiui.AIUIHolder.LocUse.CARTNUM;
 import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
@@ -604,6 +605,31 @@ public class AIUIHolder extends RxController {
 
                         break;
                     }
+                    //限行尾号
+                    case "carNumber": {
+                        JSONArray array = resultJson.getJSONObject("data")
+                                .getJSONArray("result");
+
+                        if (array.length() == 0) {
+                            aiuiResult.onNext(new HelloTalkData(mTalkText));
+                            speech.startSpeaking(mTalkText, speechListener);
+                            msgPeople = null;
+                        } else {
+                            String city = array.getJSONObject(0).getString("city");
+
+                            //如果用户没有说城市，则进行定位
+                            if (!userMsg.contains(city)) {
+                                locationHolder.startLocation();
+                                locUse = CARTNUM;
+                            } else {
+                                aiuiResult.onNext(new HelloTalkData(mTalkText));
+                                speech.startSpeaking(mTalkText, speechListener);
+                                msgPeople = null;
+                            }
+                        }
+
+                        break;
+                    }
                     //自定义导航技能
                     case "HELLOASSIS.navigation": {
                         JSONObject object = resultJson.getJSONArray("semantic")
@@ -740,6 +766,10 @@ public class AIUIHolder extends RxController {
                             userMsg = v.getAddress();
                             useTuLing();
                             break;
+                        case CARTNUM:
+                            sendMessage(v.getCity() + userMsg);
+                            msgPeople = "";
+                            break;
                     }
                 })
                 .subscribe();
@@ -765,7 +795,8 @@ public class AIUIHolder extends RxController {
     }
 
     public enum LocUse {
-        TULING,
-        NEARBY
+        TULING,//使用图灵机器人
+        NEARBY,//查询周围的东西
+        CARTNUM//尾号限行
     }
 }

@@ -127,6 +127,8 @@ public class WakeUpService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.intent.action.PHONE_STATE");
         registerReceiver(phoneReceiver, filter);
+
+        addChangeListener();
     }
 
     @Override
@@ -138,8 +140,6 @@ public class WakeUpService extends Service {
         } else {
             viewModel.stopListening();
         }
-
-        addChangeListener();
 
         //如果允许后台唤醒才才增加存活度
         if (HelloPref.INSTANCE.isCanWakeup()) {

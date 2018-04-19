@@ -46,6 +46,7 @@
     <string name="text_cook_info">%s：\n%s</string>
     <string name="text_hello_sex">小哈性别</string>
     <string name="text_backup">自动备份</string>
+    <string name="text_backup_over">备份完成</string>
     <string name="text_wakeup">后台唤醒</string>
     <string name="text_wakeup_mode">唤醒模式</string>
     <string name="text_wakeup_mode_order">命令式</string>
