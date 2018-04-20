@@ -72,8 +72,9 @@ class WakeUpHolder @Inject constructor() : RxController() {
                         }
 
                         readyToDo = true
-                        //命令式唤醒模式
-                    } else {
+
+                        mAsr.stopListening()
+                    } else {//命令式唤醒模式
                         text = when {
                             text.indexOf("小哈同学") != -1 ->
                                 text.substring(text.indexOf("小哈同学") + 4)
@@ -85,10 +86,9 @@ class WakeUpHolder @Inject constructor() : RxController() {
 
                         if (isStrValid(text)) {
                             aiuiHolder.sendMessage(text)
+                            mAsr.stopListening()
                         }
                     }
-
-                    mAsr.stopListening()
                 } else if (readyToDo) {
                     aiuiHolder.sendMessage(text)
 
