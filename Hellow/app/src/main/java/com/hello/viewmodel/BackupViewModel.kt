@@ -28,9 +28,8 @@ class BackupViewModel @Inject constructor() : RxController() {
     lateinit var notesHolder: NotesHolder
 
     //恢复备份数据,参数为是否恢复录音文件
-    fun restoreBackup(fileSave: Boolean) {
-        backupService.restoreNote()
-                .flatMapObservable { Observable.fromIterable(it) }
+    fun restoreBackup(fileSave: Boolean, chooseNotes: List<Note>) {
+        Observable.fromIterable(chooseNotes)
                 .flatMapSingle { backNote ->
                     notesHolder.getNotes()
                             .map { Pair(backNote, it.map { Pair(it.title, it.time) }) }
@@ -59,11 +58,6 @@ class BackupViewModel @Inject constructor() : RxController() {
         //先获取当前本地所有的note列表，上传到服务器端，与服务器进行同步，再进行备份
         notesHolder.getNotes()
                 .flatMapObservable {
-                    backupService.synchronizeNote(it)
-                            .toObservable<List<Note>>()
-                            .map { it }
-                }
-                .flatMap {
                     Observable.just {
                         if (HelloPref.noteBackupIds != null) {
                             Gson().fromJson(HelloPref.noteBackupIds,
@@ -90,12 +84,17 @@ class BackupViewModel @Inject constructor() : RxController() {
 
                     backupService.backupNote(description, body)
                             .doOnComplete {
-                                val noteIds = Gson().fromJson(HelloPref.noteBackupIds,
-                                        NotesBackupAnnalData::class.java).noteIds.toMutableList()
+                                if (HelloPref.noteBackupIds != null) {
+                                    val noteIds = Gson().fromJson(HelloPref.noteBackupIds,
+                                            NotesBackupAnnalData::class.java).noteIds.toMutableList()
 
-                                noteIds.add(note.id)
+                                    noteIds.add(note.id)
 
-                                HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(noteIds.toList()))
+                                    HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(noteIds.toList()))
+                                } else {
+                                    HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(listOf(note.id)))
+
+                                }
                             }
                 }
                 .compose(Completables.async())

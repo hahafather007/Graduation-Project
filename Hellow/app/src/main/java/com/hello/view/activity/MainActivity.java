@@ -1,10 +1,13 @@
 package com.hello.view.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -36,6 +39,7 @@ import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.fragment.NoteFragment;
 import com.hello.view.fragment.TodayTodoFragment;
+import com.hello.view.service.BackupService;
 import com.hello.view.service.WakeUpService;
 import com.hello.viewmodel.MainActivityViewModel;
 import com.hello.widget.view.HeartFlyView;
@@ -50,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity
     //QQ登录的监听器
     private IUiListener iUiListener;
     private boolean isExit = false;
+    private ServiceConnection backupConnection;
+    private BackupService backupService;
 
     @Inject
     MainActivityViewModel viewModel;
@@ -136,6 +143,8 @@ public class MainActivity extends AppCompatActivity
             getUserInfo();
         } else {
             binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(false);
+            binding.navView.getMenu().findItem(R.id.nav_backup).setVisible(false);
+            binding.navView.getMenu().findItem(R.id.nav_restore).setVisible(false);
         }
 
         initDrawer();
@@ -151,6 +160,23 @@ public class MainActivity extends AppCompatActivity
             intent.setAction(ACTION_APP_CREATE);
             startService(intent);
         }
+
+        backupConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                backupService = ((BackupService.BackupBinder) service).getService();
+
+                Log.i("与备份service连接成功！！！");
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.i("与备份service连接关闭！！！");
+            }
+        };
+
+        //与备份service进行绑定
+        bindService(new Intent(this, BackupService.class), backupConnection, BIND_AUTO_CREATE);
 
         addChangeListener();
     }
@@ -174,6 +200,12 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_checkUpdate:
                 viewModel.checkUpdate();
                 break;
+            case R.id.nav_backup:
+                backupService.startBackup();
+                break;
+            case R.id.nav_restore:
+                backupService.restoreBackup(true, Collections.emptyList());
+                break;
             case R.id.nav_about:
                 setupActivity(this, AboutActivity.class);
                 break;
@@ -193,6 +225,7 @@ public class MainActivity extends AppCompatActivity
         viewModel.onCleared();
         listeners.clear();
         createListeners.clear();
+        unbindService(backupConnection);
 
         super.onDestroy();
     }
@@ -248,6 +281,8 @@ public class MainActivity extends AppCompatActivity
                     HelloPref.INSTANCE.setName(null);
 
                     binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(false);
+                    binding.navView.getMenu().findItem(R.id.nav_backup).setVisible(false);
+                    binding.navView.getMenu().findItem(R.id.nav_restore).setVisible(false);
                     ((ImageView) binding.navView.getHeaderView(0)
                             .findViewById(R.id.headerView)).setImageResource(R.drawable.image_logo_head);
                     ((TextView) binding.navView.getHeaderView(0)
@@ -280,6 +315,8 @@ public class MainActivity extends AppCompatActivity
                     HelloPref.INSTANCE.setLogin(true);
 
                     binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(true);
+                    binding.navView.getMenu().findItem(R.id.nav_backup).setVisible(true);
+                    binding.navView.getMenu().findItem(R.id.nav_restore).setVisible(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

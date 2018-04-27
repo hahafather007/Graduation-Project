@@ -96,7 +96,7 @@ public class HelloApplication extends Application implements HasActivityInjector
     @Override
     public void onActivityStarted(Activity activity) {
         activityLiveCount++;
-        Log.i("activityLiveCount" + activityLiveCount);
+        Log.i("activityLiveCount===" + activityLiveCount);
 
         sendCreateBroadcast();
     }
@@ -105,7 +105,7 @@ public class HelloApplication extends Application implements HasActivityInjector
     public void onActivityStopped(Activity activity) {
         activityLiveCount--;
 
-        Log.i("activityLiveCount" + activityLiveCount);
+        Log.i("activityLiveCount===" + activityLiveCount);
         //0表app进入了后台状态
         if (activityLiveCount == 0) {
             sendDestroyBroadcast();

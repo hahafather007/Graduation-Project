@@ -2,6 +2,7 @@ package com.hello.dagger.component;
 
 import com.hello.application.HelloApplication;
 import com.hello.dagger.module.ApplicationModule;
+import com.hello.dagger.module.BackupServiceModule;
 import com.hello.dagger.module.BookActivityModule;
 import com.hello.dagger.module.MainActivityModule;
 import com.hello.dagger.module.NoteCreateActivityModule;
@@ -36,7 +37,8 @@ import dagger.Component;
         NoteCreateActivityModule.class,
         SportActivityModule.class,
         WakeUpServiceModule.class,
-        VoiceServiceModule.class
+        VoiceServiceModule.class,
+        BackupServiceModule.class
 })
 public interface ApplicationComponent {
     @Component.Builder

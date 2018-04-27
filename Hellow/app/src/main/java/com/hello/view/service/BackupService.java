@@ -9,10 +9,13 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.hello.R;
+import com.hello.model.db.table.Note;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxField;
 import com.hello.viewmodel.BackupViewModel;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -87,10 +90,10 @@ public class BackupService extends Service {
         }
     }
 
-    public void restoreBackup(Boolean fileSave) {
+    public void restoreBackup(Boolean fileSave, List<Note> chooseNotes) {
         if (viewModel.getBackupLoading().get() || viewModel.getRestoreLoading().get()) return;
 
-        viewModel.restoreBackup(fileSave);
+        viewModel.restoreBackup(fileSave, chooseNotes);
 
         notifyManager.notify(RESTORE_START_ID, getNotification(this, false, false,
                 R.string.app_name, R.string.text_restore_start, null));

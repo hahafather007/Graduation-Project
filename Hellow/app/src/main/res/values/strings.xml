@@ -45,7 +45,7 @@
     <string name="text_version">版本：%s</string>
     <string name="text_cook_info">%s：\n%s</string>
     <string name="text_hello_sex">小哈性别</string>
-    <string name="text_backup">自动备份</string>
+    <string name="text_auto_backup">自动备份</string>
     <string name="text_backup_over">备份完成</string>
     <string name="text_restore_over">云端数据恢复完成</string>
     <string name="text_backup_start">正在执行备份，请勿关闭应用！</string>
@@ -111,6 +111,8 @@
     <string name="menu_aboutUs">关于</string>
     <string name="menu_share">分享</string>
     <string name="menu_exit">注销</string>
+    <string name="menu_backup">备份数据</string>
+    <string name="menu_restore">恢复数据</string>
     <string name="refresh_finish">刷新完毕</string>
     <string name="aiui_no_result">不好意思，我好像没听懂。。。 </string>
     <string name="symbol_about">≈</string>
