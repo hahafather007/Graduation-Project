@@ -25,10 +25,10 @@ class WakeUpHolder @Inject constructor() : RxController() {
     private var readyToDo = false
     private var autoListening = false
 
-    var error: Subject<Optional<*>> = PublishSubject.create()
-    var location: Subject<String> = PublishSubject.create()
-    var result: Subject<Any> = PublishSubject.create()
-    var music: Subject<MusicData> = PublishSubject.create()
+    val error: Subject<Optional<*>> = PublishSubject.create()
+    val location: Subject<String> = PublishSubject.create()
+    val result: Subject<Any> = PublishSubject.create()
+    val music: Subject<MusicData> = PublishSubject.create()
 
     @Inject
     lateinit var aiuiHolder: AIUIHolder

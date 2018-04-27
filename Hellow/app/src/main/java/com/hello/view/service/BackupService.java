@@ -22,6 +22,11 @@ import io.reactivex.disposables.CompositeDisposable;
 import static com.hello.utils.NotificationUtil.getNotification;
 
 public class BackupService extends Service {
+    private final int BACKUP_START_ID = 233;
+    private final int BACKUP_OVER_ID = 333;
+    private final int RESTORE_OVER_ID = 3333;
+    private final int RESTORE_START_ID = 2333;
+
     private CompositeDisposable disposable = new CompositeDisposable();
     private BackupBinder binder;
     private NotificationManager notifyManager;
@@ -82,16 +87,47 @@ public class BackupService extends Service {
         }
     }
 
+    public void restoreBackup(Boolean fileSave) {
+        if (viewModel.getBackupLoading().get() || viewModel.getRestoreLoading().get()) return;
+
+        viewModel.restoreBackup(fileSave);
+
+        notifyManager.notify(RESTORE_START_ID, getNotification(this, false, false,
+                R.string.app_name, R.string.text_restore_start, null));
+    }
+
+    //外部调用该方法开始执行备份
+    public void startBackup() {
+        if (viewModel.getBackupLoading().get() || viewModel.getRestoreLoading().get()) return;
+
+        viewModel.startBackup();
+
+        notifyManager.notify(BACKUP_START_ID, getNotification(this, false, false,
+                R.string.app_name, R.string.text_backup_start, null));
+    }
+
     private void addChangeListener() {
-        RxField.of(viewModel.getLoading())
+        RxField.of(viewModel.getBackupLoading())
                 .skip(1)
                 .filter(b -> !b)
                 .compose(Observables.disposable(disposable))
                 .doOnNext(__ -> {
-                    notifyManager.notify(233, getNotification(this, false, false,
-                            R.string.app_name, R.string.text_backup_over, null));
+                    notifyManager.notify(BACKUP_OVER_ID, getNotification(this, false,
+                            false, R.string.app_name, R.string.text_backup_over, null));
 
-                    stopSelf();
+                    notifyManager.cancel(BACKUP_START_ID);
+                })
+                .subscribe();
+
+        RxField.of(viewModel.getRestoreLoading())
+                .skip(1)
+                .filter(b -> !b)
+                .compose(Observables.disposable(disposable))
+                .doOnNext(__ -> {
+                    notifyManager.notify(RESTORE_OVER_ID, getNotification(this, false,
+                            false, R.string.app_name, R.string.text_restore_over, null));
+
+                    notifyManager.cancel(RESTORE_START_ID);
                 })
                 .subscribe();
     }
