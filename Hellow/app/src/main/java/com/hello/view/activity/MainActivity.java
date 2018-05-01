@@ -54,7 +54,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -204,7 +203,7 @@ public class MainActivity extends AppCompatActivity
                 backupService.startBackup();
                 break;
             case R.id.nav_restore:
-                backupService.restoreBackup(true, Collections.emptyList());
+                viewModel.restoreNote();
                 break;
             case R.id.nav_about:
                 setupActivity(this, AboutActivity.class);
@@ -306,6 +305,7 @@ public class MainActivity extends AppCompatActivity
 
                     HelloPref.INSTANCE.setImage(image);
                     HelloPref.INSTANCE.setName(name);
+                    Log.i("info===" + object);
 
                     Glide.with(MainActivity.this)
                             .load(image)

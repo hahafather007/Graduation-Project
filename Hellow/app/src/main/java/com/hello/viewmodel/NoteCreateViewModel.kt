@@ -98,7 +98,7 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
     }
 
     fun addNote(title: String, content: String) {
-        notesHolder.addNote(title, content, voiceHolder.getFileName())
+        notesHolder.addNoteAuto(title, content, voiceHolder.getFileName())
                 .compose(Completables.async())
                 .compose(Completables.disposable(compositeDisposable))
                 .doOnComplete {

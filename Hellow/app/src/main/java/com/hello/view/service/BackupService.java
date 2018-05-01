@@ -65,6 +65,7 @@ public class BackupService extends Service {
         binder = new BackupBinder();
         notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        viewModel.uploadTalkData();
         addChangeListener();
     }
 
@@ -90,10 +91,10 @@ public class BackupService extends Service {
         }
     }
 
-    public void restoreBackup(Boolean fileSave, List<Note> chooseNotes) {
+    public void restoreBackup(List<Note> chooseNotes) {
         if (viewModel.getBackupLoading().get() || viewModel.getRestoreLoading().get()) return;
 
-        viewModel.restoreBackup(fileSave, chooseNotes);
+        viewModel.restoreBackup(chooseNotes);
 
         notifyManager.notify(RESTORE_START_ID, getNotification(this, false, false,
                 R.string.app_name, R.string.text_restore_start, null));

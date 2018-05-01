@@ -1,10 +1,10 @@
 package com.hello.application;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 
 import com.annimon.stream.Stream;
@@ -35,7 +35,7 @@ import static com.hello.common.Constants.ACTION_APP_DESTROY;
 import static com.hello.common.Constants.AIUI_APPID;
 
 
-public class HelloApplication extends Application implements HasActivityInjector,
+public class HelloApplication extends MultiDexApplication implements HasActivityInjector,
         HasSupportFragmentInjector, HasServiceInjector, SimpleActivityLifecycleCallbacks {
     private List<Activity> activities;
     //当前有效activity数量

@@ -5,17 +5,16 @@ import com.google.gson.Gson
 import com.hello.common.RxController
 import com.hello.model.data.NotesBackupAnnalData
 import com.hello.model.db.NotesHolder
+import com.hello.model.db.SpeakDataHolder
 import com.hello.model.db.table.Note
 import com.hello.model.pref.HelloPref
 import com.hello.model.service.BackupService
+import com.hello.model.service.UserTalkService
+import com.hello.utils.Log
 import com.hello.utils.rx.Completables
-import com.hello.utils.rx.Observables
+import com.hello.utils.rx.Singles
 import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
+import io.reactivex.Single
 import javax.inject.Inject
 
 class BackupViewModel @Inject constructor() : RxController() {
@@ -26,39 +25,27 @@ class BackupViewModel @Inject constructor() : RxController() {
     lateinit var backupService: BackupService
     @Inject
     lateinit var notesHolder: NotesHolder
+    @Inject
+    lateinit var userTalkService: UserTalkService
+    @Inject
+    lateinit var speakDataHolder: SpeakDataHolder
 
     //恢复备份数据,参数为是否恢复录音文件
-    fun restoreBackup(fileSave: Boolean, chooseNotes: List<Note>) {
+    fun restoreBackup(chooseNotes: List<Note>) {
         Observable.fromIterable(chooseNotes)
-                .flatMapSingle { backNote ->
-                    notesHolder.getNotes()
-                            .map { Pair(backNote, it.map { Pair(it.title, it.time) }) }
-                }
-                //过滤掉云端与本地重复的数据
-                .filter { !it.second.contains(Pair(it.first.title, it.first.time)) }
-                .map { it.first }
-                .flatMap {
-                    Observable.zip(notesHolder.addNote(it.title, it.content, it.recordFile).toObservable(),
-                            //如果需要恢复录音数据，则执行恢复录音文件操作
-                            if (fileSave) {
-                                backupService.restoreFile(it.recordFile).toObservable()
-                            } else {
-                                Observable.just(it)
-                            },
-                            BiFunction<Any, Any, Any> { t1, _ -> t1 })
-                }
-                .compose(Observables.async())
-                .compose(Observables.status(restoreLoading))
-                .compose(Observables.disposable(compositeDisposable))
+                .flatMapCompletable { notesHolder.addNote(it.title, it.content, it.time, it.recordFile) }
+                .compose(Completables.async())
+                .compose(Completables.status(restoreLoading))
+                .compose(Completables.disposable(compositeDisposable))
+                .doOnError(Throwable::printStackTrace)
                 .subscribe()
     }
 
     //执行备份操作
     fun startBackup() {
-        //先获取当前本地所有的note列表，上传到服务器端，与服务器进行同步，再进行备份
         notesHolder.getNotes()
-                .flatMapObservable {
-                    Observable.just {
+                .flatMap {
+                    Single.just {
                         if (HelloPref.noteBackupIds != null) {
                             Gson().fromJson(HelloPref.noteBackupIds,
                                     NotesBackupAnnalData::class.java).noteIds
@@ -67,39 +54,48 @@ class BackupViewModel @Inject constructor() : RxController() {
                         }
                     }
                             .map { it.invoke() }
-                            .flatMap { ids ->
-                                Observable.fromIterable(it).map { Pair(ids, it) }
-                            }
+                            .map { ids -> it.filter { note -> !ids.contains(note.id) } }
                 }
-                //没有包含对应的id证明还未备份
-                .filter { !it.first.contains(it.second.id) }
-                .map { it.second }
-                .flatMapCompletable { note ->
-                    val file = File(note.recordFile)
-                    val description = RequestBody.create(
-                            MediaType.parse("multipart/form-data"), Gson().toJson(note))
-                    val requestFile = RequestBody.create(
-                            MediaType.parse("text/plain"), file)
-                    val body = MultipartBody.Part.createFormData("music", file.name, requestFile)
+                .flatMap {
+                    Log.i("note备份数量=${it.size}")
 
-                    backupService.backupNote(description, body)
-                            .doOnComplete {
-                                if (HelloPref.noteBackupIds != null) {
-                                    val noteIds = Gson().fromJson(HelloPref.noteBackupIds,
-                                            NotesBackupAnnalData::class.java).noteIds.toMutableList()
-
-                                    noteIds.add(note.id)
-
-                                    HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(noteIds.toList()))
-                                } else {
-                                    HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(listOf(note.id)))
-
-                                }
-                            }
+                    backupService.backupNote(it)
+                            .toSingleDefault<List<Note>>(it)
                 }
+                .compose(Singles.async())
+                .compose(Singles.status(backupLoading))
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess {
+                    Log.i("备份成功！！！")
+
+                    if (HelloPref.noteBackupIds != null) {
+                        val noteIds = Gson().fromJson(HelloPref.noteBackupIds,
+                                NotesBackupAnnalData::class.java).noteIds.toMutableList()
+
+                        it.forEach { note -> noteIds.add(note.id) }
+
+                        HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(noteIds))
+                    } else {
+                        val noteIds = mutableListOf<Long>()
+
+                        it.forEach { note -> noteIds.add(note.id) }
+
+                        HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(noteIds))
+                    }
+
+                }
+                .doOnError(Throwable::printStackTrace)
+                .subscribe()
+    }
+
+    //上传用户交互数据
+    fun uploadTalkData() {
+        speakDataHolder.getSpeakData()
+                .flatMap { userTalkService.uploadData(it).toSingleDefault<Any>(it) }
+                .flatMapCompletable { speakDataHolder.removeAll() }
                 .compose(Completables.async())
-                .compose(Completables.status(backupLoading))
                 .compose(Completables.disposable(compositeDisposable))
+                .doOnError(Throwable::printStackTrace)
                 .subscribe()
     }
 }
