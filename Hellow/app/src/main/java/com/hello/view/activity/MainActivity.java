@@ -67,6 +67,7 @@ import static com.hello.common.Constants.DATA_FORMAT;
 import static com.hello.common.Constants.UPDATE_URL;
 import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
+import static com.hello.utils.VersionUtil.getVersionCode;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NoteFragment.OnNewsCreateListener {
@@ -254,7 +255,7 @@ public class MainActivity extends AppCompatActivity
         RxField.ofNonNull(viewModel.updateInfo)
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(v -> {
-                    if (v.getCode() > HelloPref.INSTANCE.getVersionInt()) {
+                    if (v.getCode() > getVersionCode(this)) {
                         DialogUtil.showDialog(this, getString(R.string.title_want_to_update),
                                 String.format(getString(R.string.text_update_info), v.getInfo(),
                                         v.getTime().toString(DATA_FORMAT)), R.string.text_cancel, R.string.text_enter, null,

@@ -54,7 +54,7 @@
     <string name="text_wakeup_mode">唤醒模式</string>
     <string name="text_wakeup_mode_order">命令式</string>
     <string name="text_wakeup_mode_call">应答试</string>
-    <string name="text_update_info">更新内容：%s\n更新时间：%s</string>
+    <string name="text_update_info">更新内容：%s\n发布时间：%s</string>
     <string name="text_scan">扫描下方二维码与我们取得联系</string>
     <string name="text_cancel">取消</string>
     <string name="text_enter">确定</string>

@@ -5,10 +5,10 @@ import android.os.Bundle;
 
 import com.hello.R;
 import com.hello.databinding.ActivityAboutBinding;
-import com.hello.utils.VersionUtil;
 import com.hello.widget.view.ContractDialog;
 
 import static com.hello.utils.IntentUtil.setupActivity;
+import static com.hello.utils.VersionUtil.*;
 
 public class AboutActivity extends AppActivity {
     private ActivityAboutBinding binding;
@@ -18,7 +18,7 @@ public class AboutActivity extends AppActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_about);
-        binding.setVersion(VersionUtil.getVersionName(this));
+        binding.setVersion(getVersionName(this));
         binding.setActivity(this);
     }
 

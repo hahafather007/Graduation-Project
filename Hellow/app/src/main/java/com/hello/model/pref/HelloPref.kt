@@ -33,9 +33,6 @@ object HelloPref : KotprefModel() {
     //标记是否登录
     var isLogin: Boolean by booleanPref(default = false)
 
-    //当前的版本信息
-    var versionInt: Int by intPref(default = 1)
-
     //已备份语音笔记id列表
     var noteBackupIds: String? by nullableStringPref(default = null)
 }
