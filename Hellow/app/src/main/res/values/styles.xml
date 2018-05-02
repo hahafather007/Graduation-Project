@@ -14,7 +14,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="SwipeBackStyle" parent="AppTheme">
+    <style name="SwipeBackStyle" parent="NormalStyle">
         <item name="android:windowIsTranslucent">true</item>
     </style>
 

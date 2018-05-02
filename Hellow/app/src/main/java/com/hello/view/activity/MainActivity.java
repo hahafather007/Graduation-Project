@@ -35,6 +35,7 @@ import com.hello.utils.DialogUtil;
 import com.hello.utils.Log;
 import com.hello.utils.ServiceUtil;
 import com.hello.utils.ToastUtil;
+import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.fragment.NoteFragment;
@@ -65,6 +66,7 @@ import dagger.android.AndroidInjection;
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.DATA_FORMAT;
 import static com.hello.common.Constants.UPDATE_URL;
+import static com.hello.utils.DialogUtil.showLoadingDialog;
 import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
 import static com.hello.utils.VersionUtil.getVersionCode;
@@ -264,6 +266,25 @@ public class MainActivity extends AppCompatActivity
                         ToastUtil.showToast(this, R.string.toast_checkUpdate);
                     }
                 })
+                .subscribe();
+
+        RxField.of(viewModel.notes)
+                .filter(ValidUtilKt::isListValid)
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> {
+
+                })
+                .subscribe();
+
+        RxField.of(viewModel.restoreLoading)
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> showLoadingDialog(this, v))
+                .subscribe();
+
+        RxField.of(viewModel.updateLoading)
+                .skip(1)
+                .compose(RxLifeCycle.resumed(this))
+                .doOnNext(v -> showLoadingDialog(this, v))
                 .subscribe();
     }
 
