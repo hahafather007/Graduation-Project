@@ -14,7 +14,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppStyle" parent="AppTheme" />
+    <style name="SwipeBackStyle" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="NormalStyle" parent="AppTheme" />
 
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/img_background_setup</item>

@@ -65,43 +65,43 @@
         <activity
             android:name=".view.activity.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/NormalStyle" />
 
         <activity
             android:name=".view.activity.SettingActivity"
             android:label="@string/title_activity_setting"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/SwipeBackStyle" />
 
         <activity
             android:name=".view.activity.BookActivity"
             android:label="@string/title_activity_interest"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/SwipeBackStyle" />
 
         <activity
             android:name=".view.activity.HelpActivity"
             android:label="@string/title_activity_help"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/SwipeBackStyle" />
 
         <activity
             android:name=".view.activity.WebViewActivity"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/SwipeBackStyle" />
 
         <activity
             android:name=".view.activity.NoteCreateActivity"
             android:keepScreenOn="true"
             android:label="@string/title_activity_note"
-            android:theme="@style/AppStyle"
+            android:theme="@style/SwipeBackStyle"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".view.activity.SportActivity"
             android:label="@string/title_activity_sport"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/SwipeBackStyle" />
 
         <activity
             android:name=".view.activity.AboutActivity"
             android:label="@string/menu_aboutUs"
-            android:theme="@style/AppStyle" />
+            android:theme="@style/SwipeBackStyle" />
 
         <activity
             android:name=".view.activity.KeepLifeActivity"
@@ -146,7 +146,6 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="behind"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
 
         <service android:name="com.amap.api.location.APSService" />
 
