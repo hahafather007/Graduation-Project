@@ -94,6 +94,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".view.activity.NoteRestoreActivity"
+            android:label="@string/menu_restore"
+            android:theme="@style/SwipeBackStyle"/>
+
+        <activity
             android:name=".view.activity.SportActivity"
             android:label="@string/title_activity_sport"
             android:theme="@style/SwipeBackStyle" />

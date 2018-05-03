@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="activity"
+            type="com.hello.view.activity.NoteRestoreActivity" />
+
+        <variable
+            name="viewModel"
+            type="com.hello.viewmodel.NoteRestoreViewModel" />
+    </data>
+
+    <android.support.v7.widget.FitWindowsFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.design.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <android.support.design.widget.AppBarLayout
+                    android:id="@+id/appBarLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/AppTheme.AppBarOverlay">
+
+                    <android.support.design.widget.CollapsingToolbarLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        app:contentScrim="@color/colorPrimary"
+                        app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                        <android.support.v7.widget.Toolbar
+                            android:id="@+id/toolbar"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/actionBarSize"
+                            android:background="@color/colorPrimary"
+                            app:layout_collapseMode="pin" />
+                    </android.support.design.widget.CollapsingToolbarLayout>
+                </android.support.design.widget.AppBarLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorLineSpace"
+                    app:itemLayout="@{@layout/item_restore_note}"
+                    app:items="@{viewModel.notes}"
+                    app:layoutManager="@string/linear_layout_manager"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    app:onBindItem="@{activity::onBindItem}"
+                    tools:listitem="@layout/item_restore_note">
+
+                </android.support.v7.widget.RecyclerView>
+            </android.support.design.widget.CoordinatorLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/actionBarSize"
+                android:background="@color/colorLine">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="top"
+                    android:background="@color/colorTransWhite" />
+
+                <Button
+                    android:layout_width="88dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/shape_corner"
+                    android:clickable="@{viewModel.noteChoosed}"
+                    android:text="@string/text_enter"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    app:onSingleClick="@{() -> activity.startRestore()}" />
+            </FrameLayout>
+        </LinearLayout>
+    </android.support.v7.widget.FitWindowsFrameLayout>
+</layout>

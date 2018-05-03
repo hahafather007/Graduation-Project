@@ -26,9 +26,11 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.hello.R;
 import com.hello.common.Constants;
 import com.hello.databinding.ActivityMainBinding;
+import com.hello.model.data.NoteListData;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.BrowserUtil;
 import com.hello.utils.DialogUtil;
@@ -65,10 +67,12 @@ import dagger.android.AndroidInjection;
 
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.DATA_FORMAT;
+import static com.hello.common.Constants.EXTRA_ITEM;
 import static com.hello.common.Constants.UPDATE_URL;
 import static com.hello.utils.DialogUtil.showLoadingDialog;
 import static com.hello.utils.IntentUtil.setupActivity;
 import static com.hello.utils.ToastUtil.showToast;
+import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.VersionUtil.getVersionCode;
 
 public class MainActivity extends AppCompatActivity
@@ -84,6 +88,8 @@ public class MainActivity extends AppCompatActivity
     private boolean isExit = false;
     private ServiceConnection backupConnection;
     private BackupService backupService;
+
+    private final int NOTE_REQUEST = 2333;
 
     @Inject
     MainActivityViewModel viewModel;
@@ -234,7 +240,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Tencent.onActivityResultData(requestCode, resultCode, data, iUiListener);
+        if (NOTE_REQUEST == requestCode) {
+            if (resultCode == RESULT_OK) {
+                backupService.restoreBackup(new Gson().fromJson(data.getStringExtra(EXTRA_ITEM),
+                        NoteListData.class).getNotes());
+            }
+        } else {
+            Tencent.onActivityResultData(requestCode, resultCode, data, iUiListener);
+        }
     }
 
     public void addScrollListener(OnPageScrollListener listener) {
@@ -269,10 +282,14 @@ public class MainActivity extends AppCompatActivity
                 .subscribe();
 
         RxField.of(viewModel.notes)
-                .filter(ValidUtilKt::isListValid)
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(v -> {
-
+                    if (isListValid(v)) {
+                        startActivityForResult(NoteRestoreActivity
+                                .intentOfNotes(this, v), NOTE_REQUEST);
+                    } else {
+                        ToastUtil.showToast(this, R.string.text_no_restore);
+                    }
                 })
                 .subscribe();
 
