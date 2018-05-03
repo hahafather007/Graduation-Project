@@ -68,11 +68,10 @@ class BackupViewModel @Inject constructor() : RxController() {
     //恢复备份数据,参数为是否恢复录音文件
     fun restoreBackup(chooseNotes: List<Note>) {
         Observable.fromIterable(chooseNotes)
-                .flatMapCompletable { Completable.fromAction { it.save() } }
+                .flatMapCompletable { notesHolder.addNote(it.title, it.content, it.time, it.recordFile) }
                 .compose(Completables.async())
                 .compose(Completables.status(restoreLoading))
                 .compose(Completables.disposable(compositeDisposable))
-                .doOnComplete { HelloPref.firstTimeRestore = false }
                 .doOnError(Throwable::printStackTrace)
                 .subscribe()
     }

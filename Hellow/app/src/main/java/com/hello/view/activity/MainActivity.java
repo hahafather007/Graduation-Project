@@ -37,7 +37,6 @@ import com.hello.utils.DialogUtil;
 import com.hello.utils.Log;
 import com.hello.utils.ServiceUtil;
 import com.hello.utils.ToastUtil;
-import com.hello.utils.ValidUtilKt;
 import com.hello.utils.rx.RxField;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.fragment.NoteFragment;
@@ -281,7 +280,7 @@ public class MainActivity extends AppCompatActivity
                 })
                 .subscribe();
 
-        RxField.of(viewModel.notes)
+        viewModel.notes
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(v -> {
                     if (isListValid(v)) {

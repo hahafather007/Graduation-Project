@@ -10,9 +10,8 @@ import javax.inject.Inject
 
 class NoteRestoreViewModel @Inject constructor() : RxController() {
     val notes = ObservableArrayList<Note>()
+    val clickedNotes = ObservableArrayList<Note>()
     val noteChoosed = ObservableBoolean()
-
-    private val clickedNotes = mutableListOf<Note>()
 
     fun initNotes(json: String) {
         notes.clear()
@@ -28,6 +27,4 @@ class NoteRestoreViewModel @Inject constructor() : RxController() {
 
         noteChoosed.set(clickedNotes.size > 0)
     }
-
-    fun getClickedNotes() = clickedNotes
 }

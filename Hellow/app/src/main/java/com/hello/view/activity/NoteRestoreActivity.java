@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.CheckBox;
 
 import com.google.gson.Gson;
 import com.hello.R;
@@ -62,13 +61,7 @@ public class NoteRestoreActivity extends AppActivity {
     }
 
     public void onBindItem(ViewDataBinding binding, Object data, int position) {
-        ((ItemRestoreNoteBinding) binding).setActivity(this);
-    }
-
-    public void itemClick(CheckBox box, Note note) {
-        box.setChecked(!box.isChecked());
-
-        viewModel.toggleClick(note);
+        ((ItemRestoreNoteBinding) binding).setViewModel(viewModel);
     }
 
     public void startRestore() {

@@ -15,7 +15,6 @@ import com.hello.databinding.ItemVoiceNoteBinding;
 import com.hello.model.db.table.Note;
 import com.hello.model.pref.HelloPref;
 import com.hello.utils.DialogUtil;
-import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxLifeCycle;
 import com.hello.view.activity.NoteCreateActivity;
 import com.hello.viewmodel.NoteViewModel;
@@ -73,7 +72,21 @@ public class NoteFragment extends AppFragment {
     }
 
     public void openNote(long id, String title) {
-        startActivity(NoteCreateActivity.intentOfNote(getContext(), id, title));
+        if (HelloPref.INSTANCE.isLogin()) {
+            if (listener != null) {
+                listener.onOpenCreate();
+            }
+
+            startActivity(NoteCreateActivity.intentOfNote(getContext(), id, title));
+        } else {
+            DialogUtil.showDialog(getContext(), R.string.text_should_login,
+                    R.string.text_cancel, R.string.text_enter, null,
+                    (__, ___) -> {
+                        if (listener != null) {
+                            listener.onOpenLogin();
+                        }
+                    });
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
