@@ -12,7 +12,9 @@ import com.hello.model.service.BackupService
 import com.hello.model.service.UserTalkService
 import com.hello.utils.Log
 import com.hello.utils.rx.Completables
+import com.hello.utils.rx.Observables
 import com.hello.utils.rx.Singles
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -30,13 +32,47 @@ class BackupViewModel @Inject constructor() : RxController() {
     @Inject
     lateinit var speakDataHolder: SpeakDataHolder
 
+    @Inject
+    fun init() {
+        notesHolder.noteEdited
+                .flatMapSingle {
+                    if (HelloPref.noteBackupIds == null) {
+                        Single.just(it)
+                    } else {
+                        val ids = Gson().fromJson(HelloPref.noteBackupIds,
+                                NotesBackupAnnalData::class.java).noteIds.toMutableList()
+
+                        Single.just(it)
+                                .map { note ->
+                                    if (ids.indexOf(note.id) != -1) {
+                                        ids.removeAt(ids.indexOf(note.id))
+
+                                        HelloPref.noteBackupIds = Gson().toJson(NotesBackupAnnalData(ids))
+                                    }
+                                }
+                                .compose(Singles.async())
+                    }
+                }
+                .filter { HelloPref.isAutoBackup }
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { startBackup() }
+                .subscribe()
+
+        notesHolder.noteAdded
+                .compose(Observables.disposable(compositeDisposable))
+                .filter { HelloPref.isAutoBackup }
+                .doOnNext { startBackup() }
+                .subscribe()
+    }
+
     //恢复备份数据,参数为是否恢复录音文件
     fun restoreBackup(chooseNotes: List<Note>) {
         Observable.fromIterable(chooseNotes)
-                .flatMapCompletable { notesHolder.addNote(it.title, it.content, it.time, it.recordFile) }
+                .flatMapCompletable { Completable.fromAction { it.save() } }
                 .compose(Completables.async())
                 .compose(Completables.status(restoreLoading))
                 .compose(Completables.disposable(compositeDisposable))
+                .doOnComplete { HelloPref.firstTimeRestore = false }
                 .doOnError(Throwable::printStackTrace)
                 .subscribe()
     }

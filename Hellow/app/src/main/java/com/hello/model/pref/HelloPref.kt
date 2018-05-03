@@ -9,11 +9,13 @@ object HelloPref : KotprefModel() {
     override val kotprefName = Constants.KOTPREF_NAME
 
     //是否自动备份
-    var isAutoBackup: Boolean by booleanPref(default = false)
+    var isAutoBackup: Boolean by booleanPref(default = true)
     //是否能后台唤醒
     var isCanWakeup: Boolean by booleanPref(default = false)
     //后台唤醒方式
     var wakeUpMode: String by stringPref(default = CALL)
+    //判断是否为第一次恢复备份
+    var firstTimeRestore: Boolean by booleanPref(default = true)
 
     //语音合成发音人
     var talkPeople: String by stringPref(default = XIAO_YAN)

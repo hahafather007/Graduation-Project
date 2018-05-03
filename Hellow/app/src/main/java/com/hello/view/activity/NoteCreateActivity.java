@@ -222,7 +222,9 @@ public class NoteCreateActivity extends AppActivity {
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(__ -> {
                     setTitle(viewModel.getNoteTitle());
+                    getIntent().putExtra(EXTRA_TITLE, viewModel.getNoteTitle());
                     ToastUtil.showToast(this, R.string.text_save_over);
+
                     hasSave = true;
                 })
                 .subscribe();

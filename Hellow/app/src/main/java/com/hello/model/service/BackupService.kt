@@ -39,6 +39,7 @@ class BackupService @Inject constructor() {
 
     fun restoreNote(): Single<List<Note>> {
         return api.restoreNote()
+                .map { it.notes }
     }
 
     fun restoreFile(fileName: String): Single<ResponseBody> {

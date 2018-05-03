@@ -64,6 +64,11 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
                     }
                 }
                 .subscribe()
+
+        notesHolder.noteAdded
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext { note = it }
+                .subscribe()
     }
 
     fun initNote(id: Long) {
@@ -82,13 +87,13 @@ class NoteCreateViewModel @Inject constructor() : RxController() {
     }
 
     fun setNoteTitle(title: String) {
-        note!!.title = title
+        note?.title = title
     }
 
     fun getNoteTitle(): String = note?.title ?: cacheTitle
 
     fun saveNote() {
-        note!!.content = noteText.get()
+        note?.content = noteText.get()
 
         notesHolder.editNote(note!!)
                 .compose(Completables.async())
