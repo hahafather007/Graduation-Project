@@ -1,6 +1,7 @@
 package com.hello.model.db
 
 import com.hello.model.db.table.Note
+import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
 import com.hello.utils.rx.Singles
 import com.raizlabs.android.dbflow.sql.language.Select
@@ -27,7 +28,7 @@ class NotesHolder @Inject constructor() {
 
     fun addNoteAuto(title: String, content: String, file: String): Completable {
         val time = LocalDateTime.now().toString()
-        val note = Note(title, content, time, file)
+        val note = Note(title, content, time, file, HelloPref.openId)
 
         return Completable.fromAction {
             note.save()
@@ -39,7 +40,7 @@ class NotesHolder @Inject constructor() {
     }
 
     fun addNote(title: String, content: String, time: String, file: String): Completable {
-        val note = Note(title, content, time, file)
+        val note = Note(title, content, time, file, HelloPref.openId)
 
         return Completable.fromAction {
             note.save()
@@ -56,7 +57,7 @@ class NotesHolder @Inject constructor() {
             Single.just(Select().from(Note::class.java).queryList())
                     .map {
                         it.sortByDescending { it.time }
-                        it
+                        it.filter { it.openId == HelloPref.openId }
                     }
                     .doOnSuccess { cacheNotes = it }
         else
@@ -89,19 +90,16 @@ class NotesHolder @Inject constructor() {
                 }
     }
 
-    private fun refreshNotes(type: RefreshType? = null, note: Note? = null) {
+    fun refreshNotes(type: RefreshType? = null, note: Note? = null) {
         Single.just(Select().from(Note::class.java).queryList())
                 .map {
                     it.sortByDescending { it.time }
-                    it
+                    it.filter { it.openId == HelloPref.openId }
                 }
                 .compose(Singles.async())
                 .subscribe { v ->
                     cacheNotes = v
                     statusChange.onNext(v)
-
-                    if (type == RefreshType.ADDED) {
-                    }
 
                     when (type) {
                         RefreshType.ADDED -> noteAdded.onNext(note ?: Note())

@@ -77,4 +77,8 @@ public class MainActivityViewModel extends RxController {
                 .doOnError(Throwable::printStackTrace)
                 .subscribe();
     }
+
+    public void refreshNotes() {
+        notesHolder.refreshNotes(null, null);
+    }
 }

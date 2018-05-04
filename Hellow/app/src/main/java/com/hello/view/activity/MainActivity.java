@@ -129,6 +129,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 getUserInfo();
 
+                viewModel.refreshNotes();
+
                 ToastUtil.showToast(MainActivity.this, R.string.text_login_success);
             }
 
@@ -316,6 +318,8 @@ public class MainActivity extends AppCompatActivity
                     HelloPref.INSTANCE.setOpenId(null);
                     HelloPref.INSTANCE.setImage(null);
                     HelloPref.INSTANCE.setName(null);
+
+                    viewModel.refreshNotes();
 
                     binding.navView.getMenu().findItem(R.id.nav_exit).setVisible(false);
                     binding.navView.getMenu().findItem(R.id.nav_backup).setVisible(false);
