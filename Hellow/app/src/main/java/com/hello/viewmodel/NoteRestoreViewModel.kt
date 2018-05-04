@@ -1,7 +1,6 @@
 package com.hello.viewmodel
 
 import android.databinding.ObservableArrayList
-import android.databinding.ObservableBoolean
 import com.google.gson.Gson
 import com.hello.common.RxController
 import com.hello.model.data.NoteListData
@@ -11,7 +10,6 @@ import javax.inject.Inject
 class NoteRestoreViewModel @Inject constructor() : RxController() {
     val notes = ObservableArrayList<Note>()
     val clickedNotes = ObservableArrayList<Note>()
-    val noteChoosed = ObservableBoolean()
 
     fun initNotes(json: String) {
         notes.clear()
@@ -25,6 +23,5 @@ class NoteRestoreViewModel @Inject constructor() : RxController() {
             clickedNotes.add(note)
         }
 
-        noteChoosed.set(clickedNotes.size > 0)
     }
 }

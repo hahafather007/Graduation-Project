@@ -13,6 +13,7 @@ import com.hello.databinding.ActivityNoteRestoreBinding;
 import com.hello.databinding.ItemRestoreNoteBinding;
 import com.hello.model.data.NoteListData;
 import com.hello.model.db.table.Note;
+import com.hello.utils.ToastUtil;
 import com.hello.viewmodel.NoteRestoreViewModel;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.hello.common.Constants.EXTRA_ITEM;
+import static com.hello.utils.ValidUtilKt.isListValid;
 
 public class NoteRestoreActivity extends AppActivity {
     private ActivityNoteRestoreBinding binding;
@@ -65,6 +67,12 @@ public class NoteRestoreActivity extends AppActivity {
     }
 
     public void startRestore() {
+        if (!isListValid(viewModel.getClickedNotes())) {
+            ToastUtil.showToast(this, R.string.text_choose_nothing);
+
+            return;
+        }
+
         setResult(RESULT_OK, new Intent().putExtra(EXTRA_ITEM,
                 new Gson().toJson(new NoteListData(viewModel.getClickedNotes()))));
 

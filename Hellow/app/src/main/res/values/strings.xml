@@ -78,6 +78,7 @@
     <string name="text_uss_energy">消耗能量：</string>
     <string name="text_uss_energy_end">大卡</string>
     <string name="text_no_have">无</string>
+    <string name="text_choose_nothing">你还没有勾选！！！</string>
     <string name="text_tap_to_cancel_recording">录音中，点击停止</string>
     <string name="text_say_nothing">你好像什么都没有说</string>
     <string name="text_calling">正在拨通电话</string>
