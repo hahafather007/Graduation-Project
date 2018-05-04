@@ -41,6 +41,8 @@ class WakeUpHolder @Inject constructor() : RxController() {
         mAsr.setParameter(SpeechConstant.DOMAIN, "iat")
         mAsr.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
         mAsr.setParameter(SpeechConstant.ACCENT, "mandarin")
+        mAsr.setParameter(SpeechConstant.VAD_BOS, "10000")
+        mAsr.setParameter(SpeechConstant.VAD_EOS, "10000")
 
         listener = object : RecognizerListener {
             //data表示音频数据

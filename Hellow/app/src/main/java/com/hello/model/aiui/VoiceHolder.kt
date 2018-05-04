@@ -51,6 +51,8 @@ class VoiceHolder @Inject constructor() : RxController() {
         mAsr.setParameter(SpeechConstant.LANGUAGE, "zh_cn")
         mAsr.setParameter(SpeechConstant.ACCENT, "mandarin")
         mAsr.setParameter(SpeechConstant.AUDIO_FORMAT, "wav")
+        mAsr.setParameter(SpeechConstant.VAD_BOS, "10000")
+        mAsr.setParameter(SpeechConstant.VAD_EOS, "10000")
 
         listener = object : RecognizerListener {
             //data表示音频数据
@@ -58,7 +60,7 @@ class VoiceHolder @Inject constructor() : RxController() {
             override fun onVolumeChanged(vol: Int, data: ByteArray?) {
                 volume.onNext(vol)
 
-                Log.i("音量：$vol")
+//                Log.i("音量：$vol")
             }
 
             override fun onResult(result: RecognizerResult?, isLast: Boolean) {
@@ -104,32 +106,13 @@ class VoiceHolder @Inject constructor() : RxController() {
             override fun onEndOfSpeech() {
                 Log.i("识别时间到")
 
-                if (speaking) {
-                    mAsr.stopListening()
-
-                    val cacheFile = File("${Environment.getExternalStorageDirectory()}" +
-                            "/哈喽助手/录音/缓存/${times - 1}.wav")
-
-                    Observable.interval(16, TimeUnit.MILLISECONDS)
-                            .filter { cacheFile.exists() }
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .compose(Observables.disposable(compositeDisposable))
-                            .doOnNext {
-                                speakTime = 0
-
-                                if (speaking) {
-                                    startRecording()
-                                }
-
-                                compositeDisposable.clear()
-                            }
-                            .subscribe()
-                }
+                continueRecording()
             }
 
             override fun onError(error: SpeechError?) {
                 Log.e("识别出错：${error?.errorCode}--->${error?.errorDescription}")
+
+                continueRecording()
             }
         }
     }
@@ -232,6 +215,32 @@ class VoiceHolder @Inject constructor() : RxController() {
 
         speaking = false
     }
+
+    private fun continueRecording(){
+        if (speaking) {
+            mAsr.stopListening()
+
+            val cacheFile = File("${Environment.getExternalStorageDirectory()}" +
+                    "/哈喽助手/录音/缓存/${times - 1}.wav")
+
+            Observable.interval(16, TimeUnit.MILLISECONDS)
+                    .filter { cacheFile.exists() }
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .compose(Observables.disposable(compositeDisposable))
+                    .doOnNext {
+                        speakTime = 0
+
+                        if (speaking) {
+                            startRecording()
+                        }
+
+                        compositeDisposable.clear()
+                    }
+                    .subscribe()
+        }
+    }
+
 
     override fun onCleared() {
         super.onCleared()
