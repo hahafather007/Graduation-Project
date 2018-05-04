@@ -11,7 +11,7 @@ object NavigationUtil {
     fun openMap(context: Context, location: String) {
         try {
             val intent = Intent.getIntent("androidamap://route?sourceApplication=softname" +
-                    "&sname=我的位置&dname=" + location + "&dev=0&m=0&t=1")
+                    "&sname=我的位置&dname=" + location + "&dev=0&m=0&t=0")
 
             context.startActivity(intent)
         } catch (e: Exception) {
