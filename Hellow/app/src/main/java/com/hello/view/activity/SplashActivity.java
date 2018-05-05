@@ -1,6 +1,5 @@
 package com.hello.view.activity;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +17,6 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SplashActivity extends AppCompatActivity {
 
-    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +29,10 @@ public class SplashActivity extends AppCompatActivity {
                         READ_PHONE_STATE,
                         WRITE_EXTERNAL_STORAGE,
                         ACCESS_FINE_LOCATION)
-                .subscribe(__ -> {
+                .doOnNext(__ -> {
                     IntentUtil.setupActivity(this, MainActivity.class);
                     finish();
-                });
+                })
+                .subscribe();
     }
 }
