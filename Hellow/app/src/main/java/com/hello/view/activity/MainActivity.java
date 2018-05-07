@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity
 
     private void showShareView() {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_share));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.text_share), UPDATE_URL));
         intent.setType("text/plain");
         startActivity(intent);
     }

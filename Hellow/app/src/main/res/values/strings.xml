@@ -15,7 +15,7 @@
     <string name="navigation_drawer_close">关闭抽屉</string>
     <string name="action_settings">Settings</string>
     <string name="toast_checkUpdate">已是最新版本！</string>
-    <string name="text_share">分享一个好玩的应用~</string>
+    <string name="text_share">给你一个炒鸡屌的语音软件，下载地址在这~\n%s</string>
     <string name="text_share_title">分享</string>
     <string name="text_send">发送</string>
     <string name="text_dialog_sex_msg">性别改变后会对小哈的性格产生一定的影响！设置保存成功后重启APP生效，重启APP生效，重启APP生效。</string>
