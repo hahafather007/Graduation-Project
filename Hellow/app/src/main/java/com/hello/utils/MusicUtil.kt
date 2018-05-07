@@ -35,7 +35,7 @@ object MusicUtil {
                     player.prepare()
                     player
                 }
-                .compose(Observables.async())
+                .async()
                 .compose(Observables.disposable(disposable))
                 .subscribe(MediaPlayer::start)
     }
