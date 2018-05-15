@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -22,6 +23,7 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import io.reactivex.disposables.CompositeDisposable;
 
+import static com.hello.utils.NotificationUtil.getChannel;
 import static com.hello.utils.NotificationUtil.getNotification;
 
 public class BackupService extends Service {
@@ -96,8 +98,12 @@ public class BackupService extends Service {
 
         viewModel.restoreBackup(chooseNotes);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                notifyManager.getNotificationChannel(RESTORE_START_ID + "") == null) {
+            notifyManager.createNotificationChannel(getChannel(RESTORE_START_ID));
+        }
         notifyManager.notify(RESTORE_START_ID, getNotification(this, false, false,
-                R.string.app_name, R.string.text_restore_start, null));
+                R.string.app_name, R.string.text_restore_start, null, RESTORE_START_ID));
     }
 
     //外部调用该方法开始执行备份
@@ -106,18 +112,26 @@ public class BackupService extends Service {
 
         viewModel.startBackup();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                notifyManager.getNotificationChannel(BACKUP_START_ID + "") == null) {
+            notifyManager.createNotificationChannel(getChannel(BACKUP_START_ID));
+        }
         notifyManager.notify(BACKUP_START_ID, getNotification(this, false, false,
-                R.string.app_name, R.string.text_backup_start, null));
+                R.string.app_name, R.string.text_backup_start, null, BACKUP_START_ID));
     }
 
     private void addChangeListener() {
         RxField.of(viewModel.getBackupLoading())
                 .skip(1)
-                .filter(b -> !b)
+                .filter(b -> b = !b)
                 .compose(Observables.disposable(disposable))
                 .doOnNext(__ -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                            notifyManager.getNotificationChannel(BACKUP_OVER_ID + "") == null) {
+                        notifyManager.createNotificationChannel(getChannel(BACKUP_OVER_ID));
+                    }
                     notifyManager.notify(BACKUP_OVER_ID, getNotification(this, false,
-                            false, R.string.app_name, R.string.text_backup_over, null));
+                            false, R.string.app_name, R.string.text_backup_over, null, BACKUP_OVER_ID));
 
                     notifyManager.cancel(BACKUP_START_ID);
                 })
@@ -128,8 +142,12 @@ public class BackupService extends Service {
                 .filter(b -> !b)
                 .compose(Observables.disposable(disposable))
                 .doOnNext(__ -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                            notifyManager.getNotificationChannel(RESTORE_OVER_ID + "") == null) {
+                        notifyManager.createNotificationChannel(getChannel(RESTORE_OVER_ID));
+                    }
                     notifyManager.notify(RESTORE_OVER_ID, getNotification(this, false,
-                            false, R.string.app_name, R.string.text_restore_over, null));
+                            false, R.string.app_name, R.string.text_restore_over, null, RESTORE_OVER_ID));
 
                     notifyManager.cancel(RESTORE_START_ID);
                 })

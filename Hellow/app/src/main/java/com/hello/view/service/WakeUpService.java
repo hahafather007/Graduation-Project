@@ -1,6 +1,7 @@
 package com.hello.view.service;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -27,7 +29,6 @@ import com.hello.model.pref.HelloPref;
 import com.hello.receiver.PhoneReceiver;
 import com.hello.utils.LightUtil;
 import com.hello.utils.Log;
-import com.hello.utils.NotificationUtil;
 import com.hello.utils.ToastUtil;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.RxField;
@@ -52,6 +53,8 @@ import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.NetWorkUtil.isOnline;
+import static com.hello.utils.NotificationUtil.getChannel;
+import static com.hello.utils.NotificationUtil.getNotification;
 import static com.hello.utils.PackageUtil.runAppByName;
 import static com.hello.utils.PhonePeopleUtil.getDisplayNameByNumber;
 
@@ -64,6 +67,7 @@ public class WakeUpService extends Service {
     private CompositeDisposable disposable = new CompositeDisposable();
     //最新接收的短信内容
     private SystemMsgData msgData;
+    private NotificationManager notifyManager;
 
     @Inject
     WakeUpViewModel viewModel;
@@ -95,6 +99,8 @@ public class WakeUpService extends Service {
         Log.i("onCreate：WakeUpService");
 
         AndroidInjection.inject(this);
+
+        notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         binder = new WakeUpBinder();
 
@@ -252,12 +258,18 @@ public class WakeUpService extends Service {
 
     //显示通知栏
     private void startNotify() {
-        startForeground(888, NotificationUtil.getNotification(WakeUpService.this,
-                false, false, R.string.app_name, R.string.text_hello_stand_by,
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                notifyManager.getNotificationChannel("888") == null) {
+            notifyManager.createNotificationChannel(getChannel(888));
+        }
+
+        startForeground(888, getNotification(WakeUpService.this, false,
+                false, R.string.app_name, R.string.text_hello_stand_by,
                 new Intent(WakeUpService.this, MainActivity.class)
                         .addCategory(Intent.CATEGORY_LAUNCHER)
                         .setComponent(new ComponentName(WakeUpService.this, MainActivity.class))
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)));
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED),
+                888));
 
         viewModel.startListening();
     }

@@ -8,12 +8,13 @@ import android.support.annotation.Nullable;
 
 import com.hello.R;
 import com.hello.utils.Log;
-import com.hello.utils.NotificationUtil;
 import com.hello.viewmodel.NoteCreateViewModel;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+
+import static com.hello.utils.NotificationUtil.getNotification;
 
 public class VoiceService extends Service {
     private VoiceBinder binder;
@@ -26,8 +27,8 @@ public class VoiceService extends Service {
     public IBinder onBind(Intent intent) {
         Log.i("onBind：VoiceService");
 
-        startForeground(666, NotificationUtil.getNotification(this,
-                false, false, R.string.app_name, R.string.text_voice_note,null));
+        startForeground(666, getNotification(this, false, false,
+                R.string.app_name, R.string.text_voice_note, null, 666));
 
         return binder;
     }
