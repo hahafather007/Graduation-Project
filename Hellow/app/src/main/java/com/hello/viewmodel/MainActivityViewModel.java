@@ -10,6 +10,7 @@ import com.hello.model.db.NotesHolder;
 import com.hello.model.db.table.Note;
 import com.hello.model.service.BackupService;
 import com.hello.model.service.UpdateService;
+import com.hello.model.step.StepHolder;
 import com.hello.utils.Log;
 import com.hello.utils.rx.Singles;
 
@@ -34,6 +35,8 @@ public class MainActivityViewModel extends RxController {
     BackupService backupService;
     @Inject
     NotesHolder notesHolder;
+    @Inject
+    StepHolder stepHolder;
 
     @Inject
     MainActivityViewModel() {
@@ -80,5 +83,12 @@ public class MainActivityViewModel extends RxController {
 
     public void refreshNotes() {
         notesHolder.refreshNotes(null, null);
+    }
+
+    @Override
+    public void onCleared() {
+        super.onCleared();
+
+        stepHolder.onCleared();
     }
 }

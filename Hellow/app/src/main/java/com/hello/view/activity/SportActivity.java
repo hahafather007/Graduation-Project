@@ -48,7 +48,6 @@ public class SportActivity extends AppActivity {
 
     private void addChangeListener() {
         RxField.of(viewModel.getStep())
-                .skip(1)
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(v -> {
                     binding.stepView.setCurrentCount(10000, v);
@@ -119,8 +118,6 @@ public class SportActivity extends AppActivity {
 
             if (info.stepCount == 0) {
                 return getString(R.string.text_no_have);
-            } else if (info.time.equals(LocalDate.now().toString("yyyy-MM-dd"))) {
-                return getString(R.string.text_today);
             } else if (ValidUtilKt.isStrValid(info.time)) {
                 return info.time.substring(6);
             } else {

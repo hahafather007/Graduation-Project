@@ -57,8 +57,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
                 if (speaking) return
 
                 //表示用户说了唤醒词
-                if (text.contains("小哈同学") || text.contains("小哈助手")
-                        || text.contains("哈喽助手")) {
+                if (text.contains("小哈同学")) {
                     speaking = true
 
                     //应答式唤醒模式
@@ -77,14 +76,7 @@ class WakeUpHolder @Inject constructor() : RxController() {
 
                         mAsr.stopListening()
                     } else {//命令式唤醒模式
-                        text = when {
-                            text.indexOf("小哈同学") != -1 ->
-                                text.substring(text.indexOf("小哈同学") + 4)
-                            text.indexOf("小哈助手") != -1 ->
-                                text.substring(text.indexOf("小哈助手") + 4)
-                            else ->
-                                text.substring(text.indexOf("哈喽助手") + 4)
-                        }
+                        text = text.substring(text.indexOf("小哈同学") + 4)
 
                         if (isStrValid(text)) {
                             aiuiHolder.sendMessage(text)

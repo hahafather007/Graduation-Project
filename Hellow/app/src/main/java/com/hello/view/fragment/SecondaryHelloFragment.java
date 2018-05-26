@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hello.R;
+import com.hello.application.HelloApplication;
 import com.hello.databinding.FragmentSecondaryHelloBinding;
 import com.hello.databinding.ItemAiuiCookBinding;
 import com.hello.databinding.ItemTulingCookBinding;
 import com.hello.databinding.ItemTulingTalkBinding;
+import com.hello.model.data.AppState;
 import com.hello.model.data.CookData;
 import com.hello.model.data.CookResult;
 import com.hello.model.data.DescriptionData;
@@ -47,7 +49,10 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.hello.utils.MusicUtil.*;
+import static com.hello.utils.MusicUtil.MediaListener;
+import static com.hello.utils.MusicUtil.continueMusic;
+import static com.hello.utils.MusicUtil.pauseMusic;
+import static com.hello.utils.MusicUtil.playMusic;
 import static com.hello.utils.NavigationUtil.openMap;
 import static com.hello.utils.PackageUtil.runAppByName;
 
@@ -172,6 +177,19 @@ public class SecondaryHelloFragment extends AppFragment implements MainActivity.
                     }
                 })
                 .subscribe();
+
+        if (getActivity().getApplication() instanceof HelloApplication) {
+            ((HelloApplication) getActivity().getApplication()).appState
+                    .compose(RxLifeCycle.with(this))
+                    .doOnNext(v -> {
+                        if (AppState.FOREGROUND == v) {
+                            viewModel.setListenAIUI(true);
+                        } else {
+                            viewModel.setListenAIUI(false);
+                        }
+                    })
+                    .subscribe();
+        }
     }
 
     private void initView() {

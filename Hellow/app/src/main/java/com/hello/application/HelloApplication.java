@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import com.annimon.stream.Stream;
 import com.chibatching.kotpref.Kotpref;
 import com.hello.dagger.component.DaggerApplicationComponent;
+import com.hello.model.data.AppState;
 import com.hello.utils.Log;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
@@ -29,6 +30,8 @@ import dagger.android.HasServiceInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 import static com.hello.common.Constants.ACTION_APP_CREATE;
 import static com.hello.common.Constants.ACTION_APP_DESTROY;
@@ -40,6 +43,8 @@ public class HelloApplication extends MultiDexApplication implements HasActivity
     private List<Activity> activities;
     //当前有效activity数量
     private int activityLiveCount;
+
+    public final Subject<AppState> appState = PublishSubject.create();
 
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;
@@ -99,6 +104,8 @@ public class HelloApplication extends MultiDexApplication implements HasActivity
         Log.i("activityLiveCount===" + activityLiveCount);
 
         sendCreateBroadcast();
+
+        appState.onNext(AppState.FOREGROUND);
     }
 
     @Override
@@ -109,6 +116,8 @@ public class HelloApplication extends MultiDexApplication implements HasActivity
         //0表app进入了后台状态
         if (activityLiveCount == 0) {
             sendDestroyBroadcast();
+
+            appState.onNext(AppState.BACKGROUND);
         }
     }
 

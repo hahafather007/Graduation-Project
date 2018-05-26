@@ -25,7 +25,9 @@ import io.reactivex.subjects.Subject
 import org.joda.time.LocalDate
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class StepHolder @Inject constructor() : RxController() {
     //系统开机时间
     private val powerUpTime = SystemTimeUtil.getPowerUpTime()
@@ -35,7 +37,6 @@ class StepHolder @Inject constructor() : RxController() {
     private var cacheStepInfo: List<StepInfo> = emptyList()
 
     val step: Subject<Int> = PublishSubject.create()
-    val stepInfoChange: Subject<Optional<*>> = PublishSubject.create()
 
     @Inject
     lateinit var context: Context
@@ -87,7 +88,6 @@ class StepHolder @Inject constructor() : RxController() {
                     }
                     return@flatMap Observable.just(
                             StepInfo(LocalDate.now().toString(DATA_FORMAT), stepCount).save())
-                            .doOnSubscribe { stepInfoChange.onNext(Optional.empty<Any>()) }
                 }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -111,7 +111,6 @@ class StepHolder @Inject constructor() : RxController() {
 
         if (!firstSaveStep) {
             HelloPref.stepCount = stepCount
-            stepInfoChange.onNext(Optional.empty<Any>())
 
             Observable.just(Select().from(StepInfo::class.java).queryList())
                     .flatMap {

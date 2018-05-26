@@ -374,9 +374,9 @@ public class AIUIHolder extends RxController {
                     }
                     case "weather": {
                         String city = resultJson.getJSONArray("semantic").getJSONObject(0)
-                                .getJSONArray("slots").getJSONObject(0).getString("value");
+                                .getJSONArray("slots").getJSONObject(1).getString("value");
 
-                        if ("CURRENT_CITY".equals(city)) {
+                        if ("CURRENT_CITY".equals(city) || "CURRENT_POI".equals(city)) {
                             locUse = WEATHER;
                             locationHolder.startLocation();
                         } else {

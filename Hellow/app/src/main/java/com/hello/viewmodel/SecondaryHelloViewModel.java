@@ -33,6 +33,8 @@ public class SecondaryHelloViewModel extends RxController {
 
     public Subject<TuLingData> tuLing = PublishSubject.create();
 
+    private boolean listenAIUI = true;
+
     @Inject
     AIUIHolder aiuiHolder;
 
@@ -43,6 +45,7 @@ public class SecondaryHelloViewModel extends RxController {
     @Inject
     void init() {
         aiuiHolder.aiuiResult
+                .filter(__ -> listenAIUI)
                 .compose(Observables.disposable(compositeDisposable))
                 .doOnNext(v -> {
                     Log.i(v.toString());
@@ -79,5 +82,9 @@ public class SecondaryHelloViewModel extends RxController {
                     location.set(v);
                 })
                 .subscribe();
+    }
+
+    public void setListenAIUI(boolean listenAIUI) {
+        this.listenAIUI = listenAIUI;
     }
 }
