@@ -2,11 +2,15 @@ package com.hello.model.aiui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Base64;
 
 import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
+import com.google.gson.Gson;
 import com.hello.R;
 import com.hello.common.Constants;
 import com.hello.common.RxController;
+import com.hello.model.data.AIUIUploadData;
 import com.hello.model.data.AppOpenData;
 import com.hello.model.data.DescriptionData;
 import com.hello.model.data.HelloTalkData;
@@ -33,6 +37,7 @@ import com.hello.model.service.TuLingService;
 import com.hello.utils.AlarmUtil;
 import com.hello.utils.CalendarUtil;
 import com.hello.utils.Log;
+import com.hello.utils.PhonePeopleUtil;
 import com.hello.utils.rx.Completables;
 import com.hello.utils.rx.Observables;
 import com.hello.utils.rx.Singles;
@@ -62,6 +67,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
@@ -69,6 +75,7 @@ import io.reactivex.subjects.Subject;
 import static com.hello.common.SpeechPeople.XIAO_YAN;
 import static com.hello.model.aiui.AIUIHolder.LocUse.CARTNUM;
 import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
+import static com.hello.model.aiui.AIUIHolder.LocUse.WEATHER;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -152,6 +159,7 @@ public class AIUIHolder extends RxController {
         };
 
         sendLocationInfo();
+        uploadPhonePeople();
     }
 
     //外部调用该方法控制录音开始和结束
@@ -187,7 +195,7 @@ public class AIUIHolder extends RxController {
             agent.sendMessage(wakeupMsg);
         }
         message = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0,
-                "data_type=text", msg.getBytes());
+                "data_type=text,pers_param={\"uid\":\"\"}", msg.getBytes());
         agent.sendMessage(message);
     }
 
@@ -216,6 +224,7 @@ public class AIUIHolder extends RxController {
                 //唤醒事件
                 case AIUIConstant.EVENT_WAKEUP: {
                     Log.i("被唤醒！");
+
                     break;
                 }
                 //结果事件（包含听写，语义，离线语法结果）
@@ -263,12 +272,14 @@ public class AIUIHolder extends RxController {
                 //休眠事件
                 case AIUIConstant.EVENT_SLEEP: {
                     Log.i("休眠！");
+
                     break;
                 }
                 //错误事件
                 case AIUIConstant.EVENT_ERROR: {
                     Log.e("错误：" + event.info);
                     error.onNext(Optional.empty());
+
                     break;
                 }
                 //状态事件
@@ -283,6 +294,7 @@ public class AIUIHolder extends RxController {
                         Log.i("音量：" + event.arg2);
                         volume.onNext(event.arg2);
                     }
+
                     break;
                 }
                 //开始录音
@@ -291,6 +303,27 @@ public class AIUIHolder extends RxController {
                 }
                 //结束录音
                 case AIUIConstant.EVENT_STOP_RECORD: {
+                    break;
+                }
+            }
+
+            switch (event.arg1) {
+                case AIUIConstant.CMD_SYNC: {
+                    int dtype = event.data.getInt("sync_dtype");
+
+                    //arg2表示结果
+                    if (0 == event.arg2) {  // 同步成功
+                        if (AIUIConstant.SYNC_DATA_SCHEMA == dtype) {
+                            String mSyncSid = event.data.getString("sid");
+                            Log.i("schema数据同步成功，sid=" + mSyncSid);
+                        }
+                    } else {
+                        if (AIUIConstant.SYNC_DATA_SCHEMA == dtype) {
+                            String mSyncSid = event.data.getString("sid");
+                            Log.i("schema数据同步出错：" + event.arg2 + "，sid=" + mSyncSid);
+                        }
+                    }
+
                     break;
                 }
             }
@@ -340,39 +373,50 @@ public class AIUIHolder extends RxController {
                         break;
                     }
                     case "weather": {
-                        //获取用户询问天气预报的具体时间
-                        WeatherData weather = null;
-                        JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
-                        try {
-                            String suggestData = new JSONObject(resultJson.getJSONArray("semantic")
-                                    .getJSONObject(0).getJSONArray("slots")
-                                    .getJSONObject(0).getString("normValue"))
-                                    .getString("suggestDatetime");
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject object = array.getJSONObject(i);
-                                if (object.getString("date").equals(suggestData)) {
-                                    weather = new WeatherData(object.getString("city"), suggestData,
-                                            object.getString("tempRange"),
-                                            object.getString("weather"),
-                                            object.getString("wind"));
+                        String city = resultJson.getJSONArray("semantic").getJSONObject(0)
+                                .getJSONArray("slots").getJSONObject(0).getString("value");
 
-                                    break;
+                        if ("CURRENT_CITY".equals(city)) {
+                            locUse = WEATHER;
+                            locationHolder.startLocation();
+                        } else {
+                            //获取用户询问天气预报的具体时间
+                            WeatherData weather = null;
+                            JSONArray array = resultJson.getJSONObject("data").getJSONArray("result");
+                            try {
+                                String suggestData = new JSONObject(resultJson.getJSONArray("semantic")
+                                        .getJSONObject(0).getJSONArray("slots")
+                                        .getJSONObject(0).getString("normValue"))
+                                        .getString("suggestDatetime");
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    if (object.getString("date").equals(suggestData)) {
+                                        weather = new WeatherData(object.getString("city"), suggestData,
+                                                object.getString("tempRange"),
+                                                object.getString("weather"),
+                                                object.getString("wind"));
+
+                                        break;
+                                    }
                                 }
+                            } catch (JSONException e) {
+                                JSONObject object = array.getJSONObject(0);
+                                weather = new WeatherData(object.getString("city"),
+                                        object.getString("date"), object.getString("tempRange"),
+                                        object.getString("weather"), object.getString("wind"));
                             }
-                        } catch (JSONException e) {
-                            JSONObject object = array.getJSONObject(0);
-                            weather = new WeatherData(object.getString("city"),
-                                    object.getString("date"), object.getString("tempRange"),
-                                    object.getString("weather"), object.getString("wind"));
-                        }
-                        mTalkText = mTalkText.replaceFirst("℃", "度")
-                                .replaceFirst(" ~ ", "至");
+                            mTalkText = mTalkText.replaceFirst("℃", "度")
+                                    .replaceFirst(" ~ ", "至");
 
-                        assert weather != null;
-                        aiuiResult.onNext(weather);
-                        speech.startSpeaking(mTalkText, speechListener);
+                            assert weather != null;
+                            aiuiResult.onNext(weather);
+                            speech.startSpeaking(mTalkText, speechListener);
+
+                            msgPeople = null;
+                        }
 
                         break;
+
                     }
                     case "cookbook": {
                         String cookName = resultJson.getJSONArray("semantic").getJSONObject(0)
@@ -580,14 +624,14 @@ public class AIUIHolder extends RxController {
                             aiuiResult.onNext(new HelloTalkData("请确认短信内容"));
                             aiuiResult.onNext(new PhoneMsgData(phoneNum, msgDetail));
                             speech.startSpeaking("请确认短信内容", speechListener);
-
-                            msgPeople = null;
-                            msgDetail = null;
                         } else {
                             aiuiResult.onNext(new HelloTalkData(context.getString(R.string.text_calling)));
                             aiuiResult.onNext(new PhoneData(phoneNum));
                             speech.startSpeaking(context.getString(R.string.text_calling), speechListener);
                         }
+
+                        msgPeople = null;
+                        msgDetail = null;
 
                         break;
                     }
@@ -766,6 +810,7 @@ public class AIUIHolder extends RxController {
                             userMsg = v.getAddress();
                             useTuLing();
                             break;
+                        case WEATHER:
                         case CARTNUM:
                             sendMessage(v.getCity() + userMsg);
                             msgPeople = "";
@@ -794,9 +839,50 @@ public class AIUIHolder extends RxController {
                 .subscribe();
     }
 
+    //上传联系人信息
+    private void uploadPhonePeople() {
+        Observable.just(PhonePeopleUtil.getContacts(context))
+                .map(list -> {
+                    StringBuilder contactJson = new StringBuilder();
+
+                    Stream.of(list).forEach(v -> {
+                        String[] nameNumber = v.split("\\$\\$");
+                        contactJson.append(String.format("{\"name\": \"%s\", \"phoneNumber\": \"%s\" }\n",
+                                nameNumber[0], nameNumber[1]));
+                    });
+
+                    return contactJson.toString();
+                })
+                .map(v -> Base64.encodeToString(v.getBytes(), Base64.NO_WRAP))
+                .map(v -> new AIUIUploadData(new AIUIUploadData.Param("uid", "",
+                        "IFLYTEK.telephone_contact"), v))
+                .compose(Observables.async())
+                .compose(Observables.disposable(compositeDisposable))
+                .doOnNext(v -> {
+                    agent.sendMessage(new AIUIMessage(AIUIConstant.CMD_SYNC, AIUIConstant.SYNC_DATA_SCHEMA,
+                            0, "", new Gson().toJson(v).getBytes("utf-8")));
+
+                    Log.i("AIUIUploadData==" + new Gson().toJson(v));
+
+                    //下面为设置动态实体生效
+                    JSONObject persParams = new JSONObject();
+                    JSONObject params = new JSONObject();
+                    JSONObject audioParams = new JSONObject();
+
+                    persParams.put("uid", "");
+                    audioParams.put("pers_param", persParams.toString());
+                    params.put("audioparams", audioParams);
+
+                    agent.sendMessage(new AIUIMessage(AIUIConstant.CMD_SET_PARAMS, 0, 0,
+                            params.toString(), null));
+                })
+                .subscribe();
+    }
+
     public enum LocUse {
         TULING,//使用图灵机器人
         NEARBY,//查询周围的东西
-        CARTNUM//尾号限行
+        CARTNUM,//尾号限行
+        WEATHER
     }
 }
