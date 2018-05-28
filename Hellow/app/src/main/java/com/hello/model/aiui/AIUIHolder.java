@@ -76,6 +76,7 @@ import static com.hello.common.SpeechPeople.XIAO_YAN;
 import static com.hello.model.aiui.AIUIHolder.LocUse.CARTNUM;
 import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
 import static com.hello.model.aiui.AIUIHolder.LocUse.WEATHER;
+import static com.hello.model.aiui.AIUIHolder.LocUse.WHERE;
 import static com.hello.utils.MusicUtil.stopMusic;
 import static com.hello.utils.ValidUtilKt.isListValid;
 import static com.hello.utils.ValidUtilKt.isStrValid;
@@ -749,6 +750,13 @@ public class AIUIHolder extends RxController {
 
                         break;
                     }
+                    //自定义我在哪
+                    case "HELLOASSIS.where_am_i": {
+                        locationHolder.startLocation();
+                        locUse = WHERE;
+
+                        break;
+                    }
                     default: {
                         aiuiResult.onNext(new HelloTalkData(mTalkText));
                         speech.startSpeaking(mTalkText, speechListener);
@@ -814,6 +822,11 @@ public class AIUIHolder extends RxController {
                         case CARTNUM:
                             sendMessage(v.getCity() + userMsg);
                             msgPeople = "";
+                            break;
+                        case WHERE:
+                            aiuiResult.onNext(new HelloTalkData("你在：" + v.getAddress()));
+                            speech.startSpeaking("你在：" + v.getAddress(), speechListener);
+
                             break;
                     }
                 })
@@ -883,6 +896,7 @@ public class AIUIHolder extends RxController {
         TULING,//使用图灵机器人
         NEARBY,//查询周围的东西
         CARTNUM,//尾号限行
-        WEATHER
+        WEATHER,//天气
+        WHERE//位置
     }
 }
