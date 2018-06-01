@@ -68,6 +68,10 @@
 -dontwarn com.iflytek.**
 -keep class com.iflytek.** {*;}
 
+#jpinyin
+-dontwarn com.github.stuxuhai.jpinyin.**
+-keep class com.github.stuxuhai.jpinyin.**{*;}
+
 #高德地图定位
 -dontwarn com.amap.api.location.**
 -dontwarn com.aps.**

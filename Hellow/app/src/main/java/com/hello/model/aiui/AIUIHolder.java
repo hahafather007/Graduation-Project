@@ -6,6 +6,8 @@ import android.util.Base64;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
+import com.github.stuxuhai.jpinyin.PinyinFormat;
+import com.github.stuxuhai.jpinyin.PinyinHelper;
 import com.google.gson.Gson;
 import com.hello.R;
 import com.hello.common.Constants;
@@ -74,6 +76,7 @@ import io.reactivex.subjects.Subject;
 
 import static com.hello.common.SpeechPeople.XIAO_YAN;
 import static com.hello.model.aiui.AIUIHolder.LocUse.CARTNUM;
+import static com.hello.model.aiui.AIUIHolder.LocUse.NEARBY;
 import static com.hello.model.aiui.AIUIHolder.LocUse.TULING;
 import static com.hello.model.aiui.AIUIHolder.LocUse.WEATHER;
 import static com.hello.model.aiui.AIUIHolder.LocUse.WHERE;
@@ -105,6 +108,7 @@ public class AIUIHolder extends RxController {
     private String msgDetail;
     //获取地址之后的用途
     private LocUse locUse;
+    private TuLingData nearbyData;
 
     //返回的结果
     public Subject<Object> aiuiResult = PublishSubject.create();
@@ -737,10 +741,10 @@ public class AIUIHolder extends RxController {
 
                         String thing = array.getJSONObject(0).getString("value");
 
-                        aiuiResult.onNext(new TuLingData(-1, "已为你找到附近的" + thing,
-                                Constants.MEI_TUAN.replace("city", "")
-                                        .replace("thing", thing)));
-                        speech.startSpeaking("已为你找到附近的" + userMsg, speechListener);
+                        nearbyData = new TuLingData(-1, "已为你找到" + thing,
+                                Constants.MEI_TUAN.replace("thing", thing));
+                        locationHolder.startLocation();
+                        locUse = NEARBY;
 
                         break;
                     }
@@ -826,7 +830,15 @@ public class AIUIHolder extends RxController {
                         case WHERE:
                             aiuiResult.onNext(new HelloTalkData("你在：" + v.getAddress()));
                             speech.startSpeaking("你在：" + v.getAddress(), speechListener);
-
+                            break;
+                        case NEARBY:
+                            nearbyData = new TuLingData(nearbyData.getCode(), nearbyData.getText(),
+                                    nearbyData.getUrl().replace("city",
+                                            PinyinHelper.convertToPinyinString(v.getCity()
+                                                            .replace("市", ""),
+                                                    "", PinyinFormat.WITHOUT_TONE)));
+                            aiuiResult.onNext(nearbyData);
+                            speakText(nearbyData.getText());
                             break;
                     }
                 })

@@ -300,7 +300,7 @@ object CityListUtil {
 
         var value = ""
         try {
-            value = getCityList().getString("Beijing")
+            value = getCityList().get(mCity).toString()
         } catch (e: JSONException) {
             e.printStackTrace()
         }

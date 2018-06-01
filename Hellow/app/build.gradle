@@ -118,6 +118,8 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.31'
+
+    implementation 'com.github.SilenceDut:jpinyin:v1.0'
 }
 repositories {
     mavenCentral()
