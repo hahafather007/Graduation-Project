@@ -13,6 +13,7 @@ import com.hello.utils.DimensionUtil.sp2px
 class StepView : View {
     //用来标记已经设置了数据
     private var hasSetData = false
+    private var lastAngleLength = 0f;
     /**
      * 圆弧的宽度
      */
@@ -188,9 +189,13 @@ class StepView : View {
         val currentAngleLength = scale * angleLength
         /**开始执行动画 */
         if (!hasSetData) {
-            setAnimation(0f, currentAngleLength, animationLength)
+            setAnimation(lastAngleLength, currentAngleLength, animationLength)
             hasSetData = true
+        } else {
+            setAnimation(lastAngleLength, currentAngleLength, animationLength / 5)
         }
+        /**上一次的弧长*/
+        lastAngleLength = currentAngleLength
     }
 
     /**

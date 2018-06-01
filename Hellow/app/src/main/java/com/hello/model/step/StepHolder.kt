@@ -14,7 +14,9 @@ import com.hello.model.db.table.StepInfo
 import com.hello.model.pref.HelloPref
 import com.hello.utils.Log
 import com.hello.utils.SystemTimeUtil
+import com.hello.utils.isListValid
 import com.hello.utils.rx.Observables
+import com.hello.utils.rx.Singles
 import com.raizlabs.android.dbflow.sql.language.Select
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -58,9 +60,15 @@ class StepHolder @Inject constructor() : RxController() {
             }
         }
 
-        manager.registerListener(sensorListener, manager.getDefaultSensor(TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_UI)
+        getStepInfoes().compose(Singles.async())
+                .compose(Singles.disposable(compositeDisposable))
+                .doOnSuccess {
+                    manager.registerListener(sensorListener,
+                            manager.getDefaultSensor(TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_UI)
 
-        saveStepInfo()
+                    saveStepInfo()
+                }
+                .subscribe()
     }
 
     //防止内存泄漏
@@ -72,31 +80,43 @@ class StepHolder @Inject constructor() : RxController() {
 
     //获得所有计步信息
     fun getStepInfoes(): Single<List<StepInfo>> {
-        return Single.just(Select().from(StepInfo::class.java).queryList())
-                .map { it.sortedBy { it.time } }
-                .doOnSuccess { cacheStepInfo = it }
+        return if (isListValid(cacheStepInfo)) {
+            Single.just(cacheStepInfo)
+        } else {
+            Single.just(Select().from(StepInfo::class.java).queryList())
+                    .map { it.sortedBy { it.time } }
+                    .doOnSuccess { cacheStepInfo = it }
+        }
     }
 
     private fun saveStepInfo() {
         Observable.interval(30, TimeUnit.SECONDS)
+                .map { cacheStepInfo.toMutableList() }
                 .flatMap {
-                    for (info in cacheStepInfo) {
+                    //若果系统开机时间等于当前时间，则准确步数等于传感器数据
+                    val step = if (powerUpTime == LocalDate.now()) {
+                        stepCount
+                    } else {//若开机时间是昨天，则步数等于传感器数据减去昨天的
+                        stepCount - HelloPref.stepCount
+                    }
+
+                    it.forEach { info ->
                         if (info.time == LocalDate.now().toString(DATA_FORMAT)) {
-                            info.stepCount = stepCount
+                            info.stepCount = step
                             return@flatMap Observable.just(info.save())
+                                    .map { _ -> it }
                         }
                     }
-                    return@flatMap Observable.just(
-                            StepInfo(LocalDate.now().toString(DATA_FORMAT), stepCount).save())
+
+                    val stepInfo = StepInfo(LocalDate.now().toString(DATA_FORMAT), step)
+                    return@flatMap Observable.just(stepInfo.save())
+                            .map { _ -> it.add(stepInfo) }
+                            .map { _ -> it }
                 }
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(Observables.disposable(compositeDisposable))
-                .doOnNext {
-                    if (powerUpTime == LocalDate.now()) {
-                        HelloPref.stepCount = stepCount
-                    }
-                }
+                .doOnNext { cacheStepInfo = it }
                 .subscribe()
     }
 
@@ -111,26 +131,29 @@ class StepHolder @Inject constructor() : RxController() {
 
         if (!firstSaveStep) {
             HelloPref.stepCount = stepCount
+            firstSaveStep = true
 
-            Observable.just(Select().from(StepInfo::class.java).queryList())
+            Observable.just(cacheStepInfo.toMutableList())
                     .flatMap {
-                        cacheStepInfo = it
-
-                        for (info in it) {
+                        it.forEach { info ->
                             if (info.time == LocalDate.now().toString(DATA_FORMAT)) {
                                 info.stepCount = stepCount
                                 return@flatMap Observable.just(info.save())
+                                        .map { _ -> it }
                             }
                         }
-                        return@flatMap Observable.just(
-                                StepInfo(LocalDate.now().toString(DATA_FORMAT), stepCount).save())
+
+                        val stepInfo = StepInfo(LocalDate.now().toString(DATA_FORMAT), stepCount)
+                        return@flatMap Observable.just(stepInfo.save())
+                                .map { _ -> it.add(stepInfo) }
+                                .map { _ -> it }
                     }
                     .compose(Observables.async())
                     .compose(Observables.disposable(compositeDisposable))
+                    .doOnNext { cacheStepInfo = it }
                     .subscribe()
-
-            firstSaveStep = true
         }
+
         step.onNext(stepCount)
     }
 }

@@ -19,6 +19,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -51,22 +52,23 @@ public class SportActivity extends AppActivity {
                 .compose(RxLifeCycle.resumed(this))
                 .doOnNext(v -> {
                     binding.stepView.setCurrentCount(10000, v);
-                    binding.energyDanceText.setText(String.valueOf(v * 0.04f));
-                    binding.jouleDanceText.setText(String.valueOf(v * 0.04f * 4.1859f));
-                    //根据步数的不同，显示的文字颜色不同
-                    if (v >= 6000) {
-                        binding.energyDanceText.setTextColor(0xFFFF0000);//红
-                        binding.jouleDanceText.setTextColor(0xFFFF0000);//红
-                    } else if (v >= 3000) {
-                        binding.energyDanceText.setTextColor(0xFFFFCC00);//黄
-                        binding.jouleDanceText.setTextColor(0xFFFFCC00);//黄
-                    } else {
-                        binding.energyDanceText.setTextColor(0xFF66CC00);//绿
-                        binding.jouleDanceText.setTextColor(0xFF66CC00);//绿
-                    }
 
-                    //文字跳动效果
                     if (!textDanced) {
+                        binding.energyDanceText.setText(String.valueOf(v * 0.04f));
+                        binding.jouleDanceText.setText(String.valueOf(v * 0.04f * 4.1859f));
+
+                        //根据步数的不同，显示的文字颜色不同
+                        if (v >= 6000) {
+                            binding.energyDanceText.setTextColor(0xFFFF0000);//红
+                            binding.jouleDanceText.setTextColor(0xFFFF0000);//红
+                        } else if (v >= 3000) {
+                            binding.energyDanceText.setTextColor(0xFFFFCC00);//黄
+                            binding.jouleDanceText.setTextColor(0xFFFFCC00);//黄
+                        } else {
+                            binding.energyDanceText.setTextColor(0xFF66CC00);//绿
+                            binding.jouleDanceText.setTextColor(0xFF66CC00);//绿
+                        }
+                        //文字跳动效果
                         binding.energyDanceText.setFormat("%.0f");
                         binding.energyDanceText.setDuration(2000);
                         binding.energyDanceText.dance();
@@ -76,6 +78,11 @@ public class SportActivity extends AppActivity {
                         binding.jouleDanceText.dance();
 
                         textDanced = true;
+                    } else {
+                        binding.energyDanceText.setText(String.format(Locale.getDefault(),
+                                "%.0f", v * 0.04f));
+                        binding.jouleDanceText.setText(String.format(Locale.getDefault(),
+                                "%.1f", v * 0.04f * 4.1859f));
                     }
                 })
                 .subscribe();
